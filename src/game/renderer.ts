@@ -105,6 +105,9 @@ export class SohoMapRenderer {
       ctx.fillStyle = vigGrad;
       ctx.fillRect(originX, originY, mapW, mapH);
       ctx.restore();
+
+      // 실제 고지도 도로 위 자갈길 톤(Cobblestone Tint) 시각화 (어디가 길인지 명확하게 구분!)
+      this.renderCobblestoneStreets(ctx);
     } else {
       this.renderFallbackStreets(ctx);
     }
@@ -531,6 +534,37 @@ export class SohoMapRenderer {
     }
   }
 
+  // 실제 고지도 도로 위 자갈길 톤(Cobblestone Tint) 시각화 (길인 곳을 명확히 구분!)
+  private renderCobblestoneStreets(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    for (const street of SOHO_STREETS) {
+      if (street.points.length < 2) continue;
+      ctx.beginPath();
+      const [startWx, startWy] = street.points[0];
+      const [startSx, startSy] = this.worldToScreen(startWx, startWy);
+      ctx.moveTo(startSx, startSy);
+      for (let i = 1; i < street.points.length; i++) {
+        const [wx, wy] = street.points[i];
+        const [sx, sy] = this.worldToScreen(wx, wy);
+        ctx.lineTo(sx, sy);
+      }
+      // 따뜻하고 밝은 런던 자갈길 반투명 톤
+      ctx.strokeStyle = 'rgba(255, 248, 230, 0.45)';
+      ctx.lineWidth = ((street.width || 56) * 1.35) * this.zoom;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // 길 가장자리 인도 연석선 (Curb Lines)
+      ctx.strokeStyle = 'rgba(120, 113, 108, 0.35)';
+      ctx.lineWidth = 2 * this.zoom;
+      ctx.setLineDash([10 * this.zoom, 14 * this.zoom]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.restore();
+  }
+
   private renderFallbackStreets(ctx: CanvasRenderingContext2D) {
     for (const street of SOHO_STREETS) {
       ctx.beginPath();
@@ -543,118 +577,210 @@ export class SohoMapRenderer {
         ctx.lineTo(sx, sy);
       }
       ctx.strokeStyle = '#e6d8ba';
-      ctx.lineWidth = (street.isMain ? 45 : 30) * this.zoom;
+      ctx.lineWidth = (street.isMain ? 65 : 45) * this.zoom;
       ctx.lineCap = 'round';
       ctx.stroke();
     }
   }
 
-  // 19세기 과학자 아바타
+  // ★ [핵심 혁신] 레고(LEGO®) 미니피규어 빅토리안 과학자 아바타!
   private drawScientistAvatar(wx: number, wy: number, name: string, coatColor: string, team: string, isMe: boolean, walkTick: number) {
     const [sx, sy] = this.worldToScreen(wx, wy);
     const ctx = this.ctx;
     const scale = this.zoom;
 
-    const bounceY = Math.sin(walkTick * 4) * 2.5 * scale;
-    const legSwing = Math.sin(walkTick * 4) * 4.5 * scale;
+    // 레고 특유의 뻣뻣하고 절도 있는 타닥타닥 보행 애니메이션
+    const bounceY = Math.abs(Math.sin(walkTick * 4)) * -2.5 * scale;
+    const legSwing = Math.sin(walkTick * 4) * 6 * scale;
 
     ctx.save();
     ctx.translate(sx, sy + bounceY);
 
-    // 그림자
+    // 1. 바닥 그림자 (레고 둥근 타원)
     ctx.beginPath();
-    ctx.ellipse(0, 16 * scale, 14 * scale, 6 * scale, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.ellipse(0, 16 * scale, 15 * scale, 6.5 * scale, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.fill();
 
-    // 다리
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 4 * scale;
-    ctx.beginPath();
-    ctx.moveTo(-5 * scale, 7 * scale);
-    ctx.lineTo(-5 * scale + legSwing, 16 * scale);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(5 * scale, 7 * scale);
-    ctx.lineTo(5 * scale - legSwing, 16 * scale);
-    ctx.stroke();
+    // 2. 레고 다리 (직사각형 2분할 레고 하체)
+    const legW = 6.5 * scale;
+    const legH = 11 * scale;
+    // 왼쪽 다리
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-7.5 * scale, 5 * scale + legSwing, legW, legH);
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.2 * scale;
+    ctx.strokeRect(-7.5 * scale, 5 * scale + legSwing, legW, legH);
+    // 레고 왼쪽 발가락 스터드 턱
+    ctx.fillRect(-7.5 * scale, 13 * scale + legSwing, legW, 3 * scale);
 
-    // 롱코트
-    ctx.fillStyle = coatColor;
+    // 오른쪽 다리
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(1 * scale, 5 * scale - legSwing, legW, legH);
+    ctx.strokeRect(1 * scale, 5 * scale - legSwing, legW, legH);
+    // 레고 오른쪽 발가락 스터드 턱
+    ctx.fillRect(1 * scale, 13 * scale - legSwing, legW, 3 * scale);
+
+    // 골반 힙 바 (Hips)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-8.5 * scale, 2.5 * scale, 17 * scale, 3.5 * scale);
+
+    // 3. 레고 사다리꼴 몸통 (Torso)
     ctx.beginPath();
-    ctx.moveTo(-10 * scale, -7 * scale);
-    ctx.lineTo(10 * scale, -7 * scale);
-    ctx.lineTo(14 * scale, 12 * scale);
-    ctx.lineTo(-14 * scale, 12 * scale);
+    ctx.moveTo(-7 * scale, -13 * scale); // 어깨 왼쪽
+    ctx.lineTo(7 * scale, -13 * scale);  // 어깨 오른쪽
+    ctx.lineTo(8.5 * scale, 2.5 * scale); // 허리 오른쪽
+    ctx.lineTo(-8.5 * scale, 2.5 * scale); // 허리 왼쪽
     ctx.closePath();
+    ctx.fillStyle = coatColor;
     ctx.fill();
     ctx.strokeStyle = isMe ? '#ffffff' : '#0f172a';
-    ctx.lineWidth = isMe ? 3 : 1.8;
+    ctx.lineWidth = isMe ? 2.8 * scale : 1.5 * scale;
     ctx.stroke();
 
-    // 넥타이
-    ctx.fillStyle = '#f8fafc';
+    // 토르소 빅토리안 수트 프린팅 (흰 셔츠 V넥 + 검은 보타이 + 단추)
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.moveTo(-3 * scale, -7 * scale);
-    ctx.lineTo(0, 0);
-    ctx.lineTo(3 * scale, -7 * scale);
+    ctx.moveTo(-3 * scale, -13 * scale);
+    ctx.lineTo(0, -6 * scale);
+    ctx.lineTo(3 * scale, -13 * scale);
+    ctx.closePath();
     ctx.fill();
 
-    // 얼굴
-    ctx.beginPath();
-    ctx.arc(0, -10 * scale, 7.5 * scale, 0, Math.PI * 2);
-    ctx.fillStyle = '#fed7aa';
-    ctx.fill();
-    ctx.strokeStyle = '#7c2d12';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // 실크햇
+    // 나비넥타이 (Bowtie)
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-13 * scale, -15 * scale, 26 * scale, 3.5 * scale);
-    ctx.fillRect(-7.5 * scale, -28 * scale, 15 * scale, 13 * scale);
-    ctx.fillStyle = coatColor;
-    ctx.fillRect(-7.5 * scale, -18 * scale, 15 * scale, 3 * scale);
-
-    // 돋보기
-    const glassX = 15 * scale;
-    const glassY = -2 * scale;
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 2.5 * scale;
     ctx.beginPath();
-    ctx.moveTo(7 * scale, 2 * scale);
+    ctx.moveTo(-2.5 * scale, -11 * scale);
+    ctx.lineTo(2.5 * scale, -9 * scale);
+    ctx.lineTo(2.5 * scale, -11 * scale);
+    ctx.lineTo(-2.5 * scale, -9 * scale);
+    ctx.closePath();
+    ctx.fill();
+
+    // 황동 단추 2개
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(0, -3 * scale, 0.9 * scale, 0, Math.PI * 2);
+    ctx.arc(0, -0.5 * scale, 0.9 * scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. 레고 팔과 상징적인 노란색 ㄷ자 집게손 (Claw Hands)
+    // 왼쪽 팔 & 손
+    ctx.fillStyle = coatColor;
+    ctx.fillRect(-11 * scale, -12 * scale, 3.5 * scale, 9 * scale);
+    // 왼쪽 노란색 ㄷ자 손
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2.2 * scale;
+    ctx.beginPath();
+    ctx.arc(-9.5 * scale, 0 * scale, 3.5 * scale, Math.PI * 0.25, Math.PI * 1.75);
+    ctx.stroke();
+
+    // 오른쪽 팔 & 손 (돋보기 쥐고 있음)
+    ctx.fillStyle = coatColor;
+    ctx.fillRect(7.5 * scale, -12 * scale, 3.5 * scale, 9 * scale);
+    // 오른쪽 노란색 ㄷ자 손
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2.2 * scale;
+    ctx.beginPath();
+    ctx.arc(9.5 * scale, 0 * scale, 3.5 * scale, -Math.PI * 0.75, Math.PI * 0.75);
+    ctx.stroke();
+
+    // 레고 황동 돋보기 장착!
+    const glassX = 16 * scale;
+    const glassY = -4 * scale;
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2.2 * scale;
+    ctx.beginPath();
+    ctx.moveTo(9.5 * scale, 0);
     ctx.lineTo(glassX, glassY);
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(glassX, glassY, 6.5 * scale, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(186, 230, 253, 0.75)';
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.8)';
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 2.5 * scale;
     ctx.stroke();
-
     // 돋보기 반사광
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5 * scale;
+    ctx.lineWidth = 1.4 * scale;
     ctx.beginPath();
-    ctx.arc(glassX - 1.8 * scale, glassY - 1.8 * scale, 3.2 * scale, 0, Math.PI * 0.8);
+    ctx.arc(glassX - 2 * scale, glassY - 2 * scale, 3.2 * scale, 0, Math.PI * 0.7);
     ctx.stroke();
 
-    // 가방
-    const bagX = -14 * scale;
-    const bagY = 2 * scale;
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(bagX - 5 * scale, bagY, 10 * scale, 8 * scale);
-    ctx.strokeStyle = '#451a03';
-    ctx.lineWidth = 1.8 * scale;
-    ctx.strokeRect(bagX - 5 * scale, bagY, 10 * scale, 8 * scale);
+    // 5. 레고 노란색 원통 머리 (Lego Head)
+    const headW = 12 * scale;
+    const headH = 10 * scale;
+    const headY = -23 * scale;
 
-    // 명찰
-    ctx.font = `bold ${Math.max(12, 13 * scale)}px -apple-system, sans-serif`;
+    // 머리 위 레고 스터드 (Lego Stud)
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(-3 * scale, headY - 3 * scale, 6 * scale, 3.2 * scale);
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 1 * scale;
+    ctx.strokeRect(-3 * scale, headY - 3 * scale, 6 * scale, 3.2 * scale);
+
+    // 얼굴 원통 (노란색)
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.roundRect(-headW / 2, headY, headW, headH, 3 * scale);
+    ctx.fill();
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 1.2 * scale;
+    ctx.stroke();
+
+    // 땡그란 레고 눈 2개 (검은 눈 + 흰색 반사 하이라이트)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
+    ctx.arc(2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    // 눈동자 흰색 반사 하이라이트
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(-2.2 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
+    ctx.arc(3 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 귀여운 레고 미소 입
+    ctx.strokeStyle = '#713f12';
+    ctx.lineWidth = 1.2 * scale;
+    ctx.beginPath();
+    ctx.arc(0, headY + 5.2 * scale, 2.5 * scale, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+
+    // 6. 레고 빅토리안 실크햇 / 중절모 몰드
+    const hatY = headY - 5 * scale;
+    // 둥근 챙
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#020617';
+    ctx.lineWidth = 1.2 * scale;
+    ctx.stroke();
+    // 모자 크라운 본체
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
+    ctx.fill();
+    // 모자 팀 컬러 밴드
+    ctx.fillStyle = coatColor;
+    ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
+
+    // 7. 초대형 고가독성 명찰 라벨
+    ctx.font = `900 ${Math.max(13, 14 * scale)}px -apple-system, sans-serif`;
     ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
-    ctx.fillText(name, 0, -32 * scale);
+    // 흰색 두꺼운 텍스트 그림자
+    ctx.shadowColor = '#ffffff';
+    ctx.shadowBlur = 6;
+    ctx.lineWidth = 3.5 * scale;
+    ctx.strokeStyle = '#ffffff';
+    ctx.strokeText(name, 0, headY - 14 * scale);
+    ctx.fillText(name, 0, headY - 14 * scale);
+    ctx.shadowBlur = 0;
 
     ctx.restore();
   }

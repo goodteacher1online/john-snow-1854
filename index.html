@@ -227,61 +227,70 @@
     </div>
   </div>
 
-  <!-- 4-1. 존 스노우 역학 조사 분석 수첩 모달 (데이터 기반 넛지 & 가설 검증) -->
+  <!-- 4-1. 존 스노우 역학 조사 일지 모달 (시나리오 개연성 & 단계적 잠금 해제) -->
   <div id="notebook-modal" class="modal-backdrop">
     <div class="modal-card max-w-2xl p-7 sm:p-9 font-serif">
       <div class="flex justify-between items-start border-b-2 border-stone-300 pb-3 mb-4">
         <div>
-          <span class="text-xs uppercase tracking-widest font-black text-amber-800">Field Epidemiological Analysis</span>
-          <h2 class="text-2xl sm:text-3xl font-serif font-black text-stone-950 mt-1">📊 역학 조사관의 데이터 분석 수첩</h2>
+          <span class="text-xs uppercase tracking-widest font-black text-amber-800" id="nb-phase-badge">제1막: 소호 현장 역학 일지</span>
+          <h2 class="text-2xl sm:text-3xl font-serif font-black text-stone-950 mt-1" id="nb-title">📋 소호 긴급 환자 조사 일지</h2>
         </div>
-        <button id="notebook-close-btn" class="text-stone-500 hover:text-stone-900 text-2xl font-bold px-2">✕</button>
+        <button id="notebook-close-btn" class="text-stone-500 hover:text-stone-900 text-3xl font-bold px-2">✕</button>
       </div>
 
       <div class="space-y-5 text-stone-800">
-        <!-- 1. 통계 요약 카드 -->
+        <!-- 1. 기본 현장 통계 (항상 노출) -->
         <div class="grid grid-cols-3 gap-3 text-center">
-          <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
-            <span class="text-xs text-stone-600 block">조사 가구</span>
-            <strong id="nb-house-count" class="text-xl text-stone-900">0 / 20</strong>
+          <div class="bg-amber-50 p-3.5 rounded-xl border-2 border-amber-200">
+            <span class="text-xs text-stone-600 font-bold block mb-1">방문한 가구</span>
+            <strong id="nb-house-count" class="text-2xl text-stone-950 font-black">0 / 20</strong>
           </div>
-          <div class="bg-red-50 p-3 rounded-xl border border-red-200">
-            <span class="text-xs text-stone-600 block">확인된 사망자</span>
-            <strong id="nb-death-count" class="text-xl text-red-700">0 명</strong>
+          <div class="bg-red-50 p-3.5 rounded-xl border-2 border-red-200">
+            <span class="text-xs text-stone-600 font-bold block mb-1">확인된 사망자</span>
+            <strong id="nb-death-count" class="text-2xl text-red-700 font-black">0 명</strong>
           </div>
-          <div class="bg-stone-100 p-3 rounded-xl border border-stone-300">
-            <span class="text-xs text-stone-600 block">현재 지배 가설</span>
-            <strong id="nb-current-hypo" class="text-xs sm:text-sm text-stone-800 block mt-1 font-sans">나쁜 공기설(Miasma)</strong>
-          </div>
-        </div>
-
-        <!-- 2. 식수원별 사망자 비교 표 (존 스노우의 결정적 데이터 시각화) -->
-        <div class="bg-white p-4 rounded-xl border-2 border-stone-200 shadow-sm">
-          <h3 class="text-base font-black text-stone-900 mb-2 flex items-center gap-1.5">
-            <span>💧</span> 식수 공급원별 가구 사망자 집계
-          </h3>
-          <div id="nb-pump-stats" class="space-y-2 text-sm">
-            <!-- 런타임에 동적 생성 -->
+          <div class="bg-stone-100 p-3.5 rounded-xl border-2 border-stone-300">
+            <span class="text-xs text-stone-600 font-bold block mb-1">당국 공식 가설</span>
+            <strong id="nb-current-hypo" class="text-sm sm:text-base text-stone-900 font-black block mt-0.5">나쁜 공기설(Miasma)</strong>
           </div>
         </div>
 
-        <!-- 3. 현장 조사에서 발견된 모순점 (넛지 아카이브) -->
-        <div class="bg-amber-50/80 p-4 rounded-xl border border-amber-200">
-          <h3 class="text-base font-black text-amber-950 mb-2 flex items-center gap-1.5">
-            <span>💡</span> 조사관이 마주한 가설의 모순 (현장 증언들)
+        <!-- 2. 제1막: 방문 가구 현장 진술 로그 (초반 메인 화면) -->
+        <div id="nb-log-section" class="bg-stone-50 p-4 rounded-xl border-2 border-stone-200 max-h-56 overflow-y-auto">
+          <h3 class="text-base font-black text-stone-900 mb-2 flex items-center gap-2">
+            <span>📝</span> 현장 방문 기록부
           </h3>
-          <ul id="nb-anomalies" class="space-y-2 text-sm text-stone-700">
-            <li class="italic text-stone-500">아직 결정적 모순이 발견되지 않았습니다. 양조장, 구빈원, 외곽 저택 등을 조사해보십시오.</li>
+          <div id="nb-records-list" class="space-y-2 text-sm">
+            <p class="text-stone-500 italic">아직 방문한 가구가 없습니다. 거리의 집들을 방문하여 문을 두드리십시오.</p>
+          </div>
+        </div>
+
+        <!-- 3. 제2막: 모순 발견 시에만 등장하는 의문 섹션 (초반엔 완전 숨김) -->
+        <div id="nb-anomaly-section" class="hidden bg-amber-50 p-4.5 rounded-xl border-2 border-amber-300 animate-fadeIn">
+          <h3 class="text-lg font-black text-amber-950 mb-2 flex items-center gap-2">
+            <span>⚡</span> 공기 감염설로는 설명할 수 없는 모순들!
+          </h3>
+          <ul id="nb-anomalies" class="space-y-2 text-base text-stone-900 font-semibold">
           </ul>
         </div>
 
-        <!-- 4. 과학적 결단: 새로운 가설 채택 -->
-        <div class="pt-3 border-t-2 border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p class="text-xs text-stone-600">
-            충분한 데이터가 모였다면 당국의 '공기 감염설'을 기각하고 '오염된 식수원' 가설을 채택하십시오.
+        <!-- 4. 제3막: 충분한 데이터 수집 후 비로소 열리는 식수원 교차 분석 (초반엔 완전 숨김) -->
+        <div id="nb-stats-section" class="hidden bg-white p-4.5 rounded-xl border-2 border-blue-300 shadow-md animate-fadeIn">
+          <h3 class="text-lg font-black text-blue-950 mb-2 flex items-center gap-2">
+            <span>🔍</span> [역학적 교차 분석] 식수 공급원별 사망률 집계
+          </h3>
+          <p class="text-xs text-stone-600 mb-3">주민들의 진술 속 식수원을 분류하여 분석한 결과입니다.</p>
+          <div id="nb-pump-stats" class="space-y-2.5 text-sm">
+          </div>
+        </div>
+
+        <!-- 5. 제3막 결단 버튼: 가설 전복 (충분한 모순과 데이터 확보 시에만 활성화) -->
+        <div id="nb-decision-section" class="hidden pt-3 border-t-2 border-stone-300 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
+          <p class="text-sm font-bold text-stone-800">
+            데이터가 진실을 가리키고 있습니다. '공기 감염설'을 기각하겠습니까?
           </p>
-          <button id="switch-water-hypo-btn" class="w-full sm:w-auto px-5 py-3 rounded-xl font-sans font-bold text-sm bg-blue-800 text-blue-50 hover:bg-blue-900 transition-all shadow-md shrink-0">
-            🌊 가설 전환: 오염된 식수원(Water-borne)
+          <button id="switch-water-hypo-btn" class="w-full sm:w-auto px-6 py-3.5 rounded-xl font-sans font-black text-base bg-blue-800 text-blue-50 hover:bg-blue-900 transition-all shadow-lg active:scale-95 shrink-0">
+            🌊 [역사적 결단] 식수원 감염설 채택!
           </button>
         </div>
       </div>

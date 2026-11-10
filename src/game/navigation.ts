@@ -29,23 +29,23 @@ export class SohoNavigator {
    * 해당 월드 좌표 (x, y)가 도로 위이거나 가구/펌프 접근 구역인지 판정
    */
   public canWalkAt(x: number, y: number): boolean {
-    // 1. 가구 문 앞 및 마당 구역 (반경 55px 이내 보행 보장)
+    // 1. 가구 문 앞 및 마당 구역 (반경 80px 이내 넉넉하게 보행 보장)
     for (const h of this.houses) {
-      if (Math.hypot(h.x - x, h.y - y) <= 55) {
+      if (Math.hypot(h.x - x, h.y - y) <= 80) {
         return true;
       }
     }
 
-    // 2. 공공 식수 펌프 주변 (반경 55px 이내 보행 보장)
+    // 2. 공공 식수 펌프 주변 (반경 80px 이내 넉넉하게 보행 보장)
     for (const p of this.pumps) {
-      if (Math.hypot(p.x - x, p.y - y) <= 55) {
+      if (Math.hypot(p.x - x, p.y - y) <= 80) {
         return true;
       }
     }
 
-    // 3. 도로 선분망 내부 보행 검사
+    // 3. 도로 선분망 내부 보행 검사 (도로 폭을 넉넉하게 판정하여 시원시원한 보행감 제공)
     for (const street of this.streets) {
-      const halfWidth = (street.width || 52) / 2;
+      const halfWidth = ((street.width || 60) * 1.35) / 2; // 폭 35% 넉넉히 확장
       const pts = street.points;
       for (let i = 0; i < pts.length - 1; i++) {
         const [ax, ay] = pts[i];
