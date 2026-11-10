@@ -1,7 +1,7 @@
 export type Smell = 'high' | 'mid' | 'low';
 export type QuestionId = 'toll' | 'air' | 'water';
 export type PortraitId = 'woman' | 'youth' | 'elder' | 'brewer' | 'widow' | 'official';
-export type SiteKind = 'house' | 'brewery' | 'workhouse';
+export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
 export type PlayerGender = 'male' | 'female';
 
 /** 위원회에서 이 기록이 반박할 수 있는 주장 */
@@ -73,6 +73,8 @@ export interface SaveData {
   reasonStep: number;
   misses: number;
   noteSeen: number;
+  /** 구빈원·양조장을 보기 전에 한 예상 (0: 많이 죽었을 것, 1: 거의 안 죽었을 것) */
+  predict?: number;
   x: number;
   y: number;
 }

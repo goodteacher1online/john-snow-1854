@@ -233,7 +233,7 @@ const SITE_TEXT: SiteText[] = [
     outro: '새의 깃털 하나도 이유 없이 빠지지 않소. 이 일에도 이유가 있을 거요.',
   },
   {
-    id: 'eley', name: '일리 형제 뇌관 공장', kind: 'brewery', basis: 'record', proves: ['far'],
+    id: 'eley', name: '일리 형제 뇌관 공장', kind: 'factory', basis: 'record', proves: ['far'],
     clue: '먼 햄스테드에서 이 펌프 물을 받아 마신 부인이 사망',
     testimony: '뇌관 공장 주인의 어머니입니다. 소호에서 먼 햄스테드에 살았지만 날마다 브로드 가 펌프 물을 받아 마셨고 2일에 숨졌습니다. 함께 마신 조카도 이즐링턴에서 죽었습니다.',
     npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'brewer', mirror: true },
@@ -512,7 +512,7 @@ export function stageCleared(stage: number, has: (id: string) => boolean): boole
 // ---------------------------------------------------------------------------
 // 스노우 박사의 쪽지 (단계가 바뀔 때마다 한 장)
 // ---------------------------------------------------------------------------
-export const NOTES: { title: string; body: string[]; button: string }[] = [
+export const NOTES: { title: string; body: string[]; button: string; predict?: { q: string; options: string[] } }[] = [
   {
     title: '조사관에게',
     body: [
@@ -531,6 +531,10 @@ export const NOTES: { title: string; body: string[]; button: string }[] = [
       '폴란드 가의 구빈원에는 535명이 모여 사오. 브로드 가의 양조장은 펌프가 대문 앞이오. 두 곳을 조사하시오.',
     ],
     button: '두 곳을 조사한다',
+    predict: {
+      q: '가기 전에 먼저 예상해 보시오. 공기설이 옳다면 두 곳에서는 어떤 일이 벌어졌겠소?',
+      options: ['많은 사람이 죽었을 것이다', '거의 죽지 않았을 것이다'],
+    },
   },
   {
     title: '무엇이 다르오?',

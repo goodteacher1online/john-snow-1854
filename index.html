@@ -43,13 +43,14 @@
         <div class="choice-row teams" id="in-team" role="radiogroup"></div>
       </div>
 
-      <label class="field inline">
-        <span>방 번호</span>
-        <input id="in-room" type="text" inputmode="numeric" maxlength="6" value="1854" class="mono">
+      <label class="field inline hidden" id="room-row">
+        <span>학급 방 번호</span>
+        <input id="in-room" type="text" maxlength="8" class="mono" placeholder="없으면 비움">
       </label>
 
       <button id="btn-start" type="submit" class="btn primary wide">조사 시작</button>
       <button id="btn-reset" type="button" class="btn ghost wide hidden">처음부터 다시</button>
+      <button id="btn-room" type="button" class="btn ghost wide">학급 친구들과 함께 하기</button>
     </form>
   </section>
 

@@ -22,7 +22,7 @@ async function newPlayer(name, room, viewport = { width: 1440, height: 900 }) {
   page.on('console', m => { if (m.type() === 'error') errors.push(`[${name}] console: ${m.text()}`); });
   await page.goto(URL);
   await page.fill('#in-name', name);
-  await page.fill('#in-room', room);
+  if (room) { await page.click('#btn-room'); await page.fill('#in-room', room); }
   return page;
 }
 const state = page => page.evaluate(() => window.__game.state());
@@ -32,7 +32,11 @@ const visible = (page, sel) => page.locator(sel).isVisible();
 /** 쪽지가 떠 있으면 읽고 닫는다 */
 async function dismissNote(page) {
   await page.waitForTimeout(1700);
-  if (await visible(page, '#note.open')) { await page.click('#note-ok'); await page.waitForTimeout(300); }
+  if (await visible(page, '#note.open')) {
+    const predict = page.locator('#note-body .opt').first();      // 예상을 묻는 쪽지면 하나 고른다
+    if (await predict.count()) await predict.click(); else await page.click('#note-ok');
+    await page.waitForTimeout(300);
+  }
 }
 
 /** 면담 장면을 끝까지 진행한다 */
@@ -95,7 +99,11 @@ await p2.click('#note-ok');
 
 await visit(p1, 'lewis');
 await visit(p1, 'cambridge');
+await p1.waitForSelector('#note.open');
+await shot(p1, '07b_predict_note');
 await dismissNote(p1);                       // 공기설 시험
+await p1.waitForTimeout(900);
+await shot(p1, '07c_guide_line');
 console.log('1단계 뒤', (await state(p1)).stage);
 await visit(p1, 'workhouse');
 await p1.waitForTimeout(400);
@@ -175,7 +183,7 @@ await p2.waitForTimeout(600);
 await shot(p2, '22_classmate_view');
 
 // 좁은 화면(휴대전화)
-const m = await newPlayer('모바일', room + '9', { width: 390, height: 780 });
+const m = await newPlayer('모바일', '', { width: 390, height: 780 });      // 방 번호 없이 혼자
 await shot(m, '23_mobile_lobby');
 await m.click('#btn-start');
 await m.waitForSelector('#note.open');

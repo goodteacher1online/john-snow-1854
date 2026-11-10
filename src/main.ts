@@ -34,7 +34,7 @@ const STAGE_LABEL = ['첫 조사', '공기설 시험', '추리', '가설 확인'
 // ---------------------------------------------------------------------------
 function freshSave(keep?: Partial<SaveData>): SaveData {
   return {
-    name: keep?.name ?? '', gender: keep?.gender ?? 'female', team: keep?.team ?? 'team1', room: keep?.room ?? '1854',
+    name: keep?.name ?? '', gender: keep?.gender ?? 'female', team: keep?.team ?? 'team1', room: keep?.room ?? '',
     stage: 0, records: [], asked: {}, xp: 0, reasonStep: 0, misses: 0, noteSeen: -1, x: 0, y: 0,
   };
 }
@@ -70,6 +70,8 @@ let userZoom = 0;
 let path: [number, number][] | null = null;
 let onArrive: (() => void) | null = null;
 let nearId: string | null = null;
+let guide: [number, number][] | null = null;   // 지금 할 일까지 길을 따라가는 안내선
+let guideName = '';
 let noteAt = 0;            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
 let sceneSeenAt = 0;       // 장면이 마지막으로 열려 있던 시각 (닫자마자 또 문을 두드리지 않게)
 let others: RemotePlayer[] = [];
@@ -137,8 +139,21 @@ function showNote(stage: number) {
   if (!note) return;
   $('note-date').textContent = DATES[stage];
   $('note-title').textContent = note.title;
-  $('note-body').innerHTML = note.body.map(p => `<p>${esc(p)}</p>`).join('');
+  const body = [...note.body];
+  if (stage === STAGE.REASON && save.predict !== undefined) {
+    body.unshift(`당신은 공기설대로라면 "${NOTES[STAGE.TEST_AIR].predict!.options[save.predict]}"라고 예상했소. 실제로는 구빈원 535명 가운데 5명, 양조장 70명 가운데 0명이었소.`);
+  }
+  const ask = note.predict && save.predict === undefined ? note.predict : null;
+  $('note-body').innerHTML = body.map(p => `<p>${esc(p)}</p>`).join('') + (ask ? `
+    <p class="ask">${esc(ask.q)}</p>
+    <div class="reason-opts">${ask.options.map((o, i) => `<button class="opt" data-i="${i}"><span class="num">${i + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>` : '');
+  $('note-body').querySelectorAll<HTMLButtonElement>('.opt').forEach(b => b.addEventListener('click', () => {
+    save.predict = Number(b.dataset.i);
+    sound.playPen();
+    $('note-ok').click();
+  }));
   $('note-ok').textContent = note.button;
+  $('note-ok').classList.toggle('hidden', !!ask);
   openModal('note');
 }
 $('note-ok').addEventListener('click', () => {
@@ -442,7 +457,7 @@ function updateNear() {
   if (best === nearId) return;
   nearId = best;
   const prompt = $('prompt');
-  prompt.classList.toggle('hidden', !best);
+  prompt.classList.toggle('hidden', !best || overview);
   if (!best) return;
   let label: string;
   if (best.startsWith('pump:')) {
@@ -467,14 +482,34 @@ function setOverview(on: boolean, withBoard = false) {
   legend.innerHTML = save.stage >= STAGE.PREDICT
     ? '<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · 검은 막대 하나가 사망자 한 명'
     : '검은 막대 하나가 사망자 한 명';
+  $('prompt').classList.toggle('hidden', !nearId || on);
   if (board) renderBoard();
+}
+
+/** 지금 할 일 가운데 가장 가까운 곳까지 길을 따라가는 안내선을 다시 잡는다 */
+function updateGuide() {
+  guide = null;
+  if (!nav.ready) return;
+  let best: [number, number] | null = null, bd = Infinity;
+  for (const id of questView(save.stage, has).targets) {
+    const pos: [number, number] = id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : SITE_BY_ID[id].door;
+    const d = Math.hypot(pos[0] - me.x, pos[1] - me.y);
+    if (d < bd) { bd = d; best = pos; guideName = id === 'pump' ? BROAD_PUMP.name : SITE_BY_ID[id].name; }
+  }
+  if (!best || bd < REACH) return;
+  const a = nav.walkable(me.x, me.y) ? [me.x, me.y] : nav.snap(me.x, me.y);
+  const b = nav.walkable(best[0], best[1]) ? best : nav.snap(best[0], best[1]);
+  if (a && b) guide = nav.path(a[0], a[1], b[0], b[1]);
 }
 
 function renderBoard() {
   const all = [{ name: save.name + ' (나)', team: save.team, records: save.records, stage: save.stage }, ...others];
   const teams = TEAMS.map(t => ({ ...t, members: all.filter(p => p.team === t.id) })).filter(t => t.members.length);
   const union = new Set(all.flatMap(p => p.records));
-  $('board').innerHTML = `<h3>학급 조사 현황 · ${all.length}명 · ${union.size}/${SITES.length}곳</h3>` + teams.map(t => `
+  const head = save.room
+    ? `<h3>학급 조사 현황 · ${all.length}명 · ${union.size}/${SITES.length}곳</h3><p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>`
+    : `<h3>혼자 조사하는 중</h3><p class="room">학급과 함께 하려면 첫 화면에서 방 번호를 넣는다.</p>`;
+  $('board').innerHTML = head + teams.map(t => `
     <h4 style="--c:${t.color}"><i></i>${t.name}</h4>
     <ul>${t.members.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>`).join('');
 }
@@ -521,6 +556,11 @@ $('help-note').addEventListener('click', () => {
   if (save.stage >= STAGE.DONE) openEnding(0); else showNote(save.stage);
 });
 $('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
+$('board').addEventListener('click', e => {
+  if (!(e.target as HTMLElement).closest('[data-copy]')) return;
+  const link = `${location.origin}${location.pathname}#r=${encodeURIComponent(save.room)}`;
+  void navigator.clipboard?.writeText(link).then(() => toast('초대 주소를 복사했다', link));
+});
 $('btn-sound').addEventListener('click', () => {
   sound.enabled = !sound.enabled;
   $('btn-sound').classList.toggle('off', !sound.enabled);
@@ -540,8 +580,16 @@ function radioGroup(id: string, value: string, onPick: (v: string) => void) {
 function setupLobby() {
   $('in-team').innerHTML = TEAMS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i>${t.name}</button>`).join('');
   const roomFromLink = new URLSearchParams(location.hash.slice(1)).get('r');
+  const room = roomFromLink || save.room;
+  $('room-row').classList.toggle('hidden', !room);
+  $('btn-room').classList.toggle('hidden', !!room);
+  $('btn-room').addEventListener('click', () => {
+    $('room-row').classList.remove('hidden');
+    $('btn-room').classList.add('hidden');
+    $<HTMLInputElement>('in-room').focus();
+  });
   $<HTMLInputElement>('in-name').value = save.name;
-  $<HTMLInputElement>('in-room').value = roomFromLink || save.room;
+  $<HTMLInputElement>('in-room').value = room;
   radioGroup('in-gender', save.gender, v => { save.gender = v as PlayerGender; });
   radioGroup('in-team', save.team, v => { save.team = v; });
   const resumable = save.records.length > 0 || save.noteSeen >= 0;
@@ -557,7 +605,7 @@ function setupLobby() {
 
 async function start() {
   save.name = $<HTMLInputElement>('in-name').value.trim() || '조사관';
-  save.room = $<HTMLInputElement>('in-room').value.trim() || '1854';
+  save.room = $<HTMLInputElement>('in-room').value.trim();
   Object.assign(me, { name: save.name, team: save.team, gender: save.gender });
   await navReady;
 
@@ -574,7 +622,8 @@ async function start() {
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
-  void mp.connect(save.room, me).then(() => mp.sendProgress(save.records, save.stage));
+  // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다)
+  if (save.room) void mp.connect(save.room, me).then(() => mp.sendProgress(save.records, save.stage));
 }
 
 // ---------------------------------------------------------------------------
@@ -596,6 +645,7 @@ function frame(now: number) {
       if (stepClock <= 0) { sound.playFootstep(); stepClock = 0.34; }
     }
     updateNear();
+    while (guide && guide.length > 1 && Math.hypot(guide[0][0] - me.x, guide[0][1] - me.y) < 14) guide.shift();
     others = mp.others();
     mp.sendPosition(me);
     slowClock -= dt;
@@ -604,6 +654,7 @@ function frame(now: number) {
       $('hud-place').textContent = placeName(me.x, me.y);
       if (board) renderBoard();
       if (me.moving) persist();
+      updateGuide();
     }
   }
   const quest = questView(save.stage, has);
@@ -613,6 +664,8 @@ function frame(now: number) {
     classRecords: new Set(others.flatMap(o => o.records)),
     targets: new Set(started ? quest.targets : []),
     nearId, path,
+    guide: started && !scene.isOpen ? guide : null,
+    guideName,
     handleRemoved: save.stage >= STAGE.DONE,
     showFog: save.stage < STAGE.PREDICT,
     showCatchment: overview && save.stage >= STAGE.PREDICT,

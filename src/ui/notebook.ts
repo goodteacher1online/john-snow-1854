@@ -1,5 +1,5 @@
 import { Site, Smell } from '../types.ts';
-import { SITES, STAGE, REASONING, questView } from '../data/story.ts';
+import { SITES, STAGE, REASONING, questView, smellWord } from '../data/story.ts';
 import { esc, factsHtml, basisTag } from './cards.ts';
 
 type Tab = 'records' | 'compare' | 'reason';
@@ -103,8 +103,20 @@ export class Notebook {
             <span>${g.sites.length}곳 · ${g.people}명 가운데 <b>${g.deaths}</b>명 사망 · 백 명에 <b>${g.rate.toFixed(1)}</b>명</span>
           </div>
           <div class="bar"><i style="width:0" data-w="${(g.rate / max * 100).toFixed(1)}"></i></div>
-          <p class="rows">${g.sites.map(s => `<span>${esc(s.name)} <b>${s.deaths}/${s.people}</b></span>`).join('')}</p>
-        </section>`).join('')}`;
+        </section>`).join('')}
+      <h3 class="table-title">곳마다 나란히 놓기 <small>사망 비율이 높은 곳부터</small></h3>
+      <table class="data">
+        <thead><tr><th>조사한 곳</th><th>사망</th><th>백 명에</th><th>악취</th><th>브로드 가 펌프 물</th></tr></thead>
+        <tbody>${[...recs].sort((a, b) => b.deaths / b.people - a.deaths / a.people).map(s => `
+          <tr>
+            <td>${esc(s.name)}</td>
+            <td class="num">${s.deaths} / ${s.people}</td>
+            <td class="num"><b>${(s.deaths / s.people * 100).toFixed(1)}</b></td>
+            <td>${smellWord(s.smell)}</td>
+            <td><i class="mark${s.drankBroad ? ' on' : ''}"></i>${s.drankBroad ? '마심' : '안 마심'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
     this.body.querySelectorAll<HTMLButtonElement>('.seg button').forEach(b => b.addEventListener('click', () => {
       this.groupBy = b.dataset.by as 'smell' | 'water';
       this.renderCompare();
