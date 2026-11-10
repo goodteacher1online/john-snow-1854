@@ -27,6 +27,12 @@ export class SohoMapRenderer {
   // 미아스마 안개 오버레이
   public showMiasmaFog = true;
 
+  // 1854 존 스노우 원본 보로노이(Voronoi / Thiessen) 도보권역 시각화 토글
+  public showVoronoi = false;
+
+  // 교실 대형 스크린(전자칠판) 전체 관제 모드
+  public isBigScreenMode = false;
+
   // 애니메이션 및 굴뚝 연기 파티클
   private animTick = 0;
   private smokeParticles: SmokeParticle[] = [];
@@ -77,10 +83,16 @@ export class SohoMapRenderer {
     const height = this.canvas.height;
     this.animTick += isMoving ? 0.22 : 0.06;
 
-    // 카메라 추적
-    this.cameraX += (myPlayer.x - this.cameraX) * 0.12;
-    this.cameraY += (myPlayer.y - this.cameraY) * 0.12;
-    this.zoom += (this.targetZoom - this.zoom) * 0.1;
+    // 카메라 추적 (대형 스크린 모드 시 전체 소호 전경 조망)
+    if (this.isBigScreenMode) {
+      this.cameraX += (1100 - this.cameraX) * 0.08;
+      this.cameraY += (1100 - this.cameraY) * 0.08;
+      this.zoom += (0.52 - this.zoom) * 0.08;
+    } else {
+      this.cameraX += (myPlayer.x - this.cameraX) * 0.12;
+      this.cameraY += (myPlayer.y - this.cameraY) * 0.12;
+      this.zoom += (this.targetZoom - this.zoom) * 0.1;
+    }
 
     // 1. 2200 x 2200 광활한 1854 고지도 배경
     ctx.fillStyle = '#eddcb0';
@@ -110,6 +122,11 @@ export class SohoMapRenderer {
       this.renderCobblestoneStreets(ctx);
     } else {
       this.renderFallbackStreets(ctx);
+    }
+
+    // 1.5 1854 존 스노우 원본 보로노이(Voronoi/Thiessen Polygon) 보행권역 오버레이
+    if (this.showVoronoi) {
+      this.renderVoronoiOverlay(ctx);
     }
 
     // 2. 가로등 조명 효과 (밤안개 속 따뜻한 오렌지 불빛)
@@ -153,11 +170,132 @@ export class SohoMapRenderer {
 
     // 7. 다른 플레이어 과학자 아바타
     for (const player of otherPlayers) {
-      this.drawScientistAvatar(player.x, player.y, player.name, player.color, player.team, false, 0);
+      this.drawScientistAvatar(
+        player.x, player.y, player.name, player.color, player.team,
+        false, 0, player.hatStyle, player.toolStyle
+      );
     }
 
     // 8. 내 과학자 아바타
-    this.drawScientistAvatar(myPlayer.x, myPlayer.y, `${myPlayer.name} (나)`, myPlayer.color, myPlayer.team, true, isMoving ? this.animTick : 0);
+    this.drawScientistAvatar(
+      myPlayer.x, myPlayer.y, `${myPlayer.name} (나)`, myPlayer.color, myPlayer.team,
+      true, isMoving ? this.animTick : 0, myPlayer.hatStyle, myPlayer.toolStyle
+    );
+  }
+
+  // ★ 1854 존 스노우 원본 보로노이(Voronoi/Thiessen Polygon) 보행 최단거리 권역 시각화!
+  private renderVoronoiOverlay(ctx: CanvasRenderingContext2D) {
+    const VORONOI_CELLS = [
+      {
+        id: 'cell_broad',
+        name: '브로드 가 펌프 보행권역 (사망자 90% 밀집)',
+        isBroad: true,
+        points: [[880, 830], [1210, 790], [1320, 1020], [1320, 1280], [1180, 1370], [890, 1300], [820, 1030]]
+      },
+      {
+        id: 'cell_great_marlborough',
+        name: '그레이트 말버러 권역',
+        isBroad: false,
+        points: [[880, 400], [1350, 400], [1210, 790], [880, 830]]
+      },
+      {
+        id: 'cell_little_marlborough',
+        name: '리틀 말버러 권역',
+        isBroad: false,
+        points: [[400, 400], [880, 400], [880, 830], [820, 1030], [550, 1000], [400, 700]]
+      },
+      {
+        id: 'cell_dean',
+        name: '딘 가 펌프 권역',
+        isBroad: false,
+        points: [[400, 1000], [550, 1000], [820, 1030], [890, 1300], [800, 1550], [400, 1550]]
+      },
+      {
+        id: 'cell_warwick',
+        name: '워윅 가 권역',
+        isBroad: false,
+        points: [[1350, 400], [1800, 400], [1800, 1200], [1320, 1020], [1210, 790]]
+      },
+      {
+        id: 'cell_bridle',
+        name: '브라이들 골목 권역',
+        isBroad: false,
+        points: [[1320, 1020], [1800, 1200], [1800, 1550], [1340, 1550], [1320, 1280]]
+      },
+      {
+        id: 'cell_rupert',
+        name: '루퍼트 가 권역',
+        isBroad: false,
+        points: [[1340, 1550], [1800, 1550], [1800, 1950], [1180, 1950], [1180, 1750], [1340, 1650]]
+      },
+      {
+        id: 'cell_tichborne',
+        name: '티치본 가 권역',
+        isBroad: false,
+        points: [[400, 1550], [800, 1550], [890, 1300], [1180, 1370], [1180, 1950], [400, 1950]]
+      }
+    ];
+
+    ctx.save();
+
+    for (const cell of VORONOI_CELLS) {
+      if (cell.points.length < 3) continue;
+
+      ctx.beginPath();
+      const [firstSx, firstSy] = this.worldToScreen(cell.points[0][0], cell.points[0][1]);
+      ctx.moveTo(firstSx, firstSy);
+
+      let centerWx = 0;
+      let centerWy = 0;
+      for (const [wx, wy] of cell.points) {
+        const [sx, sy] = this.worldToScreen(wx, wy);
+        ctx.lineTo(sx, sy);
+        centerWx += wx;
+        centerWy += wy;
+      }
+      ctx.closePath();
+
+      centerWx /= cell.points.length;
+      centerWy /= cell.points.length;
+      const [labelSx, labelSy] = this.worldToScreen(centerWx, centerWy);
+
+      if (cell.isBroad) {
+        // 브로드 스트리트 권역 (핵심 감염지): 은은한 경고 붉은 틴트 및 빛나는 황금 테두리
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.14)';
+        ctx.fill();
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 3.5 * this.zoom;
+        ctx.setLineDash([12 * this.zoom, 8 * this.zoom]);
+        ctx.stroke();
+
+        // 텍스트 라벨
+        ctx.setLineDash([]);
+        ctx.font = `900 ${Math.max(14, 17 * this.zoom)}px -apple-system, sans-serif`;
+        ctx.fillStyle = '#7f1d1d';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 8;
+        ctx.fillText(`🚨 ${cell.name}`, labelSx, labelSy - 80 * this.zoom);
+        ctx.shadowBlur = 0;
+      } else {
+        // 일반 펌프 권역: 부드러운 고지도 세피아 틴트 & 점선 경계
+        ctx.fillStyle = 'rgba(120, 113, 108, 0.06)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.55)';
+        ctx.lineWidth = 2 * this.zoom;
+        ctx.setLineDash([8 * this.zoom, 8 * this.zoom]);
+        ctx.stroke();
+
+        // 텍스트 라벨
+        ctx.setLineDash([]);
+        ctx.font = `bold ${Math.max(11, 13 * this.zoom)}px serif`;
+        ctx.fillStyle = '#581c87';
+        ctx.textAlign = 'center';
+        ctx.fillText(`📍 ${cell.name}`, labelSx, labelSy);
+      }
+    }
+
+    ctx.restore();
   }
 
   // ★ 2.5D 입체 빅토리안 건물 드로잉 (창문 불빛, 굴뚝 연기, 문패, 입체 지붕)
@@ -584,7 +722,17 @@ export class SohoMapRenderer {
   }
 
   // ★ [핵심 혁신] 레고(LEGO®) 미니피규어 빅토리안 과학자 아바타!
-  private drawScientistAvatar(wx: number, wy: number, name: string, coatColor: string, team: string, isMe: boolean, walkTick: number) {
+  private drawScientistAvatar(
+    wx: number,
+    wy: number,
+    name: string,
+    coatColor: string,
+    team: string,
+    isMe: boolean,
+    walkTick: number,
+    hatStyle: string = 'silk_hat',
+    toolStyle: string = 'magnifier'
+  ) {
     const [sx, sy] = this.worldToScreen(wx, wy);
     const ctx = this.ctx;
     const scale = this.zoom;
@@ -668,46 +816,63 @@ export class SohoMapRenderer {
     // 왼쪽 팔 & 손
     ctx.fillStyle = coatColor;
     ctx.fillRect(-11 * scale, -12 * scale, 3.5 * scale, 9 * scale);
-    // 왼쪽 노란색 ㄷ자 손
     ctx.strokeStyle = '#facc15';
     ctx.lineWidth = 2.2 * scale;
     ctx.beginPath();
     ctx.arc(-9.5 * scale, 0 * scale, 3.5 * scale, Math.PI * 0.25, Math.PI * 1.75);
     ctx.stroke();
 
-    // 오른쪽 팔 & 손 (돋보기 쥐고 있음)
+    // 오른쪽 팔 & 손 (도구 쥐고 있음)
     ctx.fillStyle = coatColor;
     ctx.fillRect(7.5 * scale, -12 * scale, 3.5 * scale, 9 * scale);
-    // 오른쪽 노란색 ㄷ자 손
     ctx.strokeStyle = '#facc15';
     ctx.lineWidth = 2.2 * scale;
     ctx.beginPath();
     ctx.arc(9.5 * scale, 0 * scale, 3.5 * scale, -Math.PI * 0.75, Math.PI * 0.75);
     ctx.stroke();
 
-    // 레고 황동 돋보기 장착!
-    const glassX = 16 * scale;
-    const glassY = -4 * scale;
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 2.2 * scale;
-    ctx.beginPath();
-    ctx.moveTo(9.5 * scale, 0);
-    ctx.lineTo(glassX, glassY);
-    ctx.stroke();
+    // 도구 렌더링 (돋보기 / 가죽 수첩 / 황동 현미경)
+    if (toolStyle === 'notebook') {
+      // 가죽 수첩 (Dark brown leather notebook)
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(11 * scale, -7 * scale, 9 * scale, 12 * scale);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1 * scale;
+      ctx.strokeRect(11 * scale, -7 * scale, 9 * scale, 12 * scale);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(13 * scale, -5 * scale, 6 * scale, 8 * scale);
+    } else if (toolStyle === 'microscope') {
+      // 황동 현미경 (Brass Microscope)
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(11 * scale, -3 * scale, 4 * scale, 8 * scale);
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.arc(13 * scale, -5 * scale, 3 * scale, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // 기본: 레고 황동 돋보기
+      const glassX = 16 * scale;
+      const glassY = -4 * scale;
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2.2 * scale;
+      ctx.beginPath();
+      ctx.moveTo(9.5 * scale, 0);
+      ctx.lineTo(glassX, glassY);
+      ctx.stroke();
 
-    ctx.beginPath();
-    ctx.arc(glassX, glassY, 6.5 * scale, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(186, 230, 253, 0.8)';
-    ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2.5 * scale;
-    ctx.stroke();
-    // 돋보기 반사광
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.4 * scale;
-    ctx.beginPath();
-    ctx.arc(glassX - 2 * scale, glassY - 2 * scale, 3.2 * scale, 0, Math.PI * 0.7);
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(glassX, glassY, 6.5 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.8)';
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5 * scale;
+      ctx.stroke();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.4 * scale;
+      ctx.beginPath();
+      ctx.arc(glassX - 2 * scale, glassY - 2 * scale, 3.2 * scale, 0, Math.PI * 0.7);
+      ctx.stroke();
+    }
 
     // 5. 레고 노란색 원통 머리 (Lego Head)
     const headW = 12 * scale;
@@ -736,7 +901,6 @@ export class SohoMapRenderer {
     ctx.arc(-2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
     ctx.arc(2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
     ctx.fill();
-    // 눈동자 흰색 반사 하이라이트
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.arc(-2.2 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
@@ -750,30 +914,47 @@ export class SohoMapRenderer {
     ctx.arc(0, headY + 5.2 * scale, 2.5 * scale, 0.15 * Math.PI, 0.85 * Math.PI);
     ctx.stroke();
 
-    // 6. 레고 빅토리안 실크햇 / 중절모 몰드
+    // 6. 레고 모자 렌더링
     const hatY = headY - 5 * scale;
-    // 둥근 챙
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#020617';
-    ctx.lineWidth = 1.2 * scale;
-    ctx.stroke();
-    // 모자 크라운 본체
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
-    ctx.fill();
-    // 모자 팀 컬러 밴드
-    ctx.fillStyle = coatColor;
-    ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
+    if (hatStyle === 'bowler') {
+      // 둥근 펠트 중산모 (Bowler Hat)
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(0, hatY, 7 * scale, Math.PI, 0);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(0, hatY + 1 * scale, 10 * scale, 2.5 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (hatStyle === 'flat_cap') {
+      // 빅토리안 헌팅캡 (Flat Cap)
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.ellipse(0, hatY - 1 * scale, 8 * scale, 4 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(-6 * scale, hatY - 1 * scale, 12 * scale, 3 * scale);
+    } else if (hatStyle === 'none') {
+      // 모자 없음 (순수 레고 스터드 헤어 유지)
+    } else {
+      // 기본값: 빅토리안 실크햇 (Silk Hat)
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#020617';
+      ctx.lineWidth = 1.2 * scale;
+      ctx.stroke();
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
+      ctx.fill();
+      ctx.fillStyle = coatColor;
+      ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
+    }
 
     // 7. 초대형 고가독성 명찰 라벨
     ctx.font = `900 ${Math.max(13, 14 * scale)}px -apple-system, sans-serif`;
     ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
-    // 흰색 두꺼운 텍스트 그림자
     ctx.shadowColor = '#ffffff';
     ctx.shadowBlur = 6;
     ctx.lineWidth = 3.5 * scale;

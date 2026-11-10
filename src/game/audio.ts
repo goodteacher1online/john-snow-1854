@@ -129,17 +129,54 @@ class SoundFXManager {
     highOsc.stop(now + 0.7);
   }
 
-  // 5. 콜레라 종식 펌프 손잡이 제거 승리 팡파르
+  // 5. 펌프 손잡이 분리 시 무쇠 덜컥 소리 (Mechanical Clank & Metal Release)
+  public playPumpHandleDetach() {
+    if (!this.enabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+
+    // 금속 둔탁한 타격
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(240, now);
+    osc1.frequency.exponentialRampToValueAtTime(60, now + 0.15);
+    gain1.gain.setValueAtTime(0.4, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.2);
+
+    // 삐걱하는 금속 마찰음
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(600, now + 0.08);
+    osc2.frequency.exponentialRampToValueAtTime(150, now + 0.35);
+    gain2.gain.setValueAtTime(0.25, now + 0.08);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(now + 0.08);
+    osc2.stop(now + 0.4);
+  }
+
+  // 6. 콜레라 종식 펌프 손잡이 제거 승리 팡파르 (Glorious Brass Fanfare)
   public playVictoryFanfare() {
     if (!this.enabled) return;
     this.initCtx();
     if (!this.ctx) return;
 
     const chords = [
-      { freq: 440.0, time: 0, dur: 0.2 },      // A4
-      { freq: 554.37, time: 0.15, dur: 0.2 },   // C#5
+      { freq: 440.0, time: 0, dur: 0.18 },      // A4
+      { freq: 554.37, time: 0.15, dur: 0.18 },   // C#5
       { freq: 659.25, time: 0.3, dur: 0.2 },    // E5
-      { freq: 880.0, time: 0.45, dur: 0.8 }     // A5 (길게)
+      { freq: 880.0, time: 0.45, dur: 0.4 },    // A5
+      { freq: 783.99, time: 0.75, dur: 0.2 },   // G5
+      { freq: 880.0, time: 0.95, dur: 0.9 }     // A5 (대단원)
     ];
 
     chords.forEach(({ freq, time, dur }) => {
@@ -150,7 +187,7 @@ class SoundFXManager {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, now);
 
-      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.setValueAtTime(0.35, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
       osc.connect(gain);
@@ -159,6 +196,11 @@ class SoundFXManager {
       osc.start(now);
       osc.stop(now + dur);
     });
+  }
+
+  // 호환용 alias
+  public playVictory() {
+    this.playVictoryFanfare();
   }
 }
 

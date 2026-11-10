@@ -57,6 +57,15 @@ const briefingModal = document.getElementById('briefing-modal') as HTMLDivElemen
 const briefingConfirmBtn = document.getElementById('briefing-confirm-btn') as HTMLButtonElement;
 const briefingCloseX = document.getElementById('briefing-close-x') as HTMLButtonElement;
 
+// 신규 추가: 보로노이 도보권역, 대형 관제 스크린, 모순 카운터, 티커
+const voronoiToggleBtn = document.getElementById('voronoi-toggle-btn') as HTMLButtonElement | null;
+const bigscreenToggleBtn = document.getElementById('bigscreen-toggle-btn') as HTMLButtonElement | null;
+const anomalyCounterText = document.getElementById('anomaly-counter-text') as HTMLElement | null;
+const liveTickerContainer = document.getElementById('live-ticker-container') as HTMLDivElement | null;
+const screenFlashOverlay = document.getElementById('screen-flash-overlay') as HTMLDivElement | null;
+const hatStyleSelect = document.getElementById('hat-style-select') as HTMLSelectElement | null;
+const toolStyleSelect = document.getElementById('tool-style-select') as HTMLSelectElement | null;
+
 const interviewModal = document.getElementById('interview-modal') as HTMLDivElement;
 const modalAddress = document.getElementById('modal-address') as HTMLHeadingElement;
 const modalResident = document.getElementById('modal-resident') as HTMLParagraphElement;
@@ -156,6 +165,72 @@ function showToast(msg: string, icon = '✨', isWarning = false) {
   }, 3500);
 }
 
+// 실시간 학급 수사 속보 티커 (Live Ticker) 팝업
+function postLiveTicker(msg: string, teamColor = '#3b82f6') {
+  if (!liveTickerContainer) return;
+
+  const card = document.createElement('div');
+  card.className = 'px-4 py-2.5 rounded-xl bg-stone-900/95 text-stone-100 border border-stone-700 shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-semibold transition-all duration-300 transform translate-x-8 opacity-0';
+  card.style.borderLeft = `4px solid ${teamColor}`;
+  card.innerHTML = `<span class="shrink-0 text-amber-400">📡</span> <span>${msg}</span>`;
+
+  liveTickerContainer.prepend(card);
+
+  // 나타나기 애니메이션
+  requestAnimationFrame(() => {
+    card.classList.remove('translate-x-8', 'opacity-0');
+    card.classList.add('translate-x-0', 'opacity-100');
+  });
+
+  // 4초 후 사라지기
+  setTimeout(() => {
+    card.classList.remove('translate-x-0', 'opacity-100');
+    card.classList.add('translate-x-8', 'opacity-0');
+    setTimeout(() => card.remove(), 400);
+  }, 4200);
+}
+
+// 결정적 모순 발견 시 황금빛 화면 플래시 연출 (Screen Flash Effect)
+function flashScreen() {
+  if (!screenFlashOverlay) return;
+  screenFlashOverlay.classList.remove('opacity-0');
+  screenFlashOverlay.classList.add('opacity-100');
+  setTimeout(() => {
+    screenFlashOverlay.classList.remove('opacity-100');
+    screenFlashOverlay.classList.add('opacity-0');
+  }, 450);
+}
+
+// 보로노이 보행권역 토글 함수
+function toggleVoronoi() {
+  renderer.showVoronoi = !renderer.showVoronoi;
+  if (voronoiToggleBtn) {
+    if (renderer.showVoronoi) {
+      voronoiToggleBtn.className = 'hud-btn bg-purple-900 text-purple-100 border-purple-400 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow ring-2 ring-purple-400';
+      showToast("📐 1854 존 스노우 원본 '도보 최단거리 권역(Voronoi Polygon)'을 표시합니다!", "🗺️");
+    } else {
+      voronoiToggleBtn.className = 'hud-btn bg-stone-900/90 text-purple-200 border-purple-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow';
+      showToast("📐 도보권역 표시를 껐습니다.", "🗺️");
+    }
+  }
+}
+voronoiToggleBtn?.addEventListener('click', toggleVoronoi);
+
+// 대형 스크린 / 전자칠판 관제 모드 토글 함수
+function toggleBigScreen() {
+  renderer.isBigScreenMode = !renderer.isBigScreenMode;
+  if (bigscreenToggleBtn) {
+    if (renderer.isBigScreenMode) {
+      bigscreenToggleBtn.className = 'hud-btn bg-emerald-900 text-emerald-100 border-emerald-400 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow ring-2 ring-emerald-400';
+      showToast("📺 [학급 대형 상황판 모드] 소호 전경과 모든 조사관을 한 화면에 관제합니다!", "🏫");
+    } else {
+      bigscreenToggleBtn.className = 'hud-btn bg-stone-900/90 text-emerald-200 border-emerald-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow';
+      showToast("📺 개인 조사 시야로 복귀했습니다.", "👤");
+    }
+  }
+}
+bigscreenToggleBtn?.addEventListener('click', toggleBigScreen);
+
 // 키보드 조작
 const keys: Record<string, boolean> = {};
 window.addEventListener('keydown', (e) => {
@@ -171,6 +246,13 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === 'n' || e.key === 'N') {
     toggleNotebook();
+  }
+  if (e.key === 'v' || e.key === 'V') {
+    toggleVoronoi();
+  }
+  if (e.key === 'F10') {
+    e.preventDefault();
+    toggleBigScreen();
   }
 });
 window.addEventListener('keyup', (e) => {
@@ -205,6 +287,8 @@ startBtn.addEventListener('click', async () => {
 
   myPlayer.name = name;
   myPlayer.team = team;
+  myPlayer.hatStyle = (hatStyleSelect?.value as HatStyle) || 'silk_hat';
+  myPlayer.toolStyle = (toolStyleSelect?.value as ToolStyle) || 'magnifier';
 
   const TEAM_COLORS: Record<string, string> = {
     team1: '#2563eb',
@@ -232,10 +316,26 @@ startBtn.addEventListener('click', async () => {
   lobbyEl.classList.add('hidden');
   gameContainerEl.classList.remove('hidden');
 
+  // 환영 티커
+  postLiveTicker(`🔬 [${myPlayer.name}] 조사관님이 소호 수사 본부에 합류했습니다.`, myPlayer.color);
+
   // 멀티플레이어 연결
   await multiplayer.init(roomId, name, team);
 
+  let prevCount = 0;
   multiplayer.onInvestigationUpdated = (records) => {
+    const newCount = Object.keys(records).length;
+    if (newCount > prevCount && prevCount > 0) {
+      // 새로 조사된 가구 찾기
+      const latest = Object.values(records).sort((a, b) => b.timestamp - a.timestamp)[0];
+      if (latest) {
+        const h = gameData.houses.find(house => house.id === latest.houseId);
+        if (h) {
+          postLiveTicker(`📝 [${latest.investigatorName}] ${h.address} 조사 완료 (사망 ${h.deaths}명)`, myPlayer.color);
+        }
+      }
+    }
+    prevCount = newCount;
     currentInvestigations = records;
     updateProgressUI();
   };
@@ -408,12 +508,27 @@ function openInterviewModal(house: House) {
   modalRecordBtn.textContent = isAlready ? '수첩에 이미 기록된 가구입니다' : '역학 수첩에 기록하고 지도에 점 찍기 (+50 EXP)';
   modalRecordBtn.disabled = isAlready;
 
-  // 이상치(양조장 등) 첫 발견 시 충격 사운드 및 알림
-  if (house.clueType === 'brewery_anomaly' && !isAlready) {
-    setTimeout(() => {
-      sound.playShockAnomaly();
-      showToast('⚠️ 결정적 모순 발견! 공기 때문이라면서 왜 맥주 공장은 0명일까?!', '💥', true);
-    }, 200);
+  // 이상치(양조장/구빈원/햄스테드) 첫 발견 시 화면 플래시 연출 & 충격 사운드
+  if (!isAlready) {
+    if (house.clueType === 'brewery_anomaly') {
+      setTimeout(() => {
+        flashScreen();
+        sound.playShockAnomaly();
+        showToast('⚠️ [결정적 모순 발견] 공기 때문이라면서 왜 맥주 공장(70명)은 0명일까?!', '💥', true);
+      }, 200);
+    } else if (house.clueType === 'workhouse_anomaly') {
+      setTimeout(() => {
+        flashScreen();
+        sound.playShockAnomaly();
+        showToast('⚠️ [결정적 모순 발견] 악취 가득한 구빈원(500명)에 사망자가 거의 없다니?!', '💥', true);
+      }, 200);
+    } else if (house.clueType === 'hampstead_anomaly') {
+      setTimeout(() => {
+        flashScreen();
+        sound.playShockAnomaly();
+        showToast('⚠️ [결정적 모순 발견] 맑은 공기의 시골 저택 마님이 왜 사망했을까?!', '💥', true);
+      }, 200);
+    }
   }
 
   interviewModal.classList.add('active');
@@ -442,23 +557,28 @@ modalRecordBtn.addEventListener('click', () => {
   multiplayer.recordInvestigation(record);
   interviewModal.classList.remove('active');
 
-  // ★ [데이터 기반 넛지] 정답을 가르쳐주지 않고 스스로 의문을 품게 만드는 질문 넛지!
+  // ★ [데이터 기반 넛지 & 실시간 학급 속보 발행]
   if (currentHouseNear.id === 'house_15') {
+    postLiveTicker(`⚡ [결정적 모순] 라이온 양조장 인부 70명 사망자 0명! (물 대신 맥주 음용)`, '#f59e0b');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #1] 양조장 인부 70명은 종일 소호 공기를 마시는데 사망자 0명! (맥주/자체 우물 음용)', '💡');
     }, 400);
   } else if (currentHouseNear.id === 'house_16') {
+    postLiveTicker(`⚡ [결정적 모순] 구빈원 500명 중 사망 단 5명! (자체 우물 사용)`, '#a855f7');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #2] 악취가 가장 심한 구빈원(500명)은 사망자 5명뿐! 악취(공기)가 원인일까요?', '💡');
     }, 400);
   } else if (currentHouseNear.id === 'house_17') {
+    postLiveTicker(`⚡ [결정적 모순] 5km 밖 전원저택 사망자! (소호 브로드 펌프 물 배달)`, '#ef4444');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #3] 공기 맑은 시골 전원주택의 마님이 소호 브로드 가 물을 배달받아 마신 후 사망했습니다!', '💡');
     }, 400);
   } else {
+    postLiveTicker(`📝 [${myPlayer.name}] ${currentHouseNear.address} 조사 완료 (+사망 ${currentHouseNear.deaths}명)`, myPlayer.color);
     showToast(`[${currentHouseNear.address}] 수첩 기록 완료! (+50 EXP)`);
   }
 
+  updateProgressUI();
   updateNotebookUI();
 });
 
@@ -640,11 +760,24 @@ function updateRank() {
   }
 }
 
-// UI 갱신
+// UI 갱신 (진행도 & 3대 모순 카운터)
 function updateProgressUI() {
   const count = Object.keys(currentInvestigations).length;
   const total = gameData.houses.length;
   progressText.textContent = `${count} / ${total} 가구`;
+
+  // 3대 핵심 모순 조사 여부 집계
+  const hasBrewery = !!currentInvestigations['house_15'];
+  const hasWorkhouse = !!currentInvestigations['house_16'];
+  const hasHampstead = !!currentInvestigations['house_17'];
+  const anomalyCount = (hasBrewery ? 1 : 0) + (hasWorkhouse ? 1 : 0) + (hasHampstead ? 1 : 0);
+
+  if (anomalyCounterText) {
+    anomalyCounterText.textContent = `${anomalyCount} / 3개`;
+    if (anomalyCount === 3) {
+      anomalyCounterText.className = 'text-amber-300 font-black text-sm sm:text-base animate-pulse';
+    }
+  }
 
   if (count >= 8 && currentHypothesis === 'miasma') {
     hypoBtn.classList.add('pulse-anim');
@@ -671,26 +804,30 @@ function updateHypothesisUI() {
 
 // 전체 맵 토글
 let isFullMapView = false;
-mapToggleBtn.addEventListener('click', toggleFullMap);
+mapToggleBtn?.addEventListener('click', toggleFullMap);
 function toggleFullMap() {
   isFullMapView = !isFullMapView;
   if (isFullMapView) {
     renderer.targetZoom = 0.85;
-    mapToggleBtn.textContent = '맵 확대 (M)';
+    if (mapToggleBtn) mapToggleBtn.textContent = '맵 확대 (M)';
   } else {
     renderer.targetZoom = 1.6;
-    mapToggleBtn.textContent = '🗺️ 전체 지도 (M)';
+    if (mapToggleBtn) mapToggleBtn.textContent = '🗺️ 전체 지도 (M)';
   }
 }
 
-// 승리 연출
+// 역사적 승리 연출 (펌프 손잡이 분리 사운드 & 팡파르)
 function triggerVictory() {
-  sound.playVictoryFanfare();
+  sound.playPumpHandleDetach();
+  setTimeout(() => sound.playVictoryFanfare(), 320);
+
   confetti({
-    particleCount: 180,
-    spread: 100,
-    origin: { y: 0.55 }
+    particleCount: 220,
+    spread: 120,
+    origin: { y: 0.52 }
   });
+
+  postLiveTicker("🚨 [역사적 순간] 브로드 펌프 손잡이가 제거되었습니다! 전염병이 종식됩니다!", "#ef4444");
   endingModal.classList.add('active');
 }
 

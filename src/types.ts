@@ -1,8 +1,8 @@
 export interface Pump {
   id: string;
   name: string;
-  x: number; // 0 ~ 1000 상대좌표
-  y: number; // 0 ~ 1000 상대좌표
+  x: number; // 0 ~ 2200 월드좌표
+  y: number; // 0 ~ 2200 월드좌표
   isSource: boolean; // Broad Street 펌프만 true
   description: string;
   handleRemoved?: boolean;
@@ -42,6 +42,9 @@ export interface SnowGameData {
   miasmaMarkers: MiasmaMarker[];
 }
 
+export type HatStyle = 'silk_hat' | 'bowler' | 'flat_cap' | 'none';
+export type ToolStyle = 'magnifier' | 'notebook' | 'microscope';
+
 export interface PlayerState {
   id: string;
   name: string;
@@ -52,6 +55,8 @@ export interface PlayerState {
   targetX?: number;
   targetY?: number;
   lastActive: number;
+  hatStyle?: HatStyle;
+  toolStyle?: ToolStyle;
 }
 
 export interface InvestigationRecord {
