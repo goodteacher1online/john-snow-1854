@@ -1,5 +1,5 @@
-import { Avatar, RemotePlayer, Site } from '../types.ts';
-import { SITES, PUMPS, BROAD_PUMP, MIASMA, WORLD_W, WORLD_H, teamColor } from '../data/story.ts';
+import { Avatar, RemotePlayer, Site, SiteKind } from '../types.ts';
+import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, teamColor } from '../data/story.ts';
 
 const INK = '#231a12';
 const PAPER = '#f6efdc';
@@ -14,7 +14,11 @@ export interface Frame {
   classRecords: Set<string>;
   targets: Set<string>;
   nearId: string | null;
+  /** 지도를 눌러 걷는 중인 경로 */
   path: [number, number][] | null;
+  /** 지금 할 일까지 길을 따라가는 안내선과 그 목적지 이름 */
+  guide: [number, number][] | null;
+  guideName: string;
   handleRemoved: boolean;
   showFog: boolean;
   showCatchment: boolean;
@@ -22,10 +26,12 @@ export interface Frame {
   time: number;
 }
 
-/** 세로로 긴 건물 그림 크기(월드 단위) */
-const ICON_SIZE = { house: [28, 48], brewery: [68, 62], workhouse: [104, 96] } as const;
+/** 건물 그림의 폭(월드 단위). 높이는 그림 비율을 따른다 */
+const ICON_W: Record<SiteKind, number> = { house: 28, brewery: 62, factory: 50, workhouse: 92 };
 const AVATAR_H = 44;
 const PUMP_H = 44;
+
+interface Label { str: string; x: number; y: number; size: number; color: string; top: boolean; prio: number }
 
 function load(src: string): HTMLImageElement {
   const img = new Image();
@@ -45,14 +51,16 @@ export class Renderer {
   private ctx: CanvasRenderingContext2D;
   private vw = 0;
   private vh = 0;
+  private labels: Label[] = [];
   private map = load('./assets/soho_map.webp');
   private catchment = load('./assets/catchment.png');
   private pump = load('./assets/pump.webp');
   private pumpNoHandle = load('./assets/pump_no_handle.webp');
   private chars = { male: load('./assets/characters/player_male.webp'), female: load('./assets/characters/player_female.webp') };
-  private icons = {
+  private icons: Record<SiteKind, HTMLImageElement> = {
     house: load('./assets/houses/house_terrace.webp'),
     brewery: load('./assets/houses/house_brewery.webp'),
+    factory: load('./assets/houses/house_factory.webp'),
     workhouse: load('./assets/houses/house_workhouse.webp'),
   };
 
@@ -88,13 +96,20 @@ export class Renderer {
     return [this.camX + (sx - this.vw / 2) / this.zoom, this.camY + (sy - this.vh / 2) / this.zoom];
   }
 
+  private iconSize(kind: SiteKind): [number, number] {
+    const img = this.icons[kind], w = ICON_W[kind];
+    return [w, ok(img) ? w * img.naturalHeight / img.naturalWidth : w * 1.2];
+  }
+
   /** 화면 좌표가 가리키는 조사 장소(건물 그림이나 문) */
   public siteAt(sx: number, sy: number): Site | null {
     const [wx, wy] = this.toWorld(sx, sy);
     for (const s of SITES) {
-      const [iw, ih] = ICON_SIZE[s.kind];
-      const inIcon = Math.abs(wx - s.icon[0]) < iw / 2 + 4 && wy < s.icon[1] + 4 && wy > s.icon[1] - ih - 4;
-      if (inIcon || Math.hypot(wx - s.door[0], wy - s.door[1]) < 16) return s;
+      if (Math.hypot(wx - s.door[0], wy - s.door[1]) < 16) return s;
+    }
+    for (const s of SITES) {
+      const [iw, ih] = this.iconSize(s.kind);
+      if (Math.abs(wx - s.icon[0]) < iw / 2 + 4 && wy < s.icon[1] + 4 && wy > s.icon[1] - ih - 4) return s;
     }
     return null;
   }
@@ -106,6 +121,7 @@ export class Renderer {
     this.camY += (target.y - this.camY) * 0.12;
     this.zoom += (this.zoomTarget - this.zoom) * 0.1;
     const z = this.zoom;
+    this.labels = [];
 
     ctx.fillStyle = '#c9b68a';
     ctx.fillRect(0, 0, this.vw, this.vh);
@@ -118,6 +134,7 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
     if (f.showFog) this.drawFog(f.time);
+    if (f.guide && !f.board) this.drawGuide(f);
     if (f.path) this.drawPath(f);
 
     for (const s of SITES) this.drawDoor(s, f);
@@ -126,13 +143,18 @@ export class Renderer {
     const sprites: { y: number; draw: () => void }[] = [];
     for (const s of SITES) sprites.push({ y: s.icon[1], draw: () => this.drawSite(s, f) });
     for (const p of PUMPS) sprites.push({ y: p.y, draw: () => this.drawPump(p.x, p.y, p.isBroad && f.handleRemoved) });
-    for (const o of f.others) sprites.push({ y: o.y, draw: () => this.drawAvatar(o, false, f.time) });
-    sprites.push({ y: f.me.y, draw: () => this.drawAvatar(f.me, true, f.time) });
+    for (const [i, o] of f.others.entries()) {
+      // 같은 자리에 겹쳐 선 친구는 옆으로 반 걸음 비켜 그린다
+      const close = Math.hypot(o.x - f.me.x, o.y - f.me.y) < 14;
+      const shift = close ? (i % 2 ? -1 : 1) * (14 + Math.floor(i / 2) * 10) : 0;
+      sprites.push({ y: o.y - 0.01, draw: () => this.drawAvatar(o, false, f.time, shift) });
+    }
+    sprites.push({ y: f.me.y, draw: () => this.drawAvatar(f.me, true, f.time, 0) });
     sprites.sort((a, b) => a.y - b.y);
     for (const s of sprites) s.draw();
 
-    this.drawLabels(f);
-    if (!f.board) this.drawTargetArrows(f);
+    this.queueLabels(f);
+    this.flushLabels();
   }
 
   private drawMap() {
@@ -164,24 +186,67 @@ export class Renderer {
     }
   }
 
+  /** 지금 할 일까지, 길을 따라 붉은 점선으로 안내한다. 목적지가 화면 밖이면 선이 화면을 벗어나는 곳에 화살표를 단다 */
+  private drawGuide(f: Frame) {
+    const ctx = this.ctx;
+    const pts = [[f.me.x, f.me.y] as [number, number], ...f.guide!].map(p => this.toScreen(p[0], p[1]));
+    if (pts.length < 2) return;
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (const p of pts.slice(1)) ctx.lineTo(p[0], p[1]);
+    ctx.strokeStyle = 'rgba(246, 239, 220, 0.9)';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    ctx.strokeStyle = RED;
+    ctx.lineWidth = 4;
+    ctx.setLineDash([3, 13]);
+    ctx.lineDashOffset = -f.time * 30;                 // 점이 목적지 쪽으로 흐른다
+    ctx.stroke();
+    ctx.restore();
+
+    // 화면(정보 패널을 뺀 안쪽)을 벗어나는 첫 지점을 찾는다
+    const padX = 60, top = 150, bottom = 150;
+    const inside = (p: number[]) => p[0] > padX && p[0] < this.vw - padX && p[1] > top && p[1] < this.vh - bottom;
+    for (let i = 1; i < pts.length; i++) {
+      if (inside(pts[i])) continue;
+      const a = pts[i - 1], b = pts[i];
+      if (!inside(a) && i > 1) break;
+      let lo = 0, hi = 1;
+      for (let k = 0; k < 12; k++) {
+        const t = (lo + hi) / 2;
+        if (inside([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t])) lo = t; else hi = t;
+      }
+      const x = a[0] + (b[0] - a[0]) * lo, y = a[1] + (b[1] - a[1]) * lo;
+      const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(ang);
+      ctx.fillStyle = RED;
+      ctx.strokeStyle = PAPER;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(20, 0); ctx.lineTo(-10, -14); ctx.lineTo(-4, 0); ctx.lineTo(-10, 14);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+      this.label(f.guideName, x - Math.cos(ang) * 30, y - Math.sin(ang) * 30 - 16, 19, RED, 6);
+      break;
+    }
+  }
+
   private drawPath(f: Frame) {
     const ctx = this.ctx, path = f.path!;
     ctx.save();
-    ctx.strokeStyle = 'rgba(35, 26, 18, 0.55)';
-    ctx.lineWidth = 2.5;
-    ctx.setLineDash([2, 9]);
-    ctx.lineCap = 'round';
-    ctx.lineDashOffset = -f.time * 24;
-    ctx.beginPath();
-    ctx.moveTo(...this.toScreen(f.me.x, f.me.y));
-    for (const p of path) ctx.lineTo(...this.toScreen(p[0], p[1]));
-    ctx.stroke();
-    ctx.setLineDash([]);
     const [ex, ey] = this.toScreen(...path[path.length - 1]);
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.strokeStyle = INK;
     ctx.beginPath();
-    ctx.arc(ex, ey, 7 + Math.sin(f.time * 6) * 2, 0, Math.PI * 2);
+    ctx.arc(ex, ey, 8 + Math.sin(f.time * 6) * 2, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
   }
@@ -193,14 +258,14 @@ export class Renderer {
     if (x < -40 || y < -40 || x > this.vw + 40 || y > this.vh + 40) return;
     const done = f.records.has(s.id);
     const target = f.targets.has(s.id);
-    const r = Math.max(4, 5 * this.zoom);
+    const r = Math.max(5, 5.5 * this.zoom);
     if (target) {
       const pulse = (f.time * 0.9) % 1;
       ctx.strokeStyle = RED;
       ctx.globalAlpha = 1 - pulse;
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(x, y, r + pulse * 22, 0, Math.PI * 2);
+      ctx.arc(x, y, r + pulse * 24, 0, Math.PI * 2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -208,7 +273,7 @@ export class Renderer {
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fillStyle = done ? INK : PAPER;
     ctx.fill();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = target ? 3 : 2;
     ctx.strokeStyle = target ? RED : INK;
     ctx.stroke();
     if (done) {
@@ -224,14 +289,14 @@ export class Renderer {
 
   private drawSite(s: Site, f: Frame) {
     const ctx = this.ctx, z = this.zoom;
-    const [iw, ih] = ICON_SIZE[s.kind];
+    const [iw, ih] = this.iconSize(s.kind);
     const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
-    if (x < -150 || y < -80 || x > this.vw + 150 || y > this.vh + 300) return;
+    if (x < -200 || y < -80 || x > this.vw + 200 || y > this.vh + 320) return;
     const w = iw * z, h = ih * z;
 
     ctx.fillStyle = 'rgba(35, 26, 18, 0.22)';
     ctx.beginPath();
-    ctx.ellipse(x, y, w * 0.56, Math.max(3, h * 0.06), 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y, w * 0.56, Math.max(3, h * 0.05), 0, 0, Math.PI * 2);
     ctx.fill();
 
     const near = f.nearId === s.id;
@@ -275,9 +340,9 @@ export class Renderer {
     ctx.drawImage(img, x - w / 2, y - h + 2 * z, w, h);
   }
 
-  private drawAvatar(a: Avatar, isMe: boolean, time: number) {
+  private drawAvatar(a: Avatar, isMe: boolean, time: number, shift: number) {
     const ctx = this.ctx, z = this.zoom;
-    const [x, y] = this.toScreen(a.x, a.y);
+    const [x, y] = this.toScreen(a.x + shift, a.y);
     if (x < -80 || y < -40 || x > this.vw + 80 || y > this.vh + 160) return;
     const img = this.chars[a.gender];
     const h = AVATAR_H * z, w = ok(img) ? h * img.naturalWidth / img.naturalHeight : h * 0.35;
@@ -290,7 +355,7 @@ export class Renderer {
     ctx.fill();
     if (isMe) {
       ctx.strokeStyle = teamColor(a.team);
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.ellipse(x, y, 12 * z, 5 * z, 0, 0, Math.PI * 2);
       ctx.stroke();
@@ -304,79 +369,64 @@ export class Renderer {
     if (ok(img)) ctx.drawImage(img, -w / 2, -h + 2 * z, w, h);
     ctx.restore();
 
-    this.text(a.name, x, y - h - 6, { size: 14, color: isMe ? INK : teamColor(a.team) });
+    this.label(a.name, x, y - h - 8, 18, isMe ? INK : teamColor(a.team), isMe ? 5 : 3);
   }
 
-  private drawLabels(f: Frame) {
+  private queueLabels(f: Frame) {
     const z = this.zoom;
     for (const s of SITES) {
-      const near = f.nearId === s.id;
-      if (!near && !f.targets.has(s.id)) continue;
+      const near = f.nearId === s.id, target = f.targets.has(s.id);
+      if (!near && !target) continue;
       const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
-      this.text(s.name, x, y + 16, { size: near ? 17 : 15, color: f.targets.has(s.id) ? RED : INK, baseline: 'top' });
+      this.label(s.name, x, y + 10, near ? 21 : 19, target ? RED : INK, near ? 5 : 4, true);
     }
     for (const p of PUMPS) {
       const near = f.nearId === 'pump:' + p.id;
       const target = p.isBroad && f.targets.has('pump');
       if (!near && !target && !(p.isBroad && z < 1.2)) continue;
       const [x, y] = this.toScreen(p.x, p.y);
-      this.text(p.name, x, y + 8, { size: near ? 17 : 15, color: target ? RED : INK, baseline: 'top' });
+      this.label(p.name, x, y + 10, near ? 21 : 19, target ? RED : INK, near || target ? 5 : 2, true);
     }
     if (f.showFog && z > 1.1) {
       for (const m of MIASMA) {
         const [x, y] = this.toScreen(m.x, m.y);
-        this.text(m.name, x, y, { size: 14, color: '#4d5a14' });
+        this.label(m.name, x, y, 17, '#4d5a14', 1);
       }
     }
   }
 
-  /** 화면 밖에 있는 목표를 가장자리 화살표로 가리킨다 */
-  private drawTargetArrows(f: Frame) {
-    const ctx = this.ctx;
-    const pad = 56, top = 130, bottom = 120;
-    const [px, py] = this.toScreen(f.me.x, f.me.y);
-    for (const id of f.targets) {
-      const s = SITES.find(v => v.id === id);
-      const wpos: [number, number] | null = s ? s.door : id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : null;
-      if (!wpos) continue;
-      const [tx, ty] = this.toScreen(wpos[0], wpos[1]);
-      if (tx > pad && tx < this.vw - pad && ty > top && ty < this.vh - bottom) continue;
-      const ang = Math.atan2(ty - py, tx - px);
-      // 플레이어에서 목표로 가는 선이 화면 안쪽 테두리와 만나는 점
-      const dx = Math.cos(ang), dy = Math.sin(ang);
-      const kx = dx > 0 ? (this.vw - pad - px) / dx : dx < 0 ? (pad - px) / dx : Infinity;
-      const ky = dy > 0 ? (this.vh - bottom - py) / dy : dy < 0 ? (top - py) / dy : Infinity;
-      const k = Math.min(kx, ky);
-      const ax = px + dx * k, ay = py + dy * k;
-      ctx.save();
-      ctx.translate(ax, ay);
-      ctx.rotate(ang);
-      ctx.fillStyle = RED;
-      ctx.strokeStyle = PAPER;
-      ctx.lineWidth = 2.5;
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(16, 0); ctx.lineTo(-8, -11); ctx.lineTo(-3, 0); ctx.lineTo(-8, 11);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fill();
-      ctx.restore();
-      const name = s ? s.name : BROAD_PUMP.name;
-      this.text(name, Math.max(90, Math.min(this.vw - 90, ax - dx * 34)), ay - dy * 30, { size: 14, color: RED });
-    }
+  private label(str: string, x: number, y: number, size: number, color: string, prio: number, top = false) {
+    this.labels.push({ str, x, y, size, color, top, prio });
   }
 
-  /** 지도 위 글자는 상자 없이 종이색 테두리만 둘러 읽히게 한다 */
-  private text(str: string, x: number, y: number, o: { size: number; color: string; baseline?: CanvasTextBaseline }) {
+  /**
+   * 지도 위 글자는 상자 없이 종이색 테두리만 둘러 읽히게 한다.
+   * 서로 겹치면 중요한 글자를 먼저 놓고, 나머지는 위아래로 비켜 놓거나(자리가 없으면) 생략한다.
+   */
+  private flushLabels() {
     const ctx = this.ctx;
-    ctx.font = `700 ${o.size}px ${FONT}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = o.baseline ?? 'alphabetic';
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = 4.5;
-    ctx.strokeStyle = PAPER;
-    ctx.strokeText(str, x, y);
-    ctx.fillStyle = o.color;
-    ctx.fillText(str, x, y);
+    const placed: [number, number, number, number][] = [];
+    this.labels.sort((a, b) => b.prio - a.prio);
+    for (const l of this.labels) {
+      ctx.font = `700 ${l.size}px ${FONT}`;
+      const w = ctx.measureText(l.str).width + 8, h = l.size + 6;
+      const x0 = Math.max(4, Math.min(this.vw - w - 4, l.x - w / 2));
+      const base = l.top ? l.y : l.y - h;
+      let y0 = NaN;
+      for (const dy of [0, h, -h, h * 2, -h * 2, h * 3]) {
+        const y = base + (l.top ? dy : -dy);
+        if (!placed.some(p => x0 < p[0] + p[2] && x0 + w > p[0] && y < p[1] + p[3] && y + h > p[1])) { y0 = y; break; }
+      }
+      if (Number.isNaN(y0)) continue;
+      placed.push([x0, y0, w, h]);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = PAPER;
+      ctx.strokeText(l.str, x0 + w / 2, y0 + h / 2);
+      ctx.fillStyle = l.color;
+      ctx.fillText(l.str, x0 + w / 2, y0 + h / 2);
+    }
   }
 }
