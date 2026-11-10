@@ -198,9 +198,26 @@ class SoundFXManager {
     });
   }
 
-  // 호환용 alias
-  public playVictory() {
-    this.playVictoryFanfare();
+  // 7. 수첩에 한 줄 적는 펜 소리 / 틀린 답의 낮은 울림
+  public playPen() { this.blip('triangle', 820, 520, 0.07, 0.1); }
+  public playWrong() { this.blip('sawtooth', 160, 90, 0.28, 0.16); }
+
+  private blip(type: OscillatorType, from: number, to: number, dur: number, vol: number) {
+    if (!this.enabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    osc.type = type;
+    osc.frequency.setValueAtTime(from, now);
+    osc.frequency.exponentialRampToValueAtTime(to, now + dur);
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur);
   }
 }
 
