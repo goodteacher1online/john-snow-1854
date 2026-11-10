@@ -554,7 +554,7 @@ function gameLoop(now: number) {
   const dt = Math.min(50, now - lastLoopTime);
   lastLoopTime = now;
 
-  const speed = 0.38 * dt;
+  const speed = 0.25 * dt; // 차분하고 품격 있는 영국 신사/숙녀의 보행 속도
   let moveX = 0;
   let moveY = 0;
 
@@ -769,13 +769,13 @@ rpgDialogueBox.addEventListener('click', (e) => {
 
 // 인터뷰 대화창 열기
 function openInterviewModal(house: House) {
-  // 1. 플레이어 초상화 설정 (고해상도 캐릭터 스프라이트 연동)
+  // 1. 플레이어 초상화 설정 (완벽한 상반신 바스트샷 포트레이트 연동)
   dialoguePlayerImg.src = myPlayer.gender === 'female' 
-    ? './assets/characters/player_female.png' 
-    : './assets/characters/player_male.png';
+    ? './assets/portraits/player_female_bust.png' 
+    : './assets/portraits/player_male_bust.png';
 
-  // 2. NPC 초상화 및 화자 분기
-  let npcPortrait = './assets/portraits/npc_resident.png';
+  // 2. 다양한 6종의 실제 인물 초상화 매핑 (집마다 다채로운 인물 등장)
+  let npcPortrait = './assets/portraits/npc_resident_female.png';
   let speakerTitle = house.residentName || '소호 주민';
 
   if (house.id === 'house_15') {
@@ -785,8 +785,21 @@ function openInterviewModal(house: House) {
     npcPortrait = './assets/portraits/npc_workhouse.png';
     speakerTitle = `구빈원 총무 (${house.residentName})`;
   } else if (house.id === 'house_17') {
-    npcPortrait = './assets/portraits/npc_lady.png';
+    npcPortrait = './assets/portraits/npc_wealthy_lady.png';
     speakerTitle = `햄스테드 마님의 하녀 (${house.residentName})`;
+  } else {
+    // 일반 주민 가구: 번호에 따라 노신사 / 청년 일꾼 / 여성 주민으로 다채롭게 분기!
+    const houseNum = parseInt(house.id.replace('house_', '')) || 0;
+    if (houseNum % 3 === 0) {
+      npcPortrait = './assets/portraits/npc_resident_elder.png';
+      speakerTitle = `원로 주민 (${house.residentName})`;
+    } else if (houseNum % 3 === 1) {
+      npcPortrait = './assets/portraits/npc_resident_youth.png';
+      speakerTitle = `청년 일꾼 (${house.residentName})`;
+    } else {
+      npcPortrait = './assets/portraits/npc_resident_female.png';
+      speakerTitle = `가정 주민 (${house.residentName})`;
+    }
   }
 
   dialogueNpcImg.src = npcPortrait;

@@ -139,7 +139,7 @@ export class SohoMapRenderer {
     const ctx = this.ctx;
     const width = this.canvas.width;
     const height = this.canvas.height;
-    this.animTick += isMoving ? 0.22 : 0.06;
+    this.animTick += isMoving ? 0.10 : 0.03;
 
     // 카메라 추적 (대형 스크린 모드 시 전체 소호 전경 조망)
     if (this.isBigScreenMode) {
@@ -241,10 +241,22 @@ export class SohoMapRenderer {
         ctx.arc(mx, my, fogR, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.font = `italic bold ${Math.max(11, 13 * this.zoom)}px serif`;
-        ctx.fillStyle = '#1c2e0b';
+        // 앤틱 반투명 라벨 배지 (글자가 지도와 겹치지 않고 정갈하게 정돈)
+        ctx.font = `bold ${Math.max(11, 12 * this.zoom)}px -apple-system, sans-serif`;
+        const mText = `⚠️ ${m.name}`;
+        const mW = ctx.measureText(mText).width;
+        ctx.fillStyle = 'rgba(28, 25, 23, 0.85)';
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(mx - mW / 2 - 6, my + 10 * this.zoom, mW + 12, 18, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fef3c7';
         ctx.textAlign = 'center';
-        ctx.fillText(`💨 ${m.name}`, mx, my + 20 * this.zoom);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(mText, mx, my + 10 * this.zoom + 9);
       }
     }
 
@@ -696,11 +708,12 @@ export class SohoMapRenderer {
     const isFemale = gender === 'female';
     const spriteImg = isFemale ? this.charFemaleImg : this.charMaleImg;
 
-    // 보행 애니메이션 (상하 바운스 + 살짝 기우는 워킹 틸트)
+    // 천천히 품격 있게 걷는 보행 애니메이션 (상하 미세 바운스 & 살짝 기우는 워킹 틸트)
     const isWalking = walkTick > 0;
-    const bounceY = isWalking ? Math.abs(Math.sin(walkTick * 4)) * -4 * scale : 0;
-    const walkTilt = isWalking ? Math.sin(walkTick * 4) * 0.05 : 0;
+    const bounceY = isWalking ? Math.abs(Math.sin(walkTick * 2.2)) * -2.2 * scale : 0;
+    const walkTilt = isWalking ? Math.sin(walkTick * 2.2) * 0.025 : 0;
 
+    // [1단계: 캐릭터 몸체 렌더링 - 걷기 바운스 적용]
     ctx.save();
     ctx.translate(sx, sy + bounceY);
     ctx.rotate(walkTilt);
@@ -747,27 +760,29 @@ export class SohoMapRenderer {
       ctx.stroke();
       ctx.setLineDash([]);
     }
+    ctx.restore(); // 몸체 바운스/틸트 컨텍스트 종료!
 
-    // 4. 머리 위 정자체 닉네임 명패 (Nothing Design 안티슬롭 정자체)
-    const labelY = -targetHeight + 2 * scale;
+    // [2단계: 머리 위 정자체 닉네임 명패 렌더링 - 걸을 때 1mm도 흔들리지 않는 절대 고정!]
+    ctx.save();
+    const fixedLabelY = sy - targetHeight + 12 * scale;
     ctx.font = `900 ${Math.max(12, 13 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     const textWidth = ctx.measureText(name).width;
     const boxH = 22;
     
-    // 명패 배경 박스
-    ctx.fillStyle = isMe ? 'rgba(15, 23, 42, 0.92)' : 'rgba(30, 41, 59, 0.88)';
+    // 명패 배경 박스 (화면 좌표 기준 완전 고정)
+    ctx.fillStyle = isMe ? 'rgba(15, 23, 42, 0.94)' : 'rgba(30, 41, 59, 0.9)';
     ctx.strokeStyle = isMe ? (coatColor || '#fbbf24') : '#94a3b8';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.roundRect(-textWidth / 2 - 8, labelY - boxH, textWidth + 16, boxH, 6);
+    ctx.roundRect(sx - textWidth / 2 - 8, fixedLabelY - boxH, textWidth + 16, boxH, 6);
     ctx.fill();
     ctx.stroke();
 
-    // 닉네임 텍스트
+    // 닉네임 텍스트 (떨림 0% 완전 고정)
     ctx.fillStyle = isMe ? '#fef08a' : '#f8fafc';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(name, 0, labelY - boxH / 2);
+    ctx.fillText(name, sx, fixedLabelY - boxH / 2);
 
     ctx.restore();
   }

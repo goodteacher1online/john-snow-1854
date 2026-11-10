@@ -263,11 +263,11 @@ html, body {
 
 #dialogue-player-wrapper img,
 #dialogue-npc-wrapper img {
-  height: 350px;
-  max-height: 46vh;
+  height: 360px;
+  max-height: 48vh;
   width: auto;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: bottom center;
   filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.7));
 }
 
