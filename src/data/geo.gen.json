@@ -1,0 +1,230 @@
+{
+ "size": [
+  1280,
+  1201
+ ],
+ "pumps": {
+  "broad": [
+   714,
+   552
+  ],
+  "little_marlborough": [
+   444,
+   466
+  ],
+  "great_marlborough": [
+   425,
+   305
+  ],
+  "warwick": [
+   560,
+   868
+  ],
+  "bridle": [
+   784,
+   838
+  ],
+  "rupert": [
+   1013,
+   742
+  ],
+  "dean": [
+   1196,
+   709
+  ],
+  "tichborne": [
+   971,
+   1060
+  ],
+  "vigo": [
+   425,
+   1038
+  ],
+  "oxford_market": [
+   422,
+   71
+  ],
+  "castle": [
+   600,
+   34
+  ],
+  "berners": [
+   805,
+   129
+  ],
+  "newman": [
+   908,
+   95
+  ]
+ },
+ "miasma": {
+  "sewer": [
+   470,
+   470
+  ],
+  "slaughter": [
+   578,
+   520
+  ],
+  "cesspool": [
+   742,
+   575
+  ]
+ },
+ "sites": {
+  "lewis": {
+   "door": [
+    704,
+    557
+   ],
+   "icon": [
+    699,
+    583
+   ],
+   "nearestPump": "broad"
+  },
+  "eley": {
+   "door": [
+    672,
+    571
+   ],
+   "icon": [
+    664,
+    598
+   ],
+   "nearestPump": "broad"
+  },
+  "lodging": {
+   "door": [
+    694,
+    544
+   ],
+   "icon": [
+    682,
+    514
+   ],
+   "nearestPump": "broad"
+  },
+  "cambridge": {
+   "door": [
+    751,
+    598
+   ],
+   "icon": [
+    773,
+    590
+   ],
+   "nearestPump": "broad"
+  },
+  "coffee": {
+   "door": [
+    770,
+    511
+   ],
+   "icon": [
+    764,
+    488
+   ],
+   "nearestPump": "broad"
+  },
+  "berwick": {
+   "door": [
+    898,
+    552
+   ],
+   "icon": [
+    884,
+    560
+   ],
+   "nearestPump": "broad"
+  },
+  "brewery": {
+   "door": [
+    814,
+    500
+   ],
+   "icon": [
+    823,
+    542
+   ],
+   "nearestPump": "broad"
+  },
+  "workhouse": {
+   "door": [
+    705,
+    423
+   ],
+   "icon": [
+    632,
+    420
+   ],
+   "nearestPump": "broad"
+  },
+  "gould": {
+   "door": [
+    838,
+    481
+   ],
+   "icon": [
+    831,
+    458
+   ],
+   "nearestPump": "broad"
+  },
+  "peter": {
+   "door": [
+    950,
+    635
+   ],
+   "icon": [
+    944,
+    612
+   ],
+   "nearestPump": "broad"
+  },
+  "carnaby": {
+   "door": [
+    499,
+    560
+   ],
+   "icon": [
+    518,
+    553
+   ],
+   "nearestPump": "little_marlborough"
+  },
+  "marlborough": {
+   "door": [
+    451,
+    492
+   ],
+   "icon": [
+    431,
+    503
+   ],
+   "nearestPump": "little_marlborough"
+  },
+  "pulteney": {
+   "door": [
+    800,
+    770
+   ],
+   "icon": [
+    818,
+    762
+   ],
+   "nearestPump": "bridle"
+  },
+  "rupert": {
+   "door": [
+    1022,
+    775
+   ],
+   "icon": [
+    1044,
+    770
+   ],
+   "nearestPump": "rupert"
+  }
+ }
+}

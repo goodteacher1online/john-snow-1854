@@ -157,11 +157,13 @@ def build_map():
 
 def fill_holes(im):
     """배경 제거 과정에서 뚫린 인물 안쪽 구멍(흰 옷깃·앞치마)을 다시 메운다."""
-    a = np.array(im)
-    solid = a[..., 3] > 40
-    holes = ndi.binary_fill_holes(solid) & ~solid
-    a[holes] = (242, 238, 230, 255)
-    return Image.fromarray(a)
+    a = np.array(im).astype(np.float32)
+    alpha = a[..., 3:] / 255.0
+    inner = ndi.binary_erosion(ndi.binary_fill_holes(alpha[..., 0] > 0.16), iterations=2)
+    white = np.array([242, 238, 230], np.float32)
+    a[inner, :3] = (a[..., :3] * alpha + white * (1 - alpha))[inner]
+    a[inner, 3] = 255
+    return Image.fromarray(a.astype(np.uint8))
 
 
 def save_h(im, height, path, q=86):

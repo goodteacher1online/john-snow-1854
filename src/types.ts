@@ -1,78 +1,76 @@
+export type Smell = 'high' | 'mid' | 'low';
+export type QuestionId = 'toll' | 'air' | 'water';
+export type PortraitId = 'woman' | 'youth' | 'elder' | 'brewer' | 'widow' | 'official';
+export type SiteKind = 'house' | 'brewery' | 'workhouse';
+export type PlayerGender = 'male' | 'female';
+
+/** 위원회에서 이 기록이 반박할 수 있는 주장 */
+export type Proof = 'smell' | 'near' | 'far';
+
+export interface Site {
+  id: string;
+  name: string;
+  kind: SiteKind;
+  /** 월드 좌표(원본 지도 픽셀 x2). 문은 거리 위, icon 은 건물 밑변 가운데 */
+  door: [number, number];
+  icon: [number, number];
+  nearestPump: string;
+  npc: { name: string; role: string; portrait: PortraitId; mirror?: boolean };
+  people: number;
+  deaths: number;
+  smell: Smell;
+  smellNote: string;
+  drankBroad: boolean;
+  waterNote: string;
+  /** record: 스노우 보고서에 실린 사례 / composite: 당시 기록을 바탕으로 꾸민 가구 */
+  basis: 'record' | 'composite';
+  proves: Proof[];
+  clue?: string;
+  intro: string[];
+  toll: string[];
+  air: string[];
+  water: string[];
+  outro: string;
+}
+
 export interface Pump {
   id: string;
   name: string;
-  x: number; // 0 ~ 2200 월드좌표
-  y: number; // 0 ~ 2200 월드좌표
-  isSource: boolean; // Broad Street 펌프만 true
-  description: string;
-  handleRemoved?: boolean;
-}
-
-export type ClueType = 
-  | 'normal' 
-  | 'brewery_anomaly' 
-  | 'workhouse_anomaly' 
-  | 'hampstead_anomaly' 
-  | 'suspect_cluster';
-
-export interface House {
-  id: string;
-  address: string;
   x: number;
   y: number;
-  deaths: number;
-  primaryPump: string;
-  residentName: string;
-  residentRole?: string;
-  interviewText: string;
-  clueType: ClueType;
+  isBroad: boolean;
 }
 
-export interface MiasmaMarker {
+export interface Avatar {
   id: string;
   name: string;
-  x: number;
-  y: number;
-  note: string;
-}
-
-export interface SnowGameData {
-  pumps: Pump[];
-  houses: House[];
-  miasmaMarkers: MiasmaMarker[];
-}
-
-export type PlayerGender = 'male' | 'female';
-export type HatStyle = 'silk_hat' | 'bowler' | 'flat_cap' | 'bonnet' | 'none';
-export type ToolStyle = 'magnifier' | 'notebook' | 'microscope';
-
-export interface PlayerState {
-  id: string;
-  name: string;
-  color: string;
-  team: string; // 'team1' ~ 'team5'
-  x: number;
-  y: number;
-  targetX?: number;
-  targetY?: number;
-  lastActive: number;
-  gender?: PlayerGender;
-  hatStyle?: HatStyle;
-  toolStyle?: ToolStyle;
-}
-
-export interface InvestigationRecord {
-  houseId: string;
-  investigatorName: string;
   team: string;
-  deaths: number;
-  primaryPump: string;
-  timestamp: number;
+  gender: PlayerGender;
+  x: number;
+  y: number;
+  facing: 1 | -1;
+  moving: boolean;
 }
 
-export interface GlobalGameState {
-  investigatedHouses: Record<string, InvestigationRecord>; // houseId -> record
-  broadStreetHandleRemoved: boolean;
-  activeHypothesis: 'miasma' | 'water'; // 초기엔 'miasma'
-  currentPhase: 'investigation' | 'voting' | 'victory';
+export interface RemotePlayer extends Avatar {
+  tx: number;
+  ty: number;
+  records: string[];
+  stage: number;
+}
+
+export interface SaveData {
+  name: string;
+  gender: PlayerGender;
+  team: string;
+  room: string;
+  stage: number;
+  records: string[];
+  asked: Record<string, QuestionId[]>;
+  xp: number;
+  reasonStep: number;
+  misses: number;
+  noteSeen: number;
+  x: number;
+  y: number;
 }
