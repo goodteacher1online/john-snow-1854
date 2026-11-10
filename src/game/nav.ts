@@ -96,7 +96,15 @@ export class Nav {
     const into = Math.min(0, dx * nx + dy * ny);
     let tx = dx - into * nx, ty = dy - into * ny;
     const tl = Math.hypot(tx, ty), step = Math.hypot(dx, dy);
-    if (tl < step * 0.08) return [x, y];                 // 벽을 정면으로 밀고 있다
+    if (tl < step * 0.2) {
+      // 벽을 정면으로 밀고 있다: 튀어나온 모퉁이라면 더 트인 쪽으로 비켜 돌아간다
+      const s = step * 0.75;
+      const a = this.clearance(x - ny * s, y + nx * s), b = this.clearance(x + ny * s, y - nx * s);
+      if (Math.abs(a - b) < 0.3) return [x, y];          // 양쪽이 똑같이 막힌 평평한 벽
+      const side = a > b ? 1 : -1;
+      const sx = -ny * s * side, sy = nx * s * side;
+      return free(sx, sy) ? [x + sx, y + sy] : [x, y];
+    }
     const k = Math.max(tl, step * 0.75) / tl;            // 비스듬히 닿아도 걸음이 처지지 않게
     tx = tx * k + nx * 0.15; ty = ty * k + ny * 0.15;
     if (free(tx, ty)) return [x + tx, y + ty];
