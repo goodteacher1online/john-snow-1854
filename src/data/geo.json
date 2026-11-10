@@ -1,0 +1,39 @@
+{
+  "_comment": "좌표 단위: snow_map.jpg 원본 픽셀(1280x1201). tools/build_assets.py 가 문 위치를 거리 위로 보정해 geo.gen.json 을 만든다.",
+  "pumps": {
+    "broad": [718, 550],
+    "little_marlborough": [440, 466],
+    "great_marlborough": [430, 304],
+    "warwick": [564, 868],
+    "bridle": [783, 833],
+    "rupert": [1008, 742],
+    "dean": [1196, 709],
+    "tichborne": [966, 1060],
+    "vigo": [426, 1042],
+    "oxford_market": [422, 71],
+    "castle": [612, 34],
+    "berners": [805, 129],
+    "newman": [905, 91]
+  },
+  "sites": {
+    "lewis": { "door": [704, 557], "icon": [699, 583] },
+    "eley": { "door": [672, 571], "icon": [664, 598] },
+    "lodging": { "door": [690, 537], "icon": [682, 514] },
+    "cambridge": { "door": [751, 598], "icon": [773, 590] },
+    "coffee": { "door": [770, 511], "icon": [764, 488] },
+    "berwick": { "door": [881, 560], "icon": [860, 566] },
+    "brewery": { "door": [814, 500], "icon": [823, 542] },
+    "workhouse": { "door": [701, 425], "icon": [632, 420] },
+    "gould": { "door": [838, 481], "icon": [831, 458] },
+    "peter": { "door": [950, 635], "icon": [944, 612] },
+    "carnaby": { "door": [499, 560], "icon": [518, 553] },
+    "marlborough": { "door": [451, 492], "icon": [431, 503] },
+    "pulteney": { "door": [800, 770], "icon": [818, 762] },
+    "rupert": { "door": [1022, 775], "icon": [1042, 790] }
+  },
+  "miasma": {
+    "sewer": [470, 470],
+    "slaughter": [578, 520],
+    "cesspool": [742, 575]
+  }
+}
