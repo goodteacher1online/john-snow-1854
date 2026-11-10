@@ -1,11 +1,6 @@
 import { SOHO_STREETS } from '../data/streets';
 import snowData from '../data/snowData.json';
 
-interface Point {
-  x: number;
-  y: number;
-}
-
 // 점 (px, py)에서 선분 (ax, ay)-(bx, by)까지의 최단 거리 계산
 function distToSegment(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
   const dx = bx - ax;
@@ -29,23 +24,23 @@ export class SohoNavigator {
    * 해당 월드 좌표 (x, y)가 도로 위이거나 가구/펌프 접근 구역인지 판정
    */
   public canWalkAt(x: number, y: number): boolean {
-    // 1. 가구 문 앞 및 마당 구역 (반경 80px 이내 넉넉하게 보행 보장)
+    // 1. 가구 문 앞 및 마당 구역 (반경 100px 이내 넉넉하게 보행 보장)
     for (const h of this.houses) {
-      if (Math.hypot(h.x - x, h.y - y) <= 80) {
+      if (Math.hypot(h.x - x, h.y - y) <= 100) {
         return true;
       }
     }
 
-    // 2. 공공 식수 펌프 주변 (반경 80px 이내 넉넉하게 보행 보장)
+    // 2. 공공 식수 펌프 주변 (반경 100px 이내 넉넉하게 보행 보장)
     for (const p of this.pumps) {
-      if (Math.hypot(p.x - x, p.y - y) <= 80) {
+      if (Math.hypot(p.x - x, p.y - y) <= 100) {
         return true;
       }
     }
 
-    // 3. 도로 선분망 내부 보행 검사 (도로 폭을 넉넉하게 판정하여 시원시원한 보행감 제공)
+    // 3. 24개 실제 1854 소호 도로망 내부 보행 검사 (고지도 길 위에서 자유롭게 이동)
     for (const street of this.streets) {
-      const halfWidth = ((street.width || 60) * 1.35) / 2; // 폭 35% 넉넉히 확장
+      const halfWidth = (street.width || 95) / 2;
       const pts = street.points;
       for (let i = 0; i < pts.length - 1; i++) {
         const [ax, ay] = pts[i];
@@ -61,9 +56,7 @@ export class SohoNavigator {
   }
 
   /**
-   * 벽 미끄러짐(Wall Sliding) 적용 이동 계산
-   * - 목표 위치가 길이면 즉시 이동
-   * - 막혔을 경우 X축 또는 Y축만 개별 검사하여 길을 따라 자연스럽게 미끄러짐
+   * 벽 미끄러짐(Wall Sliding) 적용 부드러운 보행 이동 계산
    */
   public resolveMove(curX: number, curY: number, dx: number, dy: number): [number, number] {
     const nextX = curX + dx;
@@ -84,7 +77,7 @@ export class SohoNavigator {
       return [curX, nextY];
     }
 
-    // 4. 모서리에 걸려 완전히 막힌 경우 정지
+    // 4. 벽에 완전히 닿아 막힌 경우 정지
     return [curX, curY];
   }
 }

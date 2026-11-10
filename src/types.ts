@@ -42,7 +42,8 @@ export interface SnowGameData {
   miasmaMarkers: MiasmaMarker[];
 }
 
-export type HatStyle = 'silk_hat' | 'bowler' | 'flat_cap' | 'none';
+export type PlayerGender = 'male' | 'female';
+export type HatStyle = 'silk_hat' | 'bowler' | 'flat_cap' | 'bonnet' | 'none';
 export type ToolStyle = 'magnifier' | 'notebook' | 'microscope';
 
 export interface PlayerState {
@@ -55,6 +56,7 @@ export interface PlayerState {
   targetX?: number;
   targetY?: number;
   lastActive: number;
+  gender?: PlayerGender;
   hatStyle?: HatStyle;
   toolStyle?: ToolStyle;
 }

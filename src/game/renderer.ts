@@ -18,6 +18,11 @@ export class SohoMapRenderer {
   private mapImage: HTMLImageElement | null = null;
   private mapLoaded = false;
 
+  // 1854 빅토리안 실사 건물 스프라이트 이미지
+  private houseTerraceImg: HTMLImageElement | null = null;
+  private houseBreweryImg: HTMLImageElement | null = null;
+  private houseWorkhouseImg: HTMLImageElement | null = null;
+
   // 카메라 뷰포트 (월드 크기: 2200 x 2200)
   public cameraX = 1100;
   public cameraY = 1100;
@@ -42,8 +47,18 @@ export class SohoMapRenderer {
     this.ctx = canvas.getContext('2d')!;
     this.data = data;
     this.loadAuthenticMap();
+    this.loadHouseSprites();
     this.resize();
     window.addEventListener('resize', () => this.resize());
+  }
+
+  private loadHouseSprites() {
+    this.houseTerraceImg = new Image();
+    this.houseTerraceImg.src = './assets/houses/house_terrace.png';
+    this.houseBreweryImg = new Image();
+    this.houseBreweryImg.src = './assets/houses/house_brewery.png';
+    this.houseWorkhouseImg = new Image();
+    this.houseWorkhouseImg.src = './assets/houses/house_workhouse.png';
   }
 
   private loadAuthenticMap() {
@@ -172,14 +187,14 @@ export class SohoMapRenderer {
     for (const player of otherPlayers) {
       this.drawScientistAvatar(
         player.x, player.y, player.name, player.color, player.team,
-        false, 0, player.hatStyle, player.toolStyle
+        false, 0, player.hatStyle, player.toolStyle, player.gender
       );
     }
 
     // 8. 내 과학자 아바타
     this.drawScientistAvatar(
       myPlayer.x, myPlayer.y, `${myPlayer.name} (나)`, myPlayer.color, myPlayer.team,
-      true, isMoving ? this.animTick : 0, myPlayer.hatStyle, myPlayer.toolStyle
+      true, isMoving ? this.animTick : 0, myPlayer.hatStyle, myPlayer.toolStyle, myPlayer.gender
     );
   }
 
@@ -298,7 +313,7 @@ export class SohoMapRenderer {
     ctx.restore();
   }
 
-  // ★ 2.5D 입체 빅토리안 건물 드로잉 (창문 불빛, 굴뚝 연기, 문패, 입체 지붕)
+  // ★ 1854 빅토리안 실사 건물 드로잉 (실제 19세기 런던 건축물 이미지 스프라이트 & 사망자 잉크 막대탑)
   private drawVictorian25DHouse(
     ctx: CanvasRenderingContext2D,
     house: House,
@@ -312,251 +327,129 @@ export class SohoMapRenderer {
     const isBrewery = house.id === 'house_15';
     const isWorkhouse = house.id === 'house_16';
 
-    // 1854 빅토리안 건축 고증 규격 (양조장/구빈원/테라스하우스)
-    const w = (isBrewery ? 52 : isWorkhouse ? 58 : 38) * scale;
-    const h = (isBrewery ? 30 : isWorkhouse ? 32 : 28) * scale;
-    const roofH = (isBrewery ? 12 : isWorkhouse ? 14 : 16) * scale;
-
     ctx.save();
     ctx.translate(hx, hy);
 
-    // 1. 건물 바닥 그림자
-    ctx.beginPath();
-    ctx.ellipse(w * 0.08, h * 0.32, w * 0.62, h * 0.38, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
-    ctx.fill();
+    // 1. 실사 건물 스프라이트 렌더링
+    let sprite = this.houseTerraceImg;
+    let spriteW = 58 * scale;
+    let spriteH = 58 * scale;
+    let roofTopOffset = -22 * scale;
 
-    // 2. 파사드 벽체 (건축 양식별 고증 색상)
     if (isBrewery) {
-      // 라이온 양조장: 짙은 적벽돌 공장 외벽
-      ctx.fillStyle = '#7f1d1d';
-      ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.strokeStyle = '#450a0a';
-      ctx.lineWidth = 2 * scale;
-      ctx.strokeRect(-w / 2, -h / 2, w, h);
+      sprite = this.houseBreweryImg;
+      spriteW = 86 * scale;
+      spriteH = 70 * scale;
+      roofTopOffset = -26 * scale;
 
-      // 양조장 맥주통(Barrels) 3개 나열
-      const barrelR = 4 * scale;
-      [-16 * scale, -6 * scale, 4 * scale].forEach(bx => {
-        ctx.beginPath();
-        ctx.ellipse(bx, h / 2 - 2 * scale, barrelR * 1.2, barrelR, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#78350f';
-        ctx.fill();
-        ctx.strokeStyle = '#451a03';
-        ctx.lineWidth = 1 * scale;
-        ctx.stroke();
-      });
-
-      // 대형 아치 문
-      ctx.beginPath();
-      ctx.arc(14 * scale, h / 2 - 8 * scale, 7 * scale, Math.PI, 0);
-      ctx.fillStyle = '#1c1917';
-      ctx.fill();
-
-      // 양조장 높은 산업용 벽돌 굴뚝
-      const chimX = -18 * scale;
-      const chimY = -h / 2 - 20 * scale;
-      ctx.fillStyle = '#450a0a';
-      ctx.fillRect(chimX - 3 * scale, chimY, 7 * scale, 24 * scale);
+      // 양조장 굴뚝 연기 파티클
       if (Math.random() < 0.12) {
         this.smokeParticles.push({
-          x: hx + chimX,
-          y: hy + chimY,
+          x: hx - 28 * scale,
+          y: hy - 32 * scale,
           life: 0,
           maxLife: 45 + Math.random() * 25,
           size: (4 + Math.random() * 4) * scale
         });
       }
     } else if (isWorkhouse) {
-      // 세인트 제임스 구빈원: 육중한 런던 화강암 석조 파사드
-      ctx.fillStyle = '#475569';
-      ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 2.2 * scale;
-      ctx.strokeRect(-w / 2, -h / 2, w, h);
-
-      // 규칙적인 3열 촘촘한 수직 격자창
-      const winW = 4.5 * scale;
-      const winH = 6 * scale;
-      [-18 * scale, 0, 18 * scale].forEach(wx => {
-        // 2층 창
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(wx - winW / 2, -h / 2 + 3 * scale, winW, winH);
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(wx - winW / 2 + 0.8 * scale, -h / 2 + 3.8 * scale, winW - 1.6 * scale, winH - 1.6 * scale);
-        // 1층 창
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(wx - winW / 2, -h / 2 + 13 * scale, winW, winH);
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(wx - winW / 2 + 0.8 * scale, -h / 2 + 13.8 * scale, winW - 1.6 * scale, winH - 1.6 * scale);
-      });
-
-      // 엄숙한 철제 정문
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(-5 * scale, h / 2 - 10 * scale, 10 * scale, 10 * scale);
-    } else {
-      // 빅토리안 테라스 하우스 (런던 스톡 브릭 & 흑철제 난간)
-      const brickColor = (house.deaths % 2 === 0) ? '#a36a4f' : '#94523c';
-      ctx.fillStyle = brickColor;
-      ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.strokeStyle = '#431407';
-      ctx.lineWidth = 1.8 * scale;
-      ctx.strokeRect(-w / 2, -h / 2, w, h);
-
-      // 맨사드 슬레이트 박공 지붕
-      ctx.beginPath();
-      ctx.moveTo(-w / 2 - 2 * scale, -h / 2);
-      ctx.lineTo(0, -h / 2 - roofH);
-      ctx.lineTo(w / 2 + 2 * scale, -h / 2);
-      ctx.closePath();
-      ctx.fillStyle = '#334155'; // 슬레이트 블루그레이
-      ctx.fill();
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1.8 * scale;
-      ctx.stroke();
-
-      // 굴뚝 2구 테라코타 포트
-      const cx = w * 0.22;
-      const cy = -h / 2 - roofH * 0.65;
-      ctx.fillStyle = '#7c2d12';
-      ctx.fillRect(cx - 3 * scale, cy - 7 * scale, 6 * scale, 9 * scale);
-      ctx.fillStyle = '#ea580c';
-      ctx.fillRect(cx - 2.5 * scale, cy - 9 * scale, 2 * scale, 2.5 * scale);
-      ctx.fillRect(cx + 0.5 * scale, cy - 9 * scale, 2 * scale, 2.5 * scale);
-
-      if (Math.random() < 0.08) {
-        this.smokeParticles.push({
-          x: hx + cx,
-          y: hy + cy - 9 * scale,
-          life: 0,
-          maxLife: 35 + Math.random() * 20,
-          size: (3 + Math.random() * 2.5) * scale
-        });
-      }
-
-      // 흰색 상인방(Lintel) 격자 슬라이딩 창 (Sash Windows)
-      const winW = 6.5 * scale;
-      const winH = 8 * scale;
-      [-w * 0.26, w * 0.26].forEach((wx) => {
-        // 흰색 창틀
-        ctx.fillStyle = '#f1f5f9';
-        ctx.fillRect(wx - winW / 2 - 0.8 * scale, -h / 2 + 3 * scale, winW + 1.6 * scale, winH + 1.2 * scale);
-        // 유리창 (따뜻한 호박색 불빛)
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(wx - winW / 2, -h / 2 + 3.8 * scale, winW, winH);
-        // 4칸 격자
-        ctx.strokeStyle = '#451a03';
-        ctx.lineWidth = 0.8 * scale;
-        ctx.beginPath();
-        ctx.moveTo(wx, -h / 2 + 3.8 * scale);
-        ctx.lineTo(wx, -h / 2 + 3.8 * scale + winH);
-        ctx.moveTo(wx - winW / 2, -h / 2 + 3.8 * scale + winH / 2);
-        ctx.lineTo(wx + winW / 2, -h / 2 + 3.8 * scale + winH / 2);
-        ctx.stroke();
-      });
-
-      // 아치형 목재 현관문
-      const doorW = 7.5 * scale;
-      const doorH = 11 * scale;
-      ctx.fillStyle = '#3e1c0c';
-      ctx.fillRect(-doorW / 2, h / 2 - doorH, doorW, doorH);
-      ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(-doorW / 2 + 1.8 * scale, h / 2 - doorH * 0.5, 1.4 * scale, 1.4 * scale); // 황동 손잡이
-
-      // 흑철제 난간 (Area Railings)
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1.2 * scale;
-      ctx.beginPath();
-      ctx.moveTo(-w / 2, h / 2);
-      ctx.lineTo(-doorW / 2 - 1 * scale, h / 2);
-      ctx.moveTo(doorW / 2 + 1 * scale, h / 2);
-      ctx.lineTo(w / 2, h / 2);
-      ctx.stroke();
+      sprite = this.houseWorkhouseImg;
+      spriteW = 92 * scale;
+      spriteH = 70 * scale;
+      roofTopOffset = -26 * scale;
     }
 
-    // 3. ★ [존 스노우 1854 원본 고증] 조사 완료 시 검은 사망자 막대탑(Death Bars) 스택 렌더링!
+    if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, -spriteW / 2, -spriteH / 2, spriteW, spriteH);
+    } else {
+      // 이미지 로딩 중 대체 사각형
+      ctx.fillStyle = isBrewery ? '#7f1d1d' : isWorkhouse ? '#475569' : '#a36a4f';
+      ctx.fillRect(-spriteW / 2, -spriteH / 2, spriteW, spriteH);
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2 * scale;
+      ctx.strokeRect(-spriteW / 2, -spriteH / 2, spriteW, spriteH);
+    }
+
+    // 2. ★ [존 스노우 1854 원본 고증] 조사 완료 시 지붕 위에 솟아오르는 검은 사망자 막대탑(Death Bars)!
     if (isInvestigated) {
       if (house.deaths > 0) {
         // 사망자 수만큼 차곡차곡 쌓이는 검은색 잉크 막대 (스노우 원본 지도 방식)
         const barW = 16 * scale;
         const barH = 3.6 * scale;
         const barGap = 1.2 * scale;
-        const startY = -h / 2 - roofH - 4 * scale;
-
-        ctx.fillStyle = '#0f172a';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1 * scale;
+        const startY = roofTopOffset - 4 * scale;
 
         for (let i = 0; i < house.deaths; i++) {
           const by = startY - i * (barH + barGap);
+          // 검은 잉크 바
+          ctx.fillStyle = '#0f172a';
           ctx.fillRect(-barW / 2, by, barW, barH);
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 0.8 * scale;
           ctx.strokeRect(-barW / 2, by, barW, barH);
         }
 
-        // 막대탑 최상단 사망자 수 뱃지
-        const badgeY = startY - house.deaths * (barH + barGap) - 7 * scale;
-        ctx.beginPath();
-        ctx.arc(0, badgeY, 7.5 * scale, 0, Math.PI * 2);
+        // 탑 꼭대기 사망자 숫자 뱃지
+        const topY = startY - house.deaths * (barH + barGap) - 5 * scale;
         ctx.fillStyle = '#b91c1c';
+        ctx.beginPath();
+        ctx.arc(0, topY, 6.5 * scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2 * scale;
+        ctx.stroke();
+
+        ctx.font = `900 ${Math.max(9, 10 * scale)}px sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(house.deaths), 0, topY);
+      } else {
+        // 사망자 0명 안전 가구 (양조장 등) - 초록색 안전 방패 표식
+        ctx.fillStyle = '#15803d';
+        ctx.beginPath();
+        ctx.arc(0, roofTopOffset - 8 * scale, 8 * scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.5 * scale;
         ctx.stroke();
 
-        ctx.font = `bold ${Math.max(9, 10 * scale)}px sans-serif`;
+        ctx.font = `bold ${Math.max(8, 9 * scale)}px sans-serif`;
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(String(house.deaths), 0, badgeY);
-      } else {
-        // 사망 0명 이상치 (양조장, 딘 가 21번지 등) : 녹색 방패 뱃지
-        const badgeY = -h / 2 - roofH - 8 * scale;
-        ctx.beginPath();
-        ctx.arc(0, badgeY, 9 * scale, 0, Math.PI * 2);
-        ctx.fillStyle = '#15803d';
-        ctx.fill();
-        ctx.strokeStyle = '#fef08a';
-        ctx.lineWidth = 2 * scale;
-        ctx.stroke();
-
-        ctx.font = `bold ${Math.max(9, 10 * scale)}px sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText("0", 0, badgeY);
+        ctx.fillText('0', 0, roofTopOffset - 8 * scale);
       }
     }
 
-    // 4. 가구 접근 시 황금빛 펄스 링 & 머리 위 3D 뱃지
-    if (distToPlayer < 65) {
-      const pulse = (Math.sin(this.animTick * 2.8) + 1) / 2;
+    // 3. 근접 시 부드러운 상호작용 하이라이트 & [조사 E] 플로팅 안내
+    if (distToPlayer < 75) {
+      // 바닥 주황빛 부드러운 펄스 링
+      const ringR = (spriteW / 2 + 10 * scale) + Math.sin(this.animTick * 3) * 3 * scale;
       ctx.beginPath();
-      ctx.arc(0, 0, (w * 0.72 + pulse * 18) * scale, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(245, 158, 11, ${1 - pulse * 0.5})`;
-      ctx.lineWidth = 3.5;
+      ctx.arc(0, spriteH * 0.25, ringR, 0, Math.PI * 2);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5 * scale;
+      ctx.setLineDash([6 * scale, 4 * scale]);
       ctx.stroke();
+      ctx.setLineDash([]);
 
-      // 머리 위 3D 조사 뱃지
-      ctx.save();
-      const topOffset = isInvestigated && house.deaths > 0 
-        ? -h / 2 - roofH - (house.deaths * 4.8 + 26) * scale 
-        : -h / 2 - roofH - 16 * scale;
-      ctx.translate(0, topOffset);
+      // 머리 위 세련된 조사 뱃지
+      if (!isInvestigated) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.roundRect(-26 * scale, roofTopOffset - 22 * scale, 52 * scale, 16 * scale, 8 * scale);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2 * scale;
+        ctx.stroke();
 
-      ctx.fillStyle = isInvestigated ? '#15803d' : '#f59e0b';
-      ctx.beginPath();
-      ctx.roundRect(-32 * scale, -14 * scale, 64 * scale, 28 * scale, 7 * scale);
-      ctx.fill();
-      ctx.strokeStyle = '#1e1b4b';
-      ctx.lineWidth = 2 * scale;
-      ctx.stroke();
-
-      ctx.font = `900 ${Math.max(12, 13 * scale)}px sans-serif`;
-      ctx.fillStyle = isInvestigated ? '#ffffff' : '#0c0a09';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(isInvestigated ? "확인 [E]" : "조사 [E]", 0, 0);
-      ctx.restore();
+        ctx.font = `900 ${Math.max(10, 11 * scale)}px sans-serif`;
+        ctx.fillStyle = '#1c1917';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('조사 [E]', 0, roofTopOffset - 14 * scale);
+      }
     }
 
     ctx.restore();
@@ -672,35 +565,10 @@ export class SohoMapRenderer {
     }
   }
 
-  // 실제 고지도 도로 위 자갈길 톤(Cobblestone Tint) 시각화 (길인 곳을 명확히 구분!)
-  private renderCobblestoneStreets(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    for (const street of SOHO_STREETS) {
-      if (street.points.length < 2) continue;
-      ctx.beginPath();
-      const [startWx, startWy] = street.points[0];
-      const [startSx, startSy] = this.worldToScreen(startWx, startWy);
-      ctx.moveTo(startSx, startSy);
-      for (let i = 1; i < street.points.length; i++) {
-        const [wx, wy] = street.points[i];
-        const [sx, sy] = this.worldToScreen(wx, wy);
-        ctx.lineTo(sx, sy);
-      }
-      // 따뜻하고 밝은 런던 자갈길 반투명 톤
-      ctx.strokeStyle = 'rgba(255, 248, 230, 0.45)';
-      ctx.lineWidth = ((street.width || 56) * 1.35) * this.zoom;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-
-      // 길 가장자리 인도 연석선 (Curb Lines)
-      ctx.strokeStyle = 'rgba(120, 113, 108, 0.35)';
-      ctx.lineWidth = 2 * this.zoom;
-      ctx.setLineDash([10 * this.zoom, 14 * this.zoom]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-    ctx.restore();
+  // 고지도 원본 도로망 노출 (약도형 밴드를 완전히 제거하여 1854 고지도의 골목과 도로가 선명하게 드러남)
+  private renderCobblestoneStreets(_ctx: CanvasRenderingContext2D) {
+    // 1854 고지도 snow_map.jpg 자체가 정밀한 석판 잉크 도로망을 지니고 있으므로
+    // 인위적인 노란색 밴드 덮어씌우기를 생략하여 원본 고지도 길 위를 걷는 현실감을 100% 보존합니다.
   }
 
   private renderFallbackStreets(ctx: CanvasRenderingContext2D) {
@@ -721,7 +589,7 @@ export class SohoMapRenderer {
     }
   }
 
-  // ★ [핵심 혁신] 레고(LEGO®) 미니피규어 빅토리안 과학자 아바타!
+  // ★ [핵심 혁신] 레고(LEGO®) 미니피규어 빅토리안 과학자 아바타 (남성/여성 캐릭터 분기 완비!)
   private drawScientistAvatar(
     wx: number,
     wy: number,
@@ -731,11 +599,13 @@ export class SohoMapRenderer {
     isMe: boolean,
     walkTick: number,
     hatStyle: string = 'silk_hat',
-    toolStyle: string = 'magnifier'
+    toolStyle: string = 'magnifier',
+    gender: PlayerGender = 'male'
   ) {
     const [sx, sy] = this.worldToScreen(wx, wy);
     const ctx = this.ctx;
     const scale = this.zoom;
+    const isFemale = gender === 'female';
 
     // 레고 특유의 뻣뻣하고 절도 있는 타닥타닥 보행 애니메이션
     const bounceY = Math.abs(Math.sin(walkTick * 4)) * -2.5 * scale;
@@ -754,7 +624,7 @@ export class SohoMapRenderer {
     const legW = 6.5 * scale;
     const legH = 11 * scale;
     // 왼쪽 다리
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = isFemale ? '#1e1b4b' : '#0f172a';
     ctx.fillRect(-7.5 * scale, 5 * scale + legSwing, legW, legH);
     ctx.strokeStyle = '#020617';
     ctx.lineWidth = 1.2 * scale;
@@ -763,7 +633,7 @@ export class SohoMapRenderer {
     ctx.fillRect(-7.5 * scale, 13 * scale + legSwing, legW, 3 * scale);
 
     // 오른쪽 다리
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = isFemale ? '#312e81' : '#1e293b';
     ctx.fillRect(1 * scale, 5 * scale - legSwing, legW, legH);
     ctx.strokeRect(1 * scale, 5 * scale - legSwing, legW, legH);
     // 레고 오른쪽 발가락 스터드 턱
@@ -786,31 +656,61 @@ export class SohoMapRenderer {
     ctx.lineWidth = isMe ? 2.8 * scale : 1.5 * scale;
     ctx.stroke();
 
-    // 토르소 빅토리안 수트 프린팅 (흰 셔츠 V넥 + 검은 보타이 + 단추)
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.moveTo(-3 * scale, -13 * scale);
-    ctx.lineTo(0, -6 * scale);
-    ctx.lineTo(3 * scale, -13 * scale);
-    ctx.closePath();
-    ctx.fill();
+    if (isFemale) {
+      // [여성 과학자]: 단정한 아이보리 프릴 블라우스 + 황동 카메오 브로치 + 우아한 주름선
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.moveTo(-4 * scale, -13 * scale);
+      ctx.lineTo(0, -4 * scale);
+      ctx.lineTo(4 * scale, -13 * scale);
+      ctx.closePath();
+      ctx.fill();
 
-    // 나비넥타이 (Bowtie)
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.moveTo(-2.5 * scale, -11 * scale);
-    ctx.lineTo(2.5 * scale, -9 * scale);
-    ctx.lineTo(2.5 * scale, -11 * scale);
-    ctx.lineTo(-2.5 * scale, -9 * scale);
-    ctx.closePath();
-    ctx.fill();
+      // 황동 카메오 브로치
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.ellipse(0, -9 * scale, 1.8 * scale, 2.2 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fef3c7';
+      ctx.beginPath();
+      ctx.ellipse(0, -9 * scale, 1.1 * scale, 1.4 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-    // 황동 단추 2개
-    ctx.fillStyle = '#fbbf24';
-    ctx.beginPath();
-    ctx.arc(0, -3 * scale, 0.9 * scale, 0, Math.PI * 2);
-    ctx.arc(0, -0.5 * scale, 0.9 * scale, 0, Math.PI * 2);
-    ctx.fill();
+      // 우아한 가슴 주름선
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 0.8 * scale;
+      ctx.beginPath();
+      ctx.moveTo(-2 * scale, -6 * scale);
+      ctx.lineTo(0, -4 * scale);
+      ctx.lineTo(2 * scale, -6 * scale);
+      ctx.stroke();
+    } else {
+      // [남성 과학자]: 토르소 빅토리안 수트 프린팅 (흰 셔츠 V넥 + 검은 보타이 + 단추)
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(-3 * scale, -13 * scale);
+      ctx.lineTo(0, -6 * scale);
+      ctx.lineTo(3 * scale, -13 * scale);
+      ctx.closePath();
+      ctx.fill();
+
+      // 나비넥타이 (Bowtie)
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.moveTo(-2.5 * scale, -11 * scale);
+      ctx.lineTo(2.5 * scale, -9 * scale);
+      ctx.lineTo(2.5 * scale, -11 * scale);
+      ctx.lineTo(-2.5 * scale, -9 * scale);
+      ctx.closePath();
+      ctx.fill();
+
+      // 황동 단추 2개
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(0, -3 * scale, 0.9 * scale, 0, Math.PI * 2);
+      ctx.arc(0, -0.5 * scale, 0.9 * scale, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // 4. 레고 팔과 상징적인 노란색 ㄷ자 집게손 (Claw Hands)
     // 왼쪽 팔 & 손
@@ -907,48 +807,107 @@ export class SohoMapRenderer {
     ctx.arc(3 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
     ctx.fill();
 
+    if (isFemale) {
+      // [여성 캐릭터 추가 디테일]: 속눈썹 (Eyelashes)
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      // 왼쪽 속눈썹
+      ctx.moveTo(-3.5 * scale, headY + 3.2 * scale);
+      ctx.lineTo(-4.8 * scale, headY + 2.2 * scale);
+      ctx.moveTo(-3.2 * scale, headY + 2.8 * scale);
+      ctx.lineTo(-3.8 * scale, headY + 1.8 * scale);
+      // 오른쪽 속눈썹
+      ctx.moveTo(3.5 * scale, headY + 3.2 * scale);
+      ctx.lineTo(4.8 * scale, headY + 2.2 * scale);
+      ctx.moveTo(3.2 * scale, headY + 2.8 * scale);
+      ctx.lineTo(3.8 * scale, headY + 1.8 * scale);
+      ctx.stroke();
+
+      // 수줍은 핑크빛 볼터치
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.5)';
+      ctx.beginPath();
+      ctx.arc(-4 * scale, headY + 6.2 * scale, 1.6 * scale, 0, Math.PI * 2);
+      ctx.arc(4 * scale, headY + 6.2 * scale, 1.6 * scale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     // 귀여운 레고 미소 입
-    ctx.strokeStyle = '#713f12';
+    ctx.strokeStyle = isFemale ? '#be185d' : '#713f12';
     ctx.lineWidth = 1.2 * scale;
     ctx.beginPath();
     ctx.arc(0, headY + 5.2 * scale, 2.5 * scale, 0.15 * Math.PI, 0.85 * Math.PI);
     ctx.stroke();
 
-    // 6. 레고 모자 렌더링
+    // 6. 헤어 및 모자 렌더링
     const hatY = headY - 5 * scale;
-    if (hatStyle === 'bowler') {
-      // 둥근 펠트 중산모 (Bowler Hat)
-      ctx.fillStyle = '#1e293b';
+
+    if (isFemale) {
+      // [여성 과학자 헤어 & 모자]: 우아한 다크 브라운 올림머리 헤어번 + 단아한 깃털 장식
+      ctx.fillStyle = '#3e1c0c';
+      // 양쪽 앞머리 컬
       ctx.beginPath();
-      ctx.arc(0, hatY, 7 * scale, Math.PI, 0);
+      ctx.arc(-4.5 * scale, headY + 1 * scale, 3.5 * scale, 0, Math.PI * 2);
+      ctx.arc(4.5 * scale, headY + 1 * scale, 3.5 * scale, 0, Math.PI * 2);
       ctx.fill();
+      // 머리 뒤/위 올림머리 번(Bun)
       ctx.beginPath();
-      ctx.ellipse(0, hatY + 1 * scale, 10 * scale, 2.5 * scale, 0, 0, Math.PI * 2);
+      ctx.arc(0, headY - 3 * scale, 5.5 * scale, 0, Math.PI * 2);
       ctx.fill();
-    } else if (hatStyle === 'flat_cap') {
-      // 빅토리안 헌팅캡 (Flat Cap)
-      ctx.fillStyle = '#475569';
-      ctx.beginPath();
-      ctx.ellipse(0, hatY - 1 * scale, 8 * scale, 4 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillRect(-6 * scale, hatY - 1 * scale, 12 * scale, 3 * scale);
-    } else if (hatStyle === 'none') {
-      // 모자 없음 (순수 레고 스터드 헤어 유지)
-    } else {
-      // 기본값: 빅토리안 실크햇 (Silk Hat)
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#020617';
-      ctx.lineWidth = 1.2 * scale;
+      ctx.strokeStyle = '#271105';
+      ctx.lineWidth = 1 * scale;
       ctx.stroke();
-      ctx.fillStyle = '#1e293b';
-      ctx.beginPath();
-      ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
-      ctx.fill();
-      ctx.fillStyle = coatColor;
-      ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
+
+      // 여성용 빅토리안 레이스 보닛 / 리본
+      if (hatStyle !== 'none') {
+        ctx.fillStyle = coatColor;
+        ctx.beginPath();
+        ctx.arc(0, hatY + 1 * scale, 7.5 * scale, Math.PI, 0);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2 * scale;
+        ctx.stroke();
+
+        // 황금 깃털 장식
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.ellipse(5 * scale, hatY - 2 * scale, 2 * scale, 5 * scale, Math.PI * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      // [남성 과학자 모자]: 빅토리안 실크햇 / 중산모 / 헌팅캡
+      if (hatStyle === 'bowler') {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(0, hatY, 7 * scale, Math.PI, 0);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(0, hatY + 1 * scale, 10 * scale, 2.5 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (hatStyle === 'flat_cap') {
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.ellipse(0, hatY - 1 * scale, 8 * scale, 4 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(-6 * scale, hatY - 1 * scale, 12 * scale, 3 * scale);
+      } else if (hatStyle === 'none') {
+        // 모자 없음
+      } else {
+        // 기본값: 실크햇
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 1.2 * scale;
+        ctx.stroke();
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
+        ctx.fill();
+        ctx.fillStyle = coatColor;
+        ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
+      }
     }
 
     // 7. 초대형 고가독성 명찰 라벨

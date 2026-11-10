@@ -1,5 +1,5 @@
 import { insertCoin, onPlayerJoin, myPlayer, getState, setState, isHost } from 'playroomkit';
-import { PlayerState, InvestigationRecord } from '../types.ts';
+import { PlayerState, InvestigationRecord, PlayerGender, HatStyle, ToolStyle } from '../types.ts';
 
 export class MultiplayerManager {
   public isConnected = false;
@@ -15,7 +15,14 @@ export class MultiplayerManager {
 
   private lastPosSendTime = 0;
 
-  public async init(roomId: string, playerName: string, team: string) {
+  public async init(
+    roomId: string,
+    playerName: string,
+    team: string,
+    hatStyle: HatStyle = 'silk_hat',
+    toolStyle: ToolStyle = 'magnifier',
+    gender: PlayerGender = 'male'
+  ) {
     this.myTeam = team;
     try {
       // 팀에 따른 고유 색상 배정
@@ -38,11 +45,14 @@ export class MultiplayerManager {
       const me = myPlayer();
       this.myId = me.id;
 
-      // 내 프로필 설정
+      // 내 프로필 설정 (성별, 모자, 도구 포함)
       me.setState('profile', {
         name: playerName,
         team: this.myTeam,
-        color: this.myColor
+        color: this.myColor,
+        hatStyle,
+        toolStyle,
+        gender
       }, true);
 
       // 다른 플레이어 참가 리스너

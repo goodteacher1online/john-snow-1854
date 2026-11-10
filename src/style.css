@@ -1,3 +1,4 @@
+@import url('https://cdn.jsdelivr.net/gh/webfontworld/gangwon/GangwonEduAllBold.css');
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Lora:ital,wght@0,500;0,600;1,400&display=swap');
 
 html, body {
@@ -6,8 +7,8 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #1c1917;
-  font-family: 'Lora', -apple-system, BlinkMacSystemFont, "Segoe UI", serif;
+  background-color: #0f172a;
+  font-family: 'GangwonEduAllBold', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -15,24 +16,52 @@ html, body {
 /* 로비 스타일 */
 .lobby-card {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+  background-color: #1e293b;
+  border: 1.5px solid #334155;
+}
+
+/* 캐릭터 성별 선택 버튼 */
+.gender-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background-color: #0f172a;
+  border: 2px solid #334155;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gender-btn:hover {
+  border-color: #64748b;
+  background-color: #1e293b;
+}
+
+.gender-btn.active {
+  border-color: #f8fafc;
+  background-color: #0f172a;
+  box-shadow: 0 0 0 2px #f8fafc, 0 8px 16px rgba(0, 0, 0, 0.4);
+  color: #f8fafc;
 }
 
 .input-field {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background-color: #292524;
-  border: 1px solid #44403c;
-  color: #f5f5f4;
-  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: #0f172a;
+  border: 1.5px solid #334155;
+  color: #f8fafc;
+  font-size: 16px;
   outline: none;
   transition: all 0.15s ease;
 }
 
 .input-field:focus {
-  border-color: #fbbf24;
-  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+  border-color: #f8fafc;
+  box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.2);
 }
 
 /* 팀 원클릭 선택 버튼 카드 */
@@ -94,15 +123,16 @@ html, body {
 }
 
 .hud-pill {
-  padding: 9px 20px;
+  padding: 8px 16px;
   border-radius: 9999px;
-  background-color: rgba(24, 21, 19, 0.94);
+  background-color: rgba(15, 23, 42, 0.92);
   backdrop-filter: blur(10px);
-  border: 1.5px solid #78716c;
-  color: #f5f5f4;
-  font-size: 16px;
+  border: 1.5px solid #334155;
+  color: #f8fafc;
+  font-size: 15px;
   font-weight: 700;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .hud-btn {

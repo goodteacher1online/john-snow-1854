@@ -32,6 +32,8 @@ const playerNameInput = document.getElementById('player-name') as HTMLInputEleme
 const randomNameBtn = document.getElementById('random-name-btn') as HTMLButtonElement;
 const teamCards = document.querySelectorAll<HTMLButtonElement>('.team-btn');
 const selectedTeamInput = document.getElementById('selected-team') as HTMLInputElement;
+const genderButtons = document.querySelectorAll<HTMLButtonElement>('.gender-btn');
+const selectedGenderInput = document.getElementById('selected-gender') as HTMLInputElement;
 const roomInput = document.getElementById('room-id') as HTMLInputElement;
 
 // HUD & 알림
@@ -110,6 +112,16 @@ teamCards.forEach(card => {
     card.classList.add('active');
     const team = card.dataset.team || 'team1';
     selectedTeamInput.value = team;
+  });
+});
+
+// 성별 선택 원클릭 탭
+genderButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    genderButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const gender = (btn.dataset.gender as PlayerGender) || 'male';
+    if (selectedGenderInput) selectedGenderInput.value = gender;
   });
 });
 
@@ -284,9 +296,11 @@ startBtn.addEventListener('click', async () => {
   const name = playerNameInput.value.trim() || '영국 과학자';
   const team = selectedTeamInput.value || 'team1';
   const roomId = roomInput.value.trim() || '1854';
+  const gender = (selectedGenderInput?.value as PlayerGender) || 'male';
 
   myPlayer.name = name;
   myPlayer.team = team;
+  myPlayer.gender = gender;
   myPlayer.hatStyle = (hatStyleSelect?.value as HatStyle) || 'silk_hat';
   myPlayer.toolStyle = (toolStyleSelect?.value as ToolStyle) || 'magnifier';
 
@@ -317,10 +331,10 @@ startBtn.addEventListener('click', async () => {
   gameContainerEl.classList.remove('hidden');
 
   // 환영 티커
-  postLiveTicker(`🔬 [${myPlayer.name}] 조사관님이 소호 수사 본부에 합류했습니다.`, myPlayer.color);
+  postLiveTicker(`[${myPlayer.name}] 조사관님이 소호 수사 본부에 합류했습니다.`, myPlayer.color);
 
   // 멀티플레이어 연결
-  await multiplayer.init(roomId, name, team);
+  await multiplayer.init(roomId, name, team, myPlayer.hatStyle, myPlayer.toolStyle, myPlayer.gender);
 
   let prevCount = 0;
   multiplayer.onInvestigationUpdated = (records) => {
@@ -432,7 +446,7 @@ function updateInteractionBanner() {
     const isDone = !!currentInvestigations[currentHouseNear.id];
     bannerText.textContent = isDone 
       ? `✅ [${currentHouseNear.address}] 조사가 완료된 가구입니다.` 
-      : `🔍 [${currentHouseNear.address}] 문 앞입니다! [E] 키를 눌러 인터뷰하세요!`;
+      : `[${currentHouseNear.address}] 문 앞입니다! [E] 키를 눌러 인터뷰하세요!`;
     interactionBanner.classList.remove('opacity-0', 'translate-y-6', 'scale-95');
     interactionBanner.classList.add('opacity-100', 'translate-y-0', 'scale-100');
   } else {
@@ -622,7 +636,7 @@ function updateNotebookUI() {
 
   nbHouseCount.textContent = `${count} / ${gameData.houses.length}`;
   nbDeathCount.textContent = `${totalDeaths} 명`;
-  nbCurrentHypo.textContent = currentHypothesis === 'miasma' ? '나쁜 공기설(Miasma)' : '오염된 식수원(Water-borne)';
+  nbCurrentHypo.textContent = currentHypothesis === 'miasma' ? '나쁜 공기설' : '오염된 식수원설';
   nbCurrentHypo.className = currentHypothesis === 'miasma' 
     ? 'text-sm sm:text-base text-stone-900 font-black block mt-0.5' 
     : 'text-sm sm:text-base text-blue-700 font-black block mt-0.5';
@@ -652,13 +666,13 @@ function updateNotebookUI() {
   // 2. 발견된 모순점 체크 (양조장, 구빈원, 햄스테드)
   const anomalies: string[] = [];
   if (currentInvestigations['house_15']) {
-    anomalies.push('⚡ [양조장 70명 전원 무사] 종일 소호 공기를 마시는데 왜 환자가 0명인가? (공짜 맥주와 자체 우물만 음용)');
+    anomalies.push('[양조장 70명 전원 무사] 종일 소호 공기를 마시는데 왜 환자가 0명인가? (공짜 맥주와 자체 우물만 음용)');
   }
   if (currentInvestigations['house_16']) {
-    anomalies.push('⚡ [구빈원 500명 중 사망 5명뿐] 가장 악취가 심한 수용시설인데 왜 멀쩡한가? (자체 우물 사용)');
+    anomalies.push('[구빈원 500명 중 사망 5명뿐] 가장 악취가 심한 수용시설인데 왜 멀쩡한가? (자체 우물 사용)');
   }
   if (currentInvestigations['house_17']) {
-    anomalies.push('⚡ [외곽 햄스테드 마님의 사망] 공기 맑은 시골 전원주택 거주자가 왜 사망했는가? (소호 브로드 가 물을 배달받아 음용)');
+    anomalies.push('[외곽 햄스테드 마님의 사망] 공기 맑은 시골 전원주택 거주자가 왜 사망했는가? (소호 브로드 가 물을 배달받아 음용)');
   }
 
   // ==========================================
@@ -667,24 +681,24 @@ function updateNotebookUI() {
   if (count < 5 && anomalies.length === 0) {
     // [제1막: 의혹과 조사 단계]
     nbPhaseBadge.textContent = "제1막: 소호 현장 역학 일지";
-    nbTitle.textContent = "📋 소호 긴급 환자 조사 일지";
+    nbTitle.textContent = "소호 긴급 환자 조사 일지";
     nbAnomalySection.classList.add('hidden');
     nbStatsSection.classList.add('hidden');
     nbDecisionSection.classList.add('hidden');
   } else if (count < 8 && anomalies.length >= 1) {
     // [제2막: 모순의 발견 단계]
     nbPhaseBadge.textContent = "제2막: 균열과 모순의 발견";
-    nbTitle.textContent = "⚡ 흔들리는 가설과 수사 일지";
+    nbTitle.textContent = "흔들리는 가설과 수사 일지";
     nbAnomalySection.classList.remove('hidden');
-    nbAnomalies.innerHTML = anomalies.map(a => `<li class="font-bold text-amber-950">${a}</li>`).join('');
+    nbAnomalies.innerHTML = anomalies.map(a => `<li class="font-bold text-stone-900 border-l-2 border-red-500 pl-2">${a}</li>`).join('');
     nbStatsSection.classList.add('hidden');
     nbDecisionSection.classList.add('hidden');
   } else if (count >= 8) {
     // [제3막: 데이터의 진실 및 가설 전복 단계]
     nbPhaseBadge.textContent = "제3막: 결정적 데이터의 진실";
-    nbTitle.textContent = "📊 식수 공급원별 교차 데이터 분석";
+    nbTitle.textContent = "식수 공급원별 교차 데이터 분석";
     nbAnomalySection.classList.remove('hidden');
-    nbAnomalies.innerHTML = anomalies.map(a => `<li class="font-bold text-amber-950">${a}</li>`).join('');
+    nbAnomalies.innerHTML = anomalies.map(a => `<li class="font-bold text-stone-900 border-l-2 border-red-500 pl-2">${a}</li>`).join('');
     nbStatsSection.classList.remove('hidden');
     nbDecisionSection.classList.remove('hidden');
 
@@ -709,37 +723,46 @@ function updateNotebookUI() {
     const maxDeaths = Math.max(1, broadDeaths, otherPumpDeaths, ownWellDeaths);
 
     nbPumpStats.innerHTML = `
-      <div class="space-y-3 font-sans">
+      <div class="space-y-4 font-sans">
         <!-- 브로드 가 펌프 이용 가구 -->
-        <div>
-          <div class="flex justify-between text-sm font-black text-stone-900 mb-1">
-            <span class="text-red-700">🚨 브로드 가 공공 펌프 이용 가구 (${broadHouses}가구)</span>
-            <span class="text-red-700 text-base">${broadDeaths}명 사망</span>
+        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <div class="flex justify-between items-center text-sm font-black text-stone-900 mb-1.5">
+            <span class="flex items-center gap-1.5 text-red-600">
+              <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              브로드 가 공공 펌프 이용 가구 (${broadHouses}가구)
+            </span>
+            <span class="text-red-600 text-base font-black">${broadDeaths}명 사망</span>
           </div>
-          <div class="w-full bg-stone-200 h-5 rounded-full overflow-hidden border border-stone-300">
+          <div class="w-full bg-stone-200 h-3.5 rounded-full overflow-hidden border border-stone-300">
             <div class="bg-red-600 h-full rounded-full transition-all duration-700" style="width: ${(broadDeaths / maxDeaths) * 100}%"></div>
           </div>
         </div>
 
         <!-- 타 공공 펌프 이용 가구 -->
-        <div>
-          <div class="flex justify-between text-sm font-bold text-stone-800 mb-1">
-            <span>💧 타 공공 펌프 이용 가구 (${otherPumpHouses}가구)</span>
+        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <div class="flex justify-between items-center text-sm font-bold text-stone-800 mb-1.5">
+            <span class="flex items-center gap-1.5 text-stone-700">
+              <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              타 공공 펌프 이용 가구 (${otherPumpHouses}가구)
+            </span>
             <span class="text-stone-700">${otherPumpDeaths}명 사망</span>
           </div>
-          <div class="w-full bg-stone-200 h-4 rounded-full overflow-hidden border border-stone-300">
-            <div class="bg-blue-600 h-full rounded-full transition-all duration-700" style="width: ${(otherPumpDeaths / maxDeaths) * 100}%"></div>
+          <div class="w-full bg-stone-200 h-3 rounded-full overflow-hidden border border-stone-300">
+            <div class="bg-stone-600 h-full rounded-full transition-all duration-700" style="width: ${(otherPumpDeaths / maxDeaths) * 100}%"></div>
           </div>
         </div>
 
         <!-- 자체 우물 / 맥주 음용 (양조장, 구빈원) -->
-        <div>
-          <div class="flex justify-between text-sm font-bold text-stone-800 mb-1">
-            <span class="text-green-700">🛡️ 자체 우물 / 맥주 음용 (양조장·구빈원, ${ownWellHouses}곳)</span>
-            <span class="text-green-700">${ownWellDeaths}명 사망</span>
+        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <div class="flex justify-between items-center text-sm font-bold text-stone-800 mb-1.5">
+            <span class="flex items-center gap-1.5 text-emerald-700">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              자체 우물 및 맥주 음용 (양조장·구빈원, ${ownWellHouses}곳)
+            </span>
+            <span class="text-emerald-700 font-bold">${ownWellDeaths}명 사망</span>
           </div>
-          <div class="w-full bg-stone-200 h-4 rounded-full overflow-hidden border border-stone-300">
-            <div class="bg-green-600 h-full rounded-full transition-all duration-700" style="width: ${(ownWellDeaths / maxDeaths) * 100}%"></div>
+          <div class="w-full bg-stone-200 h-3 rounded-full overflow-hidden border border-stone-300">
+            <div class="bg-emerald-600 h-full rounded-full transition-all duration-700" style="width: ${(ownWellDeaths / maxDeaths) * 100}%"></div>
           </div>
         </div>
       </div>
@@ -792,12 +815,12 @@ hypoBtn.addEventListener('click', () => {
 
 function updateHypothesisUI() {
   if (currentHypothesis === 'miasma') {
-    hypoBtn.textContent = '가설: 나쁜 공기설(Miasma)';
-    hypoBtn.className = 'hud-btn bg-stone-900/90 text-amber-200 border-amber-800 text-xs sm:text-sm';
+    hypoBtn.textContent = '가설: 나쁜 공기설';
+    hypoBtn.className = 'hud-btn bg-stone-900/90 text-stone-200 border-stone-700 text-xs sm:text-sm font-bold';
     renderer.showMiasmaFog = true;
   } else {
-    hypoBtn.textContent = '가설: 오염된 물(수계 전염설)!';
-    hypoBtn.className = 'hud-btn bg-blue-900/90 text-blue-200 border-blue-400 font-black text-xs sm:text-sm';
+    hypoBtn.textContent = '가설: 오염된 식수원설';
+    hypoBtn.className = 'hud-btn bg-stone-800 text-stone-100 border-stone-500 font-black text-xs sm:text-sm';
     renderer.showMiasmaFog = false;
   }
 }
