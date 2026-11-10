@@ -150,6 +150,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'brewery', name: '라이온 양조장', kind: 'brewery', basis: 'record', proves: ['smell', 'near'],
     clue: '펌프가 대문 앞인데 70명 중 사망 0명',
+    testimony: '라이온 양조장입니다. 펌프가 대문 앞인데 일꾼 70명 가운데 죽은 사람이 없습니다. 일꾼들은 맥아주와 양조장 우물물만 마십니다.',
     npc: { name: '허긴스 씨', role: '양조장 주인', portrait: 'elder' },
     people: 70, deaths: 0, smell: 'high', smellNote: '브로드 가와 같은 공기',
     drankBroad: false, waterNote: '맥아주와 양조장 안 우물',
@@ -177,6 +178,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'workhouse', name: '폴란드 가 구빈원', kind: 'workhouse', basis: 'record', proves: ['smell', 'near'],
     clue: '가장 비좁고 냄새나는 곳인데 535명 중 사망 5명',
+    testimony: '폴란드 가 구빈원입니다. 535명이 비좁게 모여 살고 냄새도 지독하지만 죽은 사람은 5명입니다. 구빈원에는 우물이 따로 있습니다.',
     npc: { name: '구빈원 관리인', role: '세인트 제임스 교구', portrait: 'official' },
     people: 535, deaths: 5, smell: 'high', smellNote: '비좁고 환기가 안 됨',
     drankBroad: false, waterNote: '구빈원 안 우물과 수도',
@@ -204,6 +206,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'gould', name: '브로드 가 20번지 굴드 댁', kind: 'house', basis: 'record', proves: ['smell', 'near'],
     clue: '펌프 가까이 살지만 그 물을 마시지 않아 무사',
+    testimony: '브로드 가 20번지 굴드 씨 댁입니다. 펌프 가까이 살지만 여덟 식구 모두 살아 있습니다. 굴드 씨는 물에서 냄새가 나 마시지 않았습니다.',
     npc: { name: '존 굴드', role: '조류학자', portrait: 'official', mirror: true },
     people: 8, deaths: 0, smell: 'high', smellNote: '브로드 가와 같은 공기',
     drankBroad: false, waterNote: '물에서 냄새가 나 마시지 않음',
@@ -232,6 +235,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'eley', name: '일리 형제 뇌관 공장', kind: 'brewery', basis: 'record', proves: ['far'],
     clue: '먼 햄스테드에서 이 펌프 물을 받아 마신 부인이 사망',
+    testimony: '뇌관 공장 주인의 어머니입니다. 소호에서 먼 햄스테드에 살았지만 날마다 브로드 가 펌프 물을 받아 마셨고 2일에 숨졌습니다. 함께 마신 조카도 이즐링턴에서 죽었습니다.',
     npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'brewer', mirror: true },
     people: 200, deaths: 18, smell: 'mid', smellNote: '화약과 하수구 냄새',
     drankBroad: true, waterNote: '브로드 가 펌프, 작업장 물통 두 개',
@@ -262,6 +266,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'littlepulteney', name: '리틀 풀트니 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '다른 펌프가 더 가까운데 브로드 가 물을 길어 마신 남매가 사망',
+    testimony: '리틀 풀트니 가의 남매입니다. 브라이들 골목 펌프가 더 가깝고 냄새도 덜한 거리지만, 일부러 브로드 가 물을 길어 마셨고 둘 다 죽었습니다.',
     npc: { name: '잭', role: '짐꾼', portrait: 'youth', mirror: true },
     people: 7, deaths: 2, smell: 'low', smellNote: '냄새가 덜한 거리',
     drankBroad: true, waterNote: '브로드 가 펌프, 일부러 길어 옴',
@@ -288,6 +293,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'carnaby', name: '카나비 가 살림집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '집 앞 펌프를 쓰는 가족 중 브로드 가 펌프 물을 마신 아이만 사망',
+    testimony: '카나비 가의 아홉 살 아이입니다. 가족은 집 앞 펌프 물을 마셔 모두 무사한데, 하굣길에 브로드 가 펌프 물을 마신 이 아이만 죽었습니다.',
     npc: { name: '엘런', role: '여섯 식구의 어머니', portrait: 'woman' },
     people: 6, deaths: 1, smell: 'mid', smellNote: '시장 냄새',
     drankBroad: true, waterNote: '딸만 하굣길에 브로드 가 펌프',
@@ -315,6 +321,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'marlborough', name: '리틀 말버러 가 골목집', kind: 'house', basis: 'composite', proves: ['smell'],
     clue: '소호에서 냄새가 가장 고약한 골목인데 사망 0명',
+    testimony: '리틀 말버러 가 골목입니다. 흑사병 구덩이를 파헤쳤다는, 소호에서 냄새가 가장 고약한 곳이지만 죽은 사람이 없습니다. 이곳 사람들은 집 앞 펌프를 씁니다.',
     npc: { name: '에이브 노인', role: '은퇴한 마부', portrait: 'elder', mirror: true },
     people: 8, deaths: 0, smell: 'high', smellNote: '하수도 공사 터, 흑사병 구덩이 소문',
     drankBroad: false, waterNote: '리틀 말버러 가 펌프',

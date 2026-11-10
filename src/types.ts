@@ -26,6 +26,8 @@ export interface Site {
   basis: 'record' | 'composite';
   proves: Proof[];
   clue?: string;
+  /** 위원회에서 이 기록을 내놓으며 하는 말 */
+  testimony?: string;
   intro: string[];
   toll: string[];
   air: string[];
