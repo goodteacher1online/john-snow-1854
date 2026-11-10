@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import './style.css';
 import { Avatar, PlayerGender, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
@@ -498,7 +499,7 @@ window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', () => keys.clear());
 
 const canvas = $<HTMLCanvasElement>('map');
-canvas.addEventListener('pointerdown', e => { sound.playPen(); onTap(e.clientX, e.clientY); });
+canvas.addEventListener('pointerdown', e => onTap(e.clientX, e.clientY));
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   if (overview) return;
@@ -618,4 +619,19 @@ function frame(now: number) {
 }
 
 setupLobby();
+renderer.jumpTo(BROAD_PUMP.x, BROAD_PUMP.y);
 requestAnimationFrame(frame);
+
+// 개발 서버에서만: tools/playtest.mjs 가 게임 상태를 들여다보는 창구
+if (import.meta.env.DEV) {
+  Object.assign(window, {
+    __game: {
+      state: () => ({ ...save, near: nearId, others: others.map(o => o.name), x: me.x, y: me.y, walking: !!path }),
+      doorOnScreen: (id: string) => renderer.toScreen(...SITE_BY_ID[id].door),
+      iconOnScreen: (id: string) => renderer.toScreen(SITE_BY_ID[id].icon[0], SITE_BY_ID[id].icon[1] - 12),
+      teleport: (x: number, y: number) => { [me.x, me.y] = nav.snap(x, y) ?? [me.x, me.y]; path = null; },
+      door: (id: string) => SITE_BY_ID[id].door,
+      pump: () => [BROAD_PUMP.x, BROAD_PUMP.y],
+    },
+  });
+}

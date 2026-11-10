@@ -1,5 +1,5 @@
 import { Avatar, RemotePlayer, Site } from '../types.ts';
-import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, teamColor } from '../data/story.ts';
+import { SITES, PUMPS, BROAD_PUMP, MIASMA, WORLD_W, WORLD_H, teamColor } from '../data/story.ts';
 
 const INK = '#231a12';
 const PAPER = '#f6efdc';
@@ -304,7 +304,7 @@ export class Renderer {
     if (ok(img)) ctx.drawImage(img, -w / 2, -h + 2 * z, w, h);
     ctx.restore();
 
-    this.text(isMe ? a.name : a.name, x, y - h - 6, { size: 14, color: isMe ? INK : teamColor(a.team) });
+    this.text(a.name, x, y - h - 6, { size: 14, color: isMe ? INK : teamColor(a.team) });
   }
 
   private drawLabels(f: Frame) {
@@ -337,7 +337,7 @@ export class Renderer {
     const [px, py] = this.toScreen(f.me.x, f.me.y);
     for (const id of f.targets) {
       const s = SITES.find(v => v.id === id);
-      const wpos: [number, number] | null = s ? s.door : id === 'pump' ? [PUMPS[0].x, PUMPS[0].y] : null;
+      const wpos: [number, number] | null = s ? s.door : id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : null;
       if (!wpos) continue;
       const [tx, ty] = this.toScreen(wpos[0], wpos[1]);
       if (tx > pad && tx < this.vw - pad && ty > top && ty < this.vh - bottom) continue;
@@ -361,7 +361,7 @@ export class Renderer {
       ctx.stroke();
       ctx.fill();
       ctx.restore();
-      const name = s ? s.name : PUMPS[0].name;
+      const name = s ? s.name : BROAD_PUMP.name;
       this.text(name, Math.max(90, Math.min(this.vw - 90, ax - dx * 34)), ay - dy * 30, { size: 14, color: RED });
     }
   }
