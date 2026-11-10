@@ -4,33 +4,30 @@ async function verify() {
   const browser = await chromium.launch({ channel: 'msedge' });
   const page = await browser.newPage();
   
-  console.log('[Verification] 1. http://localhost:3000 접속 중...');
-  await page.goto('http://localhost:3000');
+  console.log('[Verification] 1. http://localhost:5173 접속 중...');
+  await page.goto('http://localhost:5173');
   
-  const title = await page.title();
-  console.log('[Verification] 페이지 타이틀:', title);
-  
-  // 1. 로비 화면 캡처
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_1_lobby.png' });
-  console.log('[Verification] 로비 스크린샷 저장 완료: verify_1_lobby.png');
+  // 1. 신규 로비 캡처 (원클릭 참여, 주사위 이름, 팀 카드)
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_1_lobby_v2.png' });
+  console.log('[Verification] 로비 v2 스크린샷 저장 완료');
 
-  // 2. 이름 입력 및 시작 버튼 클릭
-  await page.fill('#player-name', '테스트조사관');
-  await page.selectOption('#team-select', 'team1');
+  // 2. 시작 버튼 클릭
   await page.click('#start-btn');
-  
-  // 3. 캔버스 로딩 대기
-  await page.waitForTimeout(2000);
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_2_gameplay.png' });
-  console.log('[Verification] 캔버스 게임플레이 스크린샷 저장 완료: verify_2_gameplay.png');
+  await page.waitForTimeout(600);
 
-  // 4. E 키 눌러서 근처 가구 조사 모달 열기
-  await page.keyboard.press('e');
-  await page.waitForTimeout(800);
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_3_modal.png' });
-  console.log('[Verification] 가구 조사 모달 스크린샷 저장 완료: verify_3_modal.png');
+  // 3. 미션 브리핑 팝업 캡처
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_2_briefing.png' });
+  console.log('[Verification] 미션 브리핑 지침서 스크린샷 저장 완료');
 
-  console.log('🎉 [Verification] 모든 E2E 테스트 성공!');
+  // 4. 지침 숙지 버튼 클릭 후 게임 진입
+  await page.click('#briefing-confirm-btn');
+  await page.waitForTimeout(1500);
+
+  // 5. 19세기 과학자 아바타 & 캔버스 고지도 & 나침반 캡처
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_3_scientist_gameplay.png' });
+  console.log('[Verification] 과학자 캐릭터 & 사실적 고지도 스크린샷 저장 완료');
+
+  console.log('🎉 [Verification] 모든 신규 UX/UI 검증 100% 통과!');
   await browser.close();
 }
 

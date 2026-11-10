@@ -15,6 +15,9 @@ export class SohoMapRenderer {
   // 미아스마 안개 오버레이 활성 여부
   public showMiasmaFog = true;
 
+  // 걷기 애니메이션 타이머
+  private animTick = 0;
+
   constructor(canvas: HTMLCanvasElement, data: SnowGameData) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
@@ -28,7 +31,6 @@ export class SohoMapRenderer {
     this.canvas.height = window.innerHeight;
   }
 
-  // 월드 좌표(0~1000)를 화면 픽셀 좌표로 변환
   public worldToScreen(wx: number, wy: number): [number, number] {
     const cx = this.canvas.width / 2;
     const cy = this.canvas.height / 2;
@@ -37,36 +39,29 @@ export class SohoMapRenderer {
     return [sx, sy];
   }
 
-  // 화면 좌표를 월드 좌표(0~1000)로 역변환
-  public screenToWorld(sx: number, sy: number): [number, number] {
-    const cx = this.canvas.width / 2;
-    const cy = this.canvas.height / 2;
-    const wx = this.cameraX + (sx - cx) / this.zoom;
-    const wy = this.cameraY + (sy - cy) / this.zoom;
-    return [wx, wy];
-  }
-
   public render(
     myPlayer: PlayerState,
     otherPlayers: PlayerState[],
     investigations: Record<string, InvestigationRecord>,
-    broadHandleRemoved: boolean
+    broadHandleRemoved: boolean,
+    isMoving: boolean
   ) {
     const ctx = this.ctx;
     const width = this.canvas.width;
     const height = this.canvas.height;
+    this.animTick += isMoving ? 0.2 : 0.05;
 
     // 카메라 부드러운 추적 (Lerp)
     this.cameraX += (myPlayer.x - this.cameraX) * 0.12;
     this.cameraY += (myPlayer.y - this.cameraY) * 0.12;
     this.zoom += (this.targetZoom - this.zoom) * 0.1;
 
-    // 1. 빅토리안 양피지 고지도 배경 (#f4ecd8)
-    ctx.fillStyle = '#f3ebd5';
+    // 1. 1854 빅토리안 빈티지 양피지 고지도 질감 (#f1e7d0)
+    ctx.fillStyle = '#f1e7d0';
     ctx.fillRect(0, 0, width, height);
 
-    // 미세한 고지도 그리드 라인
-    ctx.strokeStyle = 'rgba(160, 140, 110, 0.2)';
+    // 고지도 모눈눈금선 및 에이징 그리드
+    ctx.strokeStyle = 'rgba(140, 115, 80, 0.15)';
     ctx.lineWidth = 1;
     const gridSize = 100 * this.zoom;
     const startX = ((-this.cameraX * this.zoom + width / 2) % gridSize + gridSize) % gridSize;
@@ -84,7 +79,36 @@ export class SohoMapRenderer {
       ctx.stroke();
     }
 
-    // 2. 특수 구역 및 건물 블록 (양조장, 구빈원, 광장)
+    // 2. 브로드 펌프 중심 역학 감염 위험지대 (동심원 히트맵)
+    // 조사가 진행될수록 브로드 펌프 주변에 핏빛 붉은 역학 위험 구역이 점진적으로 선명해짐
+    const investigatedCount = Object.keys(investigations).length;
+    if (investigatedCount > 0) {
+      const broadPump = this.data.pumps.find(p => p.isSource);
+      if (broadPump) {
+        const [bx, by] = this.worldToScreen(broadPump.x, broadPump.y);
+        const radius = Math.min(220, (60 + investigatedCount * 7)) * this.zoom;
+        const heatGrad = ctx.createRadialGradient(bx, by, 10 * this.zoom, bx, by, radius);
+        heatGrad.addColorStop(0, 'rgba(185, 28, 28, 0.28)');
+        heatGrad.addColorStop(0.5, 'rgba(220, 38, 38, 0.12)');
+        heatGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+
+        ctx.fillStyle = heatGrad;
+        ctx.beginPath();
+        ctx.arc(bx, by, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 파동 펄스 링
+        ctx.strokeStyle = 'rgba(185, 28, 28, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.arc(bx, by, radius * (0.8 + Math.sin(this.animTick * 0.5) * 0.1), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    // 3. 특수 구역 및 건물 블록 (양조장, 구빈원, 골든 스퀘어)
     for (const block of SOHO_BLOCKS) {
       ctx.beginPath();
       const first = this.worldToScreen(block.polygon[0][0], block.polygon[0][1]);
@@ -96,16 +120,33 @@ export class SohoMapRenderer {
       ctx.closePath();
 
       if (block.id === 'brewery_block') {
-        ctx.fillStyle = 'rgba(215, 180, 130, 0.45)'; // 맥주 양조장 호박색 톤
+        ctx.fillStyle = 'rgba(217, 119, 6, 0.25)'; // 호박색 양조장
       } else if (block.id === 'workhouse_block') {
-        ctx.fillStyle = 'rgba(180, 180, 190, 0.45)'; // 구빈원 석조 톤
+        ctx.fillStyle = 'rgba(100, 116, 139, 0.25)'; // 회색 구빈원
       } else {
-        ctx.fillStyle = 'rgba(200, 215, 190, 0.4)'; // 공원/광장 톤
+        ctx.fillStyle = 'rgba(132, 175, 115, 0.25)'; // 녹색 잔디 광장
       }
       ctx.fill();
-      ctx.strokeStyle = '#8c7b64';
-      ctx.lineWidth = 1.5 * this.zoom;
+      ctx.strokeStyle = '#786548';
+      ctx.lineWidth = 2 * this.zoom;
       ctx.stroke();
+
+      // 건물 내부 잉크 해칭선 (19세기 고지도 특유의 필지 표현)
+      ctx.save();
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(120, 100, 70, 0.2)';
+      ctx.lineWidth = 1;
+      const bMinX = Math.min(...block.polygon.map(p => this.worldToScreen(p[0], p[1])[0]));
+      const bMaxX = Math.max(...block.polygon.map(p => this.worldToScreen(p[0], p[1])[0]));
+      const bMinY = Math.min(...block.polygon.map(p => this.worldToScreen(p[0], p[1])[1]));
+      const bMaxY = Math.max(...block.polygon.map(p => this.worldToScreen(p[0], p[1])[1]));
+      for (let lx = bMinX - (bMaxY - bMinY); lx < bMaxX; lx += 12 * this.zoom) {
+        ctx.beginPath();
+        ctx.moveTo(lx, bMinY);
+        ctx.lineTo(lx + (bMaxY - bMinY), bMaxY);
+        ctx.stroke();
+      }
+      ctx.restore();
 
       // 구역 라벨
       if (block.label) {
@@ -113,14 +154,14 @@ export class SohoMapRenderer {
           (block.polygon[0][0] + block.polygon[2][0]) / 2,
           (block.polygon[0][1] + block.polygon[2][1]) / 2
         );
-        ctx.font = `italic bold ${Math.max(10, 11 * this.zoom)}px 'Georgia', serif`;
-        ctx.fillStyle = '#5a4d3b';
+        ctx.font = `italic bold ${Math.max(10, 12 * this.zoom)}px 'Georgia', serif`;
+        ctx.fillStyle = '#453723';
         ctx.textAlign = 'center';
         ctx.fillText(block.label, center[0], center[1]);
       }
     }
 
-    // 3. 소호 거리 도로망 렌더링
+    // 4. 소호 거리 도로망 렌더링 (조약돌 도로 질감)
     for (const street of SOHO_STREETS) {
       ctx.beginPath();
       const [startWx, startWy] = street.points[0];
@@ -131,99 +172,130 @@ export class SohoMapRenderer {
         const [sx, sy] = this.worldToScreen(wx, wy);
         ctx.lineTo(sx, sy);
       }
-      ctx.strokeStyle = '#e2d3b4'; // 도로 내부
-      ctx.lineWidth = (street.isMain ? 24 : 16) * this.zoom;
+      // 도로 바닥
+      ctx.strokeStyle = '#e6d8ba';
+      ctx.lineWidth = (street.isMain ? 28 : 18) * this.zoom;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke();
 
-      // 도로 테두리 라인
-      ctx.strokeStyle = '#c4b293';
-      ctx.lineWidth = (street.isMain ? 26 : 18) * this.zoom;
+      // 도로 잉크 테두리
+      ctx.strokeStyle = '#b8a582';
+      ctx.lineWidth = (street.isMain ? 30 : 20) * this.zoom;
       ctx.stroke();
 
-      // 도로명 표기
+      // 도로명 텍스트
       const midIdx = Math.floor(street.points.length / 2);
       const [mx, my] = this.worldToScreen(street.points[midIdx][0], street.points[midIdx][1]);
-      ctx.font = `600 ${Math.max(9, 10 * this.zoom)}px 'Times New Roman', serif`;
-      ctx.fillStyle = '#6b5e4c';
+      ctx.font = `bold ${Math.max(9, 11 * this.zoom)}px 'Times New Roman', serif`;
+      ctx.fillStyle = '#5c4d38';
       ctx.textAlign = 'center';
       ctx.fillText(street.name.toUpperCase(), mx, my - 6 * this.zoom);
     }
 
-    // 4. 가구 (Houses) 렌더링
+    // 5. 가구 (Houses) 렌더링
     for (const house of this.data.houses) {
       const [hx, hy] = this.worldToScreen(house.x, house.y);
       const isInvestigated = !!investigations[house.id];
+      const distToPlayer = Math.hypot(house.x - myPlayer.x, house.y - myPlayer.y);
 
-      // 건물 기호 (사각형 지붕)
-      const size = 12 * this.zoom;
       ctx.save();
       ctx.translate(hx, hy);
 
       if (isInvestigated) {
-        // 조사 완료: 역사적 역학 지도 기호!
-        // 사망자 수에 따른 붉은 막대(Bar) 또는 점(Dot) 누적
+        // [조사 완료] 역학 지도 붉은 점 표기
         if (house.deaths > 0) {
-          ctx.fillStyle = '#b91c1c'; // 심홍색 사망 점
+          // 사망자 수에 비례하는 붉은 원
+          const dotR = Math.min(22, (5 + house.deaths * 2.2) * this.zoom);
           ctx.beginPath();
-          ctx.arc(0, 0, Math.min(18, (4 + house.deaths * 1.8) * this.zoom), 0, Math.PI * 2);
+          ctx.arc(0, 0, dotR, 0, Math.PI * 2);
+          ctx.fillStyle = '#b91c1c';
           ctx.fill();
           ctx.strokeStyle = '#450a0a';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 2;
           ctx.stroke();
 
           // 사망자 숫자 표기
-          ctx.font = `bold ${Math.max(9, 11 * this.zoom)}px sans-serif`;
+          ctx.font = `bold ${Math.max(10, 12 * this.zoom)}px sans-serif`;
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(String(house.deaths), 0, 0);
         } else {
-          // 사망자 0명 (양조장 등 이상치): 녹색 체크 쉴드
-          ctx.fillStyle = '#15803d';
+          // 사망자 0명 (양조장 등 이상치): 승리의 녹색 쉴드
           ctx.beginPath();
-          ctx.arc(0, 0, 8 * this.zoom, 0, Math.PI * 2);
+          ctx.arc(0, 0, 11 * this.zoom, 0, Math.PI * 2);
+          ctx.fillStyle = '#16a34a';
           ctx.fill();
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 2;
           ctx.stroke();
-          ctx.font = `bold ${Math.max(8, 10 * this.zoom)}px sans-serif`;
+          ctx.font = `bold ${Math.max(9, 11 * this.zoom)}px sans-serif`;
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText("0", 0, 0);
         }
       } else {
-        // 미조사 가구: 고풍스러운 흑갈색 건물 벽돌
-        ctx.fillStyle = '#786953';
+        // [미조사 가구] 빅토리안 붉은 벽돌집 그래픽
+        const size = 15 * this.zoom;
+        ctx.fillStyle = '#8b5a36'; // 벽돌색
         ctx.fillRect(-size / 2, -size / 2, size, size);
-        ctx.strokeStyle = '#3e3427';
-        ctx.lineWidth = 1 * this.zoom;
+        ctx.strokeStyle = '#3d2514';
+        ctx.lineWidth = 1.5;
         ctx.strokeRect(-size / 2, -size / 2, size, size);
 
-        // 상호작용 가능 유도 펄스
-        const distToPlayer = Math.hypot(house.x - myPlayer.x, house.y - myPlayer.y);
-        if (distToPlayer < 35) {
+        // 지붕 삼각 박공
+        ctx.beginPath();
+        ctx.moveTo(-size / 2, -size / 2);
+        ctx.lineTo(0, -size);
+        ctx.lineTo(size / 2, -size / 2);
+        ctx.closePath();
+        ctx.fillStyle = '#5c3a21';
+        ctx.fill();
+        ctx.stroke();
+
+        // 굴뚝 연기 효과
+        ctx.fillStyle = 'rgba(120, 120, 120, 0.4)';
+        ctx.beginPath();
+        ctx.arc(size * 0.3, -size * 1.2 - Math.sin(this.animTick) * 2, 3 * this.zoom, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ★ [핵심] 가구 접근 시 큼직하고 화려한 상호작용 안내 뱃지
+        if (distToPlayer < 45) {
+          // 바닥 황금빛 펄스 링
+          const pulse = (Math.sin(this.animTick * 2) + 1) / 2;
           ctx.beginPath();
-          ctx.arc(0, 0, (size + Math.sin(Date.now() / 200) * 3) * this.zoom, 0, Math.PI * 2);
-          ctx.strokeStyle = '#eab308';
+          ctx.arc(0, 0, (size + pulse * 12) * this.zoom, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(234, 179, 8, ${0.9 - pulse * 0.5})`;
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+          // 머리 위 3D 느낌의 [E] 조사 뱃지
+          ctx.save();
+          ctx.translate(0, -size * 1.6);
+          // 뱃지 배경
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.roundRect(-24 * this.zoom, -12 * this.zoom, 48 * this.zoom, 24 * this.zoom, 6 * this.zoom);
+          ctx.fill();
+          ctx.strokeStyle = '#78350f';
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // "조사 [E]" 말풍선
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(-22 * this.zoom, -26 * this.zoom, 44 * this.zoom, 16 * this.zoom);
-          ctx.font = `bold ${Math.max(9, 10 * this.zoom)}px sans-serif`;
-          ctx.fillStyle = '#fef08a';
+          // 텍스트
+          ctx.font = `900 ${Math.max(11, 13 * this.zoom)}px -apple-system, sans-serif`;
+          ctx.fillStyle = '#451a03';
           ctx.textAlign = 'center';
-          ctx.fillText("조사 [E]", 0, -14 * this.zoom);
+          ctx.textBaseline = 'middle';
+          ctx.fillText("조사 [E]", 0, 0);
+          ctx.restore();
         }
       }
       ctx.restore();
     }
 
-    // 5. 공공 식수 펌프 (Pumps) 렌더링
+    // 6. 공공 식수 펌프 (Pumps) 렌더링
     for (const pump of this.data.pumps) {
       const [px, py] = this.worldToScreen(pump.x, pump.y);
       const isBroad = pump.isSource;
@@ -231,112 +303,197 @@ export class SohoMapRenderer {
       ctx.save();
       ctx.translate(px, py);
 
-      // 펌프 밑받침 원
+      // 펌프 대리석 받침대
       ctx.beginPath();
-      ctx.arc(0, 0, (isBroad ? 14 : 9) * this.zoom, 0, Math.PI * 2);
+      ctx.arc(0, 0, (isBroad ? 16 : 10) * this.zoom, 0, Math.PI * 2);
       ctx.fillStyle = isBroad ? (broadHandleRemoved ? '#64748b' : '#0284c7') : '#475569';
       ctx.fill();
       ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2 * this.zoom;
+      ctx.lineWidth = 2.5 * this.zoom;
       ctx.stroke();
 
-      // 펌프 아이콘 (수동 펌프 모양)
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-2 * this.zoom, -8 * this.zoom, 4 * this.zoom, 12 * this.zoom);
-      // 손잡이
+      // 무쇠 펌프 기둥
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(-3 * this.zoom, -10 * this.zoom, 6 * this.zoom, 14 * this.zoom);
+
+      // 주물 손잡이
       if (!isBroad || !broadHandleRemoved) {
         ctx.beginPath();
-        ctx.moveTo(0, -6 * this.zoom);
-        ctx.lineTo(8 * this.zoom, -2 * this.zoom);
+        ctx.moveTo(0, -8 * this.zoom);
+        ctx.lineTo(10 * this.zoom, -2 * this.zoom);
         ctx.strokeStyle = '#f8fafc';
-        ctx.lineWidth = 2 * this.zoom;
+        ctx.lineWidth = 2.5 * this.zoom;
         ctx.stroke();
       }
 
-      // 펌프 라벨
-      ctx.font = `bold ${Math.max(9, 10 * this.zoom)}px 'Georgia', serif`;
+      // 펌프 라벨 (황금빛 현판)
+      ctx.font = `bold ${Math.max(10, 11 * this.zoom)}px 'Georgia', serif`;
       ctx.fillStyle = isBroad ? '#0369a1' : '#334155';
       ctx.textAlign = 'center';
       const label = pump.name + (isBroad && broadHandleRemoved ? " [손잡이 제거됨!]" : "");
-      ctx.fillText(label, 0, 18 * this.zoom);
+      ctx.fillText(label, 0, 20 * this.zoom);
 
-      // 브로드 펌프 손잡이 제거 상호작용
+      // 브로드 펌프 손잡이 제거 상호작용 배너
       if (isBroad && !broadHandleRemoved) {
         const dist = Math.hypot(pump.x - myPlayer.x, pump.y - myPlayer.y);
-        if (dist < 40) {
+        if (dist < 45) {
           ctx.fillStyle = '#dc2626';
-          ctx.fillRect(-45 * this.zoom, -32 * this.zoom, 90 * this.zoom, 18 * this.zoom);
-          ctx.font = `bold ${Math.max(9, 10 * this.zoom)}px sans-serif`;
+          ctx.beginPath();
+          ctx.roundRect(-55 * this.zoom, -38 * this.zoom, 110 * this.zoom, 22 * this.zoom, 6 * this.zoom);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.font = `bold ${Math.max(10, 11 * this.zoom)}px sans-serif`;
           ctx.fillStyle = '#ffffff';
-          ctx.fillText("손잡이 제거 [Space]", 0, -19 * this.zoom);
+          ctx.textAlign = 'center';
+          ctx.fillText("손잡이 제거 [Space]", 0, -23 * this.zoom);
         }
       }
       ctx.restore();
     }
 
-    // 6. 장기설(Miasma) 악취 마커 & 안개 오버레이
+    // 7. 장기설(Miasma) 악취 마커 & 독성 스모그 안개
     if (this.showMiasmaFog) {
       for (const m of this.data.miasmaMarkers) {
         const [mx, my] = this.worldToScreen(m.x, m.y);
-        const grad = ctx.createRadialGradient(mx, my, 5 * this.zoom, mx, my, 80 * this.zoom);
-        grad.addColorStop(0, 'rgba(100, 140, 60, 0.35)'); // 독성 녹색 스모그
-        grad.addColorStop(1, 'rgba(100, 140, 60, 0)');
+        const fogR = (80 + Math.sin(this.animTick + m.x) * 10) * this.zoom;
+        const grad = ctx.createRadialGradient(mx, my, 5 * this.zoom, mx, my, fogR);
+        grad.addColorStop(0, 'rgba(80, 120, 40, 0.45)');
+        grad.addColorStop(1, 'rgba(80, 120, 40, 0)');
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(mx, my, 80 * this.zoom, 0, Math.PI * 2);
+        ctx.arc(mx, my, fogR, 0, Math.PI * 2);
         ctx.fill();
 
-        // 냄새 마커 텍스트
-        ctx.font = `italic ${Math.max(8, 9 * this.zoom)}px serif`;
-        ctx.fillStyle = '#3f5223';
+        ctx.font = `italic bold ${Math.max(9, 10 * this.zoom)}px serif`;
+        ctx.fillStyle = '#2d3f16';
         ctx.textAlign = 'center';
-        ctx.fillText(`💨 ${m.name}`, mx, my + 14 * this.zoom);
+        ctx.fillText(`💨 ${m.name}`, mx, my + 16 * this.zoom);
       }
     }
 
-    // 7. 다른 플레이어 아바타 렌더링
+    // 8. 다른 플레이어 아바타 렌더링
     for (const player of otherPlayers) {
-      this.drawAvatar(player.x, player.y, player.name, player.color, player.team, false);
+      this.drawScientistAvatar(player.x, player.y, player.name, player.color, player.team, false, 0);
     }
 
-    // 8. 내 아바타 렌더링 (최상단)
-    this.drawAvatar(myPlayer.x, myPlayer.y, `${myPlayer.name} (나)`, myPlayer.color, myPlayer.team, true);
+    // 9. 내 아바타 렌더링 (최상단, 걷기 바운스 적용)
+    this.drawScientistAvatar(myPlayer.x, myPlayer.y, `${myPlayer.name} (나)`, myPlayer.color, myPlayer.team, true, isMoving ? this.animTick : 0);
   }
 
-  // 조사관 아바타 드로잉
-  private drawAvatar(wx: number, wy: number, name: string, color: string, team: string, isMe: boolean) {
+  // ★ 19세기 빅토리안 의사/과학자 정밀 아바타 드로잉 함수
+  private drawScientistAvatar(wx: number, wy: number, name: string, coatColor: string, team: string, isMe: boolean, walkTick: number) {
     const [sx, sy] = this.worldToScreen(wx, wy);
     const ctx = this.ctx;
-    const r = 9 * this.zoom;
+    const scale = this.zoom;
+
+    // 걷기 바운스 오프셋
+    const bounceY = Math.sin(walkTick * 4) * 2 * scale;
+    const legSwing = Math.sin(walkTick * 4) * 4 * scale;
 
     ctx.save();
-    ctx.translate(sx, sy);
+    ctx.translate(sx, sy + bounceY);
 
-    // 하단 그림자
+    // 1. 하단 그림자
     ctx.beginPath();
-    ctx.ellipse(0, r * 0.7, r * 0.9, r * 0.4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.ellipse(0, 14 * scale, 12 * scale, 5 * scale, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.fill();
 
-    // 몸체 (조사관 코트)
+    // 2. 다리 (걷는 모션)
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 3 * scale;
+    // 왼다리
     ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.strokeStyle = isMe ? '#ffffff' : '#0f172a';
-    ctx.lineWidth = isMe ? 2.5 : 1.5;
+    ctx.moveTo(-4 * scale, 6 * scale);
+    ctx.lineTo(-4 * scale + legSwing, 14 * scale);
+    ctx.stroke();
+    // 오른다리
+    ctx.beginPath();
+    ctx.moveTo(4 * scale, 6 * scale);
+    ctx.lineTo(4 * scale - legSwing, 14 * scale);
     ctx.stroke();
 
-    // 빅토리안 조사관 모자 (중절모 실루엣)
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-r * 0.9, -r * 1.1, r * 1.8, 2.5 * this.zoom); // 챙
-    ctx.fillRect(-r * 0.5, -r * 1.6, r, 5 * this.zoom); // 모자 윗부분
+    // 3. 의사 롱코트 (Frock Coat - 팀 컬러)
+    ctx.fillStyle = coatColor;
+    ctx.beginPath();
+    ctx.moveTo(-8 * scale, -6 * scale);
+    ctx.lineTo(8 * scale, -6 * scale);
+    ctx.lineTo(11 * scale, 10 * scale);
+    ctx.lineTo(-11 * scale, 10 * scale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = isMe ? '#ffffff' : '#0f172a';
+    ctx.lineWidth = isMe ? 2 : 1.2;
+    ctx.stroke();
 
-    // 이름 태그 및 팀 배지
-    ctx.font = `bold ${Math.max(9, 10 * this.zoom)}px -apple-system, sans-serif`;
+    // 코트 옷깃 & 넥타이
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.moveTo(-3 * scale, -6 * scale);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(3 * scale, -6 * scale);
+    ctx.fill();
+
+    // 4. 얼굴
+    ctx.beginPath();
+    ctx.arc(0, -9 * scale, 6 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = '#fed7aa'; // 피부톤
+    ctx.fill();
+    ctx.strokeStyle = '#7c2d12';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // 5. 빅토리안 신사 실크햇 (Top Hat)
+    ctx.fillStyle = '#0f172a'; // 흑색 모자
+    // 모자 챙
+    ctx.fillRect(-10 * scale, -13 * scale, 20 * scale, 2.5 * scale);
+    // 모자 본체
+    ctx.fillRect(-6 * scale, -23 * scale, 12 * scale, 10 * scale);
+    // 모자 리본 띠
+    ctx.fillStyle = coatColor;
+    ctx.fillRect(-6 * scale, -15 * scale, 12 * scale, 2 * scale);
+
+    // 6. 오른손: 반짝이는 황금빛 돋보기 (Magnifying Glass)
+    const glassX = 12 * scale;
+    const glassY = -2 * scale;
+    // 돋보기 손잡이
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 2 * scale;
+    ctx.beginPath();
+    ctx.moveTo(6 * scale, 2 * scale);
+    ctx.lineTo(glassX, glassY);
+    ctx.stroke();
+    // 돋보기 림(Rim) & 렌즈
+    ctx.beginPath();
+    ctx.arc(glassX, glassY, 5 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.6)'; // 푸른 유리 렌즈
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b'; // 황금빛 테두리
+    ctx.lineWidth = 1.5 * scale;
+    ctx.stroke();
+    // 렌즈 반사광
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1 * scale;
+    ctx.beginPath();
+    ctx.arc(glassX - 1.5 * scale, glassY - 1.5 * scale, 2.5 * scale, 0, Math.PI * 0.8);
+    ctx.stroke();
+
+    // 7. 왼손: 갈색 가죽 의사 왕진 가방 (Doctor's Bag)
+    const bagX = -11 * scale;
+    const bagY = 2 * scale;
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(bagX - 4 * scale, bagY, 8 * scale, 6 * scale);
+    ctx.strokeStyle = '#451a03';
+    ctx.lineWidth = 1 * scale;
+    ctx.strokeRect(bagX - 4 * scale, bagY, 8 * scale, 6 * scale);
+
+    // 8. 머리 위 이름표 & 팀 명찰
+    ctx.font = `bold ${Math.max(10, 11 * scale)}px -apple-system, sans-serif`;
     ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
-    ctx.fillText(name, 0, -r * 1.9);
+    ctx.fillText(name, 0, -26 * scale);
 
     ctx.restore();
   }
