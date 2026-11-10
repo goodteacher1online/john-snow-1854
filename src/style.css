@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #1c1917;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 로비 스타일 */
+.lobby-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+.input-field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #292524;
+  border: 1px solid #44403c;
+  color: #f5f5f4;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  border-color: #fbbf24;
+}
+
+/* 상단 HUD */
+.hud-header {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.hud-header > * {
+  pointer-events: auto;
+}
+
+.hud-pill {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background-color: rgba(28, 25, 23, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid #44403c;
+  color: #e7e5e4;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn:hover {
+  filter: brightness(1.15);
+}
+
+.pulse-anim {
+  animation: pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(234, 179, 8, 0);
+  }
+}
+
+/* 모바일 D-Pad */
+.dpad-btn {
+  background-color: rgba(28, 25, 23, 0.85);
+  border: 1px solid #57534e;
+  color: #f5f5f4;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  active:scale-95;
+}
+
+.action-btn {
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  border: none;
+  cursor: pointer;
+}
+
+/* 빅토리안 양피지 모달 */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(12, 10, 9, 0.7);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  max-width: 520px;
+  width: 100%;
+  padding: 24px;
+  border-radius: 16px;
+  background: #fbf6ec; /* 양피지 종이 질감 */
+  border: 2px solid #8c7b64;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  color: #292524;
+}
+
+.hidden {
+  display: none !important;
+}

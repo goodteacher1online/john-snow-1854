@@ -1,0 +1,40 @@
+{
+  "pumps": [
+    { "id": "pump_broad", "name": "브로드 스트리트 펌프", "x": 500, "y": 500, "isSource": true, "description": "소호 중심부의 공용 펌프. 물맛이 시원하고 탄산이 있어 멀리서도 물을 길으러 온다. (역사적 원인 펌프)" },
+    { "id": "pump_little_marlborough", "name": "리틀 말버러 스트리트 펌프", "x": 340, "y": 330, "isSource": false, "description": "브로드 스트리트 북서쪽 펌프. 이 펌프 주변은 사망자가 거의 없다." },
+    { "id": "pump_bridle_lane", "name": "브라이들 레인 펌프", "x": 580, "y": 640, "isSource": false, "description": "남동쪽 골목의 펌프. 물맛이 탁해 주민들이 꺼리고 브로드 스트리트로 물을 길으러 간다." },
+    { "id": "pump_warwick", "name": "워윅 스트리트 펌프", "x": 660, "y": 420, "isSource": false, "description": "동쪽 워윅 스트리트의 펌프." },
+    { "id": "pump_dean", "name": "딘 스트리트 펌프", "x": 330, "y": 560, "isSource": false, "description": "서쪽 딘 스트리트 펌프. 이 펌프를 쓰는 가구는 대체로 무사하다." },
+    { "id": "pump_great_marlborough", "name": "그레이트 말버러 스트리트 펌프", "x": 470, "y": 270, "isSource": false, "description": "북쪽 큰길가의 펌프. 상점과 작업장이 많은 구역." },
+    { "id": "pump_rupert", "name": "루퍼트 스트리트 펌프", "x": 640, "y": 760, "isSource": false, "description": "남쪽 루퍼트 스트리트 펌프. 브로드 스트리트와 떨어져 있어 피해가 적다." },
+    { "id": "pump_tichborne", "name": "티치본 스트리트 펌프", "x": 420, "y": 820, "isSource": false, "description": "남서쪽 끝 티치본 스트리트 펌프." }
+  ],
+  "houses": [
+    { "id": "house_01", "address": "브로드 스트리트 40번지", "x": 495, "y": 470, "deaths": 6, "primaryPump": "pump_broad", "residentName": "토머스 하글리", "interviewText": "펌프가 바로 문 앞인데 물맛이 제일 좋아서 온 식구가 마셨습니다. 일주일 새 여섯이 갔어요. 지독한 악취가 돈다고들 하지만 우리 집은 늘 창문을 열어 둡니다.", "clueType": "suspect_cluster" },
+    { "id": "house_02", "address": "브로드 스트리트 37번지", "x": 515, "y": 530, "deaths": 4, "primaryPump": "pump_broad", "residentName": "마사 윌킨스", "interviewText": "아이들 심부름으로 매일 아침 펌프에서 물을 길어 왔습니다. 막내가 먼저 쓰러지고 이틀 뒤 남편이 따라갔습니다...", "clueType": "suspect_cluster" },
+    { "id": "house_03", "address": "브로드 스트리트 52번지", "x": 470, "y": 510, "deaths": 5, "primaryPump": "pump_broad", "residentName": "제임스 오코너", "interviewText": "3층에서 4층까지 한 건물에 사는 가족이 거의 같은 날 앓았습니다. 우리는 모두 문 앞 브로드 펌프를 씁니다.", "clueType": "suspect_cluster" },
+    { "id": "house_04", "address": "케임브리지 스트리트 12번지", "x": 540, "y": 470, "deaths": 3, "primaryPump": "pump_broad", "residentName": "엘리자 프라이스", "interviewText": "집 뒤 오물 구덩이가 낡아서 늘 냄새가 났습니다. 공기가 썩어 병이 도는 게 분명해요! 그래도 물은 시원한 펌프 물을 마셨지요.", "clueType": "suspect_cluster" },
+    { "id": "house_05", "address": "브로드 스트리트 25번지", "x": 525, "y": 555, "deaths": 4, "primaryPump": "pump_broad", "residentName": "헨리 콜린스", "interviewText": "구두 수선 가게를 합니다. 일할 때 목이 마르면 손님들과 함께 브로드 펌프 물을 벌컥벌컥 들이켰지요...", "clueType": "suspect_cluster" },
+    { "id": "house_06", "address": "폴란드 스트리트 8번지", "x": 450, "y": 450, "deaths": 2, "primaryPump": "pump_broad", "residentName": "새러 베넷", "interviewText": "빨래할 물을 길어 오는 게 제 일입니다. 병이 돌기 시작한 날 아침에도 그 펌프 물을 마시고 빨래를 했어요.", "clueType": "suspect_cluster" },
+    { "id": "house_07", "address": "드루어리 코트 3번지", "x": 560, "y": 520, "deaths": 3, "primaryPump": "pump_broad", "residentName": "윌리엄 터너", "interviewText": "가까운 브라이들 레인 펌프는 물맛이 탁해서 일부러 브로드 스트리트까지 걸어가서 물을 떠왔습니다. 아내가 먼저 앓아누웠어요.", "clueType": "suspect_cluster" },
+    { "id": "house_08", "address": "워윅 스트리트 14번지", "x": 650, "y": 440, "deaths": 2, "primaryPump": "pump_broad", "residentName": "앤 리버스", "interviewText": "우리 동네에는 워윅 펌프가 있지만 시장 갈 때마다 브로드 스트리트 물을 한 통씩 받아 옵니다. 하숙생 둘이 죽었어요.", "clueType": "suspect_cluster" },
+    { "id": "house_09", "address": "딘 스트리트 21번지", "x": 320, "y": 580, "deaths": 0, "primaryPump": "pump_dean", "residentName": "조지 밀러", "interviewText": "전염병이 소호를 휩쓸어도 우리 집은 멀쩡했습니다. 우리는 늘 집 앞 딘 스트리트 펌프를 쓰거든요. 악취는 이 골목도 똑같이 지독한데 말이죠!", "clueType": "normal" },
+    { "id": "house_10", "address": "리틀 말버러 스트리트 5번지", "x": 350, "y": 340, "deaths": 0, "primaryPump": "pump_little_marlborough", "residentName": "루시 하트", "interviewText": "시궁창 냄새는 나지만 아픈 사람은 전혀 없어요. 나쁜 공기가 원인이라면 왜 우리 골목 사람들은 다 살아있을까요?", "clueType": "normal" },
+    { "id": "house_11", "address": "그레이트 말버러 스트리트 30번지", "x": 480, "y": 285, "deaths": 1, "primaryPump": "pump_great_marlborough", "residentName": "프레더릭 던", "interviewText": "형이 브로드 스트리트 작업장에서 일하면서 점심에 그쪽 물을 마시고 와서 앓아누웠습니다. 정작 우리 집 다른 가족은 멀쩡합니다.", "clueType": "suspect_cluster" },
+    { "id": "house_12", "address": "브라이들 레인 9번지", "x": 585, "y": 650, "deaths": 1, "primaryPump": "pump_bridle_lane", "residentName": "메리 가드너", "interviewText": "여기 골목 펌프는 맛이 텁텁해서 아이는 입에도 안 댔어요. 그래서 브로드 스트리트에서 길어 온 물을 먹였다가 아이를 잃었습니다...", "clueType": "suspect_cluster" },
+    { "id": "house_13", "address": "루퍼트 스트리트 44번지", "x": 650, "y": 770, "deaths": 0, "primaryPump": "pump_rupert", "residentName": "다니엘 크로스", "interviewText": "소호 중심부 소식은 들었지만 우리 구역엔 환자가 없소. 우리는 루퍼트 스트리트 펌프 물만 씁니다.", "clueType": "normal" },
+    { "id": "house_14", "address": "티치본 스트리트 17번지", "x": 410, "y": 830, "deaths": 0, "primaryPump": "pump_tichborne", "residentName": "에마 힐", "interviewText": "펌프 하나 차이로 이웃들이 쓰러진다니 믿기지 않네요. 우리는 티치본 펌프를 쓰는데 아무 일도 없습니다.", "clueType": "normal" },
+    { "id": "house_15", "address": "브로드 스트리트 50번지, 라이온 양조장 (Brewery)", "x": 450, "y": 550, "deaths": 0, "primaryPump": "own_well", "residentName": "윌리엄 휴잇 (양조장 감독)", "interviewText": "우리 맥주 공장 노동자 70여 명 중 콜레라에 걸린 사람은 '단 한 명도' 없소! 사장님이 일할 때 펌프 물은 절대 마시지 못하게 하고 공짜 맥주만 마시게 하거든. 게다가 공장 마당에 우리만의 깊은 전용 우물이 따로 있소!", "clueType": "brewery_anomaly" },
+    { "id": "house_16", "address": "폴란드 스트리트, 세인트 제임스 구빈원 (Workhouse)", "x": 280, "y": 270, "deaths": 5, "primaryPump": "own_well", "residentName": "에드워드 심스 (구빈원 관리인)", "interviewText": "이곳엔 가난하고 쇠약한 사람들 535명이 빽빽하게 수용되어 있소. 공기 전염이라면 전멸했어야 마땅하지! 하지만 사망자는 고작 5명뿐이오. 구빈원 구내에 자체 깊은 우물이 있어서 밖의 브로드 펌프에 갈 필요가 없었기 때문이지.", "clueType": "workhouse_anomaly" },
+    { "id": "house_17", "address": "소호 외곽 햄스테드 특수 연락소 (Hampstead)", "x": 120, "y": 140, "deaths": 1, "primaryPump": "pump_broad", "residentName": "하녀 베시 (수잔나 일리 미망인의 하녀)", "interviewText": "마님께선 공기 맑은 햄스테드 전원주택에 사셨어요. 하지만 소호 브로드 펌프의 톡 쏘는 시원한 물맛을 유독 좋아하셔서, 마차를 보내 매일 브로드 스트리트 펌프 물을 배달시켜 드셨답니다... 그 물을 드시고 마님께서 돌아가셨어요.", "clueType": "hampstead_anomaly" },
+    { "id": "house_18", "address": "브로드 스트리트 45번지", "x": 485, "y": 540, "deaths": 4, "primaryPump": "pump_broad", "residentName": "로버트 게이츠", "interviewText": "식당을 운영합니다. 손님들에게 브로드 펌프 물을 그대로 내놓았는데, 그 뒤로 단골 손님들 여럿이 돌아오지 못했습니다...", "clueType": "suspect_cluster" },
+    { "id": "house_19", "address": "마셜 스트리트 6번지", "x": 535, "y": 590, "deaths": 2, "primaryPump": "pump_broad", "residentName": "캐서린 부스", "interviewText": "펌프에서 몇 걸음밖에 안 되는 곳이라 하루에도 서너 번씩 물을 길었습니다. 그 시원하던 물이 독이었을 줄이야...", "clueType": "suspect_cluster" },
+    { "id": "house_20", "address": "딘 스트리트 33번지", "x": 345, "y": 530, "deaths": 1, "primaryPump": "pump_broad", "residentName": "존 맥도널드", "interviewText": "딘 스트리트 펌프가 바로 앞인데도, 어머니께서 브로드 펌프 물이 더 맑다고 고집하셔서 매일 그쪽 물을 길어 드렸습니다. 제 손으로 어머니를 해친 것 같아 가슴이 찢어집니다...", "clueType": "suspect_cluster" }
+  ],
+  "miasmaMarkers": [
+    { "id": "miasma_01", "name": "케임브리지 오물 집수정 (Cesspool)", "x": 545, "y": 465, "note": "당시 의사들이 콜레라의 진원지로 지목했던 악취 나는 오물 구덩이. (실제로는 이 오물이 지하로 스며들어 브로드 펌프 수원을 오염시킴)" },
+    { "id": "miasma_02", "name": "골든 스퀘어 가축 도살장 악취", "x": 160, "y": 700, "note": "피와 내장 냄새가 진동하여 장기설 신봉자들이 맹렬히 비난하던 장소." },
+    { "id": "miasma_03", "name": "소호 하수 배출구", "x": 620, "y": 590, "note": "비가 올 때마다 역류하는 하수관." },
+    { "id": "miasma_04", "name": "세인트 제임스 묘지 정체 공기", "x": 380, "y": 470, "note": "시신 부패 가스가 머무는 곳이라 믿어졌던 구역." }
+  ]
+}

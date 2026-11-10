@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>1854 런던 소호 역학 조사단 — John Snow 1854</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body class="bg-stone-900 text-stone-100 select-none overflow-hidden m-0 p-0">
+
+  <!-- 1. 시작 로비 화면 -->
+  <div id="lobby" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/90 backdrop-blur-md">
+    <div class="lobby-card max-w-lg w-full p-8 rounded-2xl shadow-2xl border border-stone-700 bg-stone-900">
+      <div class="text-center mb-6">
+        <span class="inline-block px-3 py-1 text-xs uppercase tracking-widest font-semibold rounded-full bg-amber-950 text-amber-300 border border-amber-800/80 mb-2">
+          Historical Epidemiology Simulation
+        </span>
+        <h1 class="text-2xl font-serif font-bold text-stone-100 tracking-tight">1854 런던 소호 역학 조사단</h1>
+        <p class="text-xs text-stone-400 mt-1 font-serif italic">
+          "나쁜 공기(Miasma) 때문인가, 보이지 않는 오염된 물 때문인가?"
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">조사관 이름</label>
+          <input type="text" id="player-name" placeholder="조사관 이름 (예: 홍길동)" class="input-field" maxlength="10">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">담당 수사팀 선택 (학급 모둠)</label>
+          <select id="team-select" class="input-field">
+            <option value="team1">1조: 브로드 가 수사대 (중심부 펌프 구역)</option>
+            <option value="team2">2조: 케임브리지 가 수사대 (오물 구덩이 인접)</option>
+            <option value="team3">3조: 골든 스퀘어 수사대 (남서측 도살장)</option>
+            <option value="team4">4조: 폴랜드 가 수사대 (구빈원 수용소)</option>
+            <option value="team5">5조: 햄스테드 특수 수사대 (원거리 배달지)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">학급 방 코드</label>
+          <input type="text" id="room-id" value="class1" class="input-field" placeholder="방 코드 (예: 3학년1반)">
+        </div>
+
+        <button id="start-btn" class="w-full py-3.5 mt-2 rounded-xl font-serif font-bold text-stone-900 bg-amber-400 hover:bg-amber-300 transition-all shadow-lg shadow-amber-950/40">
+          소호 거리 현장 조사 시작
+        </button>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-stone-800 text-[11px] text-stone-400 leading-relaxed">
+        <p class="font-medium text-stone-300 mb-1">조작 방법</p>
+        <p>• 이동: <strong>W, A, S, D</strong> 또는 <strong>방향키</strong> (모바일: 화면 버튼)</p>
+        <p>• 조사: 집 문 앞 근처에서 <strong>E</strong> 키</p>
+        <p>• 지도 확대/축소: <strong>M</strong> 키</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 게임 본화면 컨테이너 -->
+  <div id="game-container" class="hidden relative w-full h-full">
+    <!-- 캔버스 -->
+    <canvas id="map-canvas" class="block w-full h-full cursor-crosshair"></canvas>
+
+    <!-- 상단 HUD 바 -->
+    <header class="hud-header">
+      <div class="flex items-center gap-3">
+        <span class="hud-pill">
+          조사 진척: <strong id="progress-text" class="text-amber-300 ml-1">0 / 20 가구</strong>
+        </span>
+        <button id="hypo-toggle-btn" class="hud-btn bg-amber-950/80 text-amber-200 border-amber-800">
+          현재 가설: 나쁜 공기설(Miasma)
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="fog-toggle-btn" class="hud-btn bg-stone-800/80 text-stone-200 border-stone-700">
+          안개: 켜짐
+        </button>
+        <button id="map-toggle-btn" class="hud-btn bg-stone-800/80 text-stone-200 border-stone-700">
+          전체 지도 (M)
+        </button>
+      </div>
+    </header>
+
+    <!-- 모바일 가상 조이스틱 D-Pad -->
+    <div id="mobile-dpad" class="absolute bottom-6 left-6 z-20 grid grid-cols-3 gap-2 w-36 h-36 md:hidden">
+      <div></div>
+      <button class="dpad-btn" data-dir="w">▲</button>
+      <div></div>
+      <button class="dpad-btn" data-dir="a">◀</button>
+      <div class="flex items-center justify-center text-[10px] text-stone-500 font-bold">MOVE</div>
+      <button class="dpad-btn" data-dir="d">▶</button>
+      <div></div>
+      <button class="dpad-btn" data-dir="s">▼</button>
+      <div></div>
+    </div>
+
+    <!-- 모바일 액션 버튼 -->
+    <div class="absolute bottom-8 right-6 z-20 flex flex-col gap-3 md:hidden">
+      <button id="mobile-action-btn" class="action-btn bg-amber-400 text-stone-900" onclick="window.dispatchEvent(new KeyboardEvent('keydown', {key: 'e'}))">
+        조사 [E]
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. 가구 인터뷰 조사 수첩 모달 -->
+  <div id="interview-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="flex justify-between items-start border-b border-stone-300 pb-3 mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider font-semibold text-stone-600">역학 조사 보고서</span>
+          <h2 id="modal-address" class="text-xl font-serif font-bold text-stone-900 mt-0.5">주소 로딩 중...</h2>
+        </div>
+        <button id="modal-close-btn" class="text-stone-500 hover:text-stone-900 text-xl font-bold px-2">✕</button>
+      </div>
+
+      <div class="space-y-3 font-serif">
+        <p id="modal-resident" class="text-sm font-semibold text-stone-800"></p>
+        <p class="text-base"><span id="modal-deaths" class="text-red-700 font-bold"></span></p>
+        <div class="bg-amber-50/70 p-4 rounded-lg border border-amber-200/80 italic text-stone-800 leading-relaxed text-sm">
+          <p id="modal-text"></p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3 pt-3 border-t border-stone-200">
+        <button id="modal-record-btn" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-amber-800 text-amber-50 hover:bg-amber-900 transition-all shadow">
+          역학 수첩에 기록하고 지도에 점 찍기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 엔딩 클라이맥스 모달 -->
+  <div id="ending-modal" class="modal-backdrop">
+    <div class="modal-card max-w-xl text-center">
+      <div class="text-4xl mb-2">🏆</div>
+      <span class="text-xs uppercase tracking-widest font-bold text-amber-700">Mission Accomplished</span>
+      <h2 class="text-2xl font-serif font-bold text-stone-900 mt-1 mb-3">1854년 9월 8일, 콜레라가 멈추다</h2>
+      <div class="text-left text-sm text-stone-700 leading-relaxed space-y-2.5 font-serif bg-stone-50 p-4 rounded-xl border border-stone-200 mb-5">
+        <p><strong>존 스노우 박사와 역학 조사관 여러분의 승리입니다!</strong></p>
+        <p>• 구청 보건위원회를 설득하여 <strong>브로드 스트리트 펌프의 손잡이를 제거</strong>하자, 사망자 발생이 기적처럼 급감했습니다.</p>
+        <p>• 특히 <strong>'맥주 양조장(환자 0명)'</strong>과 <strong>'구빈원(자체 우물)'</strong>, 그리고 <strong>'멀리 햄스테드로 배달된 펌프 물'</strong>이라는 예외 데이터는 당시 의학계를 지배하던 '공기 전염설(Miasma)'을 완벽하게 무너뜨렸습니다.</p>
+        <p>• 이 조사는 인류 역사상 최초로 <strong>데이터 시각화와 공간 통계가 수많은 생명을 구한 현대 역학(Epidemiology)의 시작</strong>이 되었습니다.</p>
+      </div>
+      <button id="ending-close-btn" class="w-full py-3 rounded-lg font-bold text-sm bg-stone-900 text-stone-100 hover:bg-stone-800">
+        조사 완료 및 지도 자유 탐색
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

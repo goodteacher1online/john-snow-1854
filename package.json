@@ -1,0 +1,23 @@
+{
+  "name": "john-snow-1854",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.65.0",
+    "vite": "^8.3.7"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "playroomkit": "^0.0.97"
+  }
+}
