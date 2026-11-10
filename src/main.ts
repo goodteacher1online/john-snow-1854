@@ -33,16 +33,23 @@ const teamCards = document.querySelectorAll<HTMLButtonElement>('.team-btn');
 const selectedTeamInput = document.getElementById('selected-team') as HTMLInputElement;
 const roomInput = document.getElementById('room-id') as HTMLInputElement;
 
-// HUD & 알림 배너
+// HUD & 알림
+const rankTitle = document.getElementById('rank-title') as HTMLSpanElement;
+const expText = document.getElementById('exp-text') as HTMLSpanElement;
 const progressText = document.getElementById('progress-text') as HTMLSpanElement;
 const hypoBtn = document.getElementById('hypo-toggle-btn') as HTMLButtonElement;
-const fogBtn = document.getElementById('fog-toggle-btn') as HTMLButtonElement;
 const mapToggleBtn = document.getElementById('map-toggle-btn') as HTMLButtonElement;
 const guideOpenBtn = document.getElementById('guide-open-btn') as HTMLButtonElement;
 const interactionBanner = document.getElementById('interaction-banner') as HTMLDivElement;
 const bannerText = document.getElementById('banner-text') as HTMLSpanElement;
 const compassArrow = document.getElementById('compass-arrow') as HTMLSpanElement;
 const compassLabel = document.getElementById('compass-label') as HTMLSpanElement;
+
+// 토스트
+const gameToast = document.getElementById('game-toast') as HTMLDivElement;
+const toastCard = document.getElementById('toast-card') as HTMLDivElement;
+const toastIcon = document.getElementById('toast-icon') as HTMLSpanElement;
+const toastMsg = document.getElementById('toast-msg') as HTMLSpanElement;
 
 // 모달
 const briefingModal = document.getElementById('briefing-modal') as HTMLDivElement;
@@ -60,7 +67,7 @@ const modalCloseBtn = document.getElementById('modal-close-btn') as HTMLButtonEl
 const endingModal = document.getElementById('ending-modal') as HTMLDivElement;
 const endingCloseBtn = document.getElementById('ending-close-btn') as HTMLButtonElement;
 
-// 초기 랜덤 이름 부여
+// 초기 랜덤 이름
 function rollRandomName() {
   const chosen = SCIENTIST_NAMES[Math.floor(Math.random() * SCIENTIST_NAMES.length)];
   playerNameInput.value = chosen;
@@ -68,7 +75,7 @@ function rollRandomName() {
 rollRandomName();
 randomNameBtn.addEventListener('click', rollRandomName);
 
-// 모둠(팀) 원클릭 선택 카드
+// 모둠 원클릭 탭
 teamCards.forEach(card => {
   card.addEventListener('click', () => {
     teamCards.forEach(c => c.classList.remove('active'));
@@ -78,7 +85,7 @@ teamCards.forEach(card => {
   });
 });
 
-// 미션 브리핑 모달 닫기
+// 수사 지침서 닫기
 function closeBriefing() {
   briefingModal.classList.remove('active');
 }
@@ -86,7 +93,8 @@ briefingConfirmBtn.addEventListener('click', closeBriefing);
 briefingCloseX.addEventListener('click', closeBriefing);
 guideOpenBtn.addEventListener('click', () => briefingModal.classList.add('active'));
 
-// 게임 상태
+// 게임 상태 및 경험치
+let totalExp = 0;
 let currentHouseNear: House | null = null;
 let currentInvestigations: Record<string, InvestigationRecord> = {};
 let isBroadHandleRemoved = false;
@@ -108,6 +116,26 @@ const myPlayer: PlayerState = {
 // 렌더러 & 멀티플레이어 매니저
 const renderer = new SohoMapRenderer(canvasEl, gameData);
 const multiplayer = new MultiplayerManager();
+
+// 토스트 메시지 띄우기
+let toastTimer = 0;
+function showToast(msg: string, icon = '✨', isWarning = false) {
+  toastIcon.textContent = icon;
+  toastMsg.textContent = msg;
+  if (isWarning) {
+    toastCard.className = 'px-6 py-3.5 rounded-2xl bg-red-950 text-red-200 border-2 border-red-500 shadow-2xl font-serif font-black text-base flex items-center gap-2.5 animate-pulse';
+  } else {
+    toastCard.className = 'px-6 py-3 rounded-2xl bg-stone-900 text-amber-300 border-2 border-amber-500 shadow-2xl font-serif font-bold text-base flex items-center gap-2';
+  }
+  gameToast.classList.remove('opacity-0', '-translate-y-4');
+  gameToast.classList.add('opacity-100', 'translate-y-0');
+
+  clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    gameToast.classList.remove('opacity-100', 'translate-y-0');
+    gameToast.classList.add('opacity-0', '-translate-y-4');
+  }, 3500);
+}
 
 // 키보드 조작
 const keys: Record<string, boolean> = {};
@@ -140,7 +168,7 @@ dpadButtons.forEach(btn => {
   btn.addEventListener('mouseup', stopMove);
 });
 
-// 모바일 액션 버튼 클릭
+// 모바일 액션 버튼
 const mobileActionBtn = document.getElementById('mobile-action-btn');
 mobileActionBtn?.addEventListener('click', () => {
   checkHouseInteraction();
@@ -165,13 +193,13 @@ startBtn.addEventListener('click', async () => {
   };
   myPlayer.color = TEAM_COLORS[team] || '#2563eb';
 
-  // 팀별 시작 위치
+  // 시작 위치
   const TEAM_SPAWNS: Record<string, [number, number]> = {
-    team1: [480, 520], // 브로드 가 중심
-    team2: [540, 430], // 케임브리지 가
-    team3: [180, 680], // 골든 스퀘어
-    team4: [400, 320], // 폴랜드 가
-    team5: [160, 200]  // 햄스테드 연락소 부근
+    team1: [480, 520],
+    team2: [540, 430],
+    team3: [180, 680],
+    team4: [400, 320],
+    team5: [160, 200]
   };
   const [sx, sy] = TEAM_SPAWNS[team] || [480, 520];
   myPlayer.x = sx;
@@ -182,7 +210,7 @@ startBtn.addEventListener('click', async () => {
   lobbyEl.classList.add('hidden');
   gameContainerEl.classList.remove('hidden');
 
-  // 멀티플레이어 초기화
+  // 멀티플레이어 연결
   await multiplayer.init(roomId, name, team);
 
   multiplayer.onInvestigationUpdated = (records) => {
@@ -209,7 +237,6 @@ function gameLoop(now: number) {
   const dt = Math.min(50, now - lastLoopTime);
   lastLoopTime = now;
 
-  // 1. 이동 처리
   const speed = 0.22 * dt;
   let moveX = 0;
   let moveY = 0;
@@ -231,7 +258,6 @@ function gameLoop(now: number) {
     myPlayer.y = Math.max(50, Math.min(950, myPlayer.y + moveY));
     multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
 
-    // 발걸음 사운드 (일정 간격)
     footstepCooldown -= dt;
     if (footstepCooldown <= 0) {
       sound.playFootstep();
@@ -239,22 +265,16 @@ function gameLoop(now: number) {
     }
   }
 
-  // 2. 근처 가구 & 펌프 인터랙션 감지 및 배너 제어
   updateInteractionBanner();
-
-  // 3. 가장 가까운 미조사 가구 방향 나침반 갱신
   updateCompass();
 
-  // 4. 다른 플레이어 보간
   const otherPlayers = multiplayer.updateAndGetOtherPlayers();
-
-  // 5. 캔버스 렌더링
   renderer.render(myPlayer, otherPlayers, currentInvestigations, isBroadHandleRemoved, isPlayerMoving);
 
   requestAnimationFrame(gameLoop);
 }
 
-// 상호작용 배너 실시간 업데이트
+// 상호작용 배너
 function updateInteractionBanner() {
   let targetHouse: House | null = null;
   let minDist = 48;
@@ -271,24 +291,24 @@ function updateInteractionBanner() {
   const broadPump = gameData.pumps.find(p => p.isSource);
   const distToPump = broadPump ? Math.hypot(broadPump.x - myPlayer.x, broadPump.y - myPlayer.y) : 999;
 
-  if (distToPump < 45 && !isBroadHandleRemoved) {
+  if (distToPump < 48 && !isBroadHandleRemoved) {
     bannerText.textContent = "🚨 브로드 펌프 앞입니다! [스페이스바]로 손잡이를 제거하세요!";
-    interactionBanner.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+    interactionBanner.classList.remove('opacity-0', 'translate-y-6', 'scale-95');
     interactionBanner.classList.add('opacity-100', 'translate-y-0', 'scale-100');
   } else if (currentHouseNear) {
     const isDone = !!currentInvestigations[currentHouseNear.id];
     bannerText.textContent = isDone 
       ? `✅ [${currentHouseNear.address}] 조사가 완료된 가구입니다.` 
-      : `🔍 [${currentHouseNear.address}] 문 앞입니다! E 키를 눌러 인터뷰하세요!`;
-    interactionBanner.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+      : `🔍 [${currentHouseNear.address}] 문 앞입니다! [E] 키를 눌러 인터뷰하세요!`;
+    interactionBanner.classList.remove('opacity-0', 'translate-y-6', 'scale-95');
     interactionBanner.classList.add('opacity-100', 'translate-y-0', 'scale-100');
   } else {
     interactionBanner.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
-    interactionBanner.classList.add('opacity-0', 'translate-y-4', 'scale-95');
+    interactionBanner.classList.add('opacity-0', 'translate-y-6', 'scale-95');
   }
 }
 
-// 나침반 내비게이션 화살표
+// 나침반 내비게이션
 function updateCompass() {
   let closestHouse: House | null = null;
   let minDist = 9999;
@@ -308,19 +328,20 @@ function updateCompass() {
     const dy = closestHouse.y - myPlayer.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     compassArrow.style.transform = `rotate(${angle}deg)`;
-    compassLabel.textContent = `다음 미조사 가구: ${Math.round(minDist)}m (${closestHouse.address})`;
+    compassLabel.textContent = `다음 가구: ${Math.round(minDist)}m (${closestHouse.address})`;
   } else {
     compassArrow.style.transform = 'rotate(0deg)';
-    compassLabel.textContent = '모든 가구 조사 완료! 펌프로 이동하세요!';
+    compassLabel.textContent = '모든 가구 조사 완료! 브로드 펌프로 가세요!';
   }
 }
 
-// 가구 인터뷰 열기
+// 가구 인터뷰 열기 (돋보기 인스펙션 줌인 연출)
 function checkHouseInteraction() {
   if (interviewModal.classList.contains('active')) return;
   if (!currentHouseNear) return;
 
   sound.playDoorKnock();
+  renderer.targetZoom = 2.4; // 돋보기 줌인!
   openInterviewModal(currentHouseNear);
 }
 
@@ -337,31 +358,39 @@ function checkPumpInteraction() {
   }
 }
 
-// 인터뷰 모달 팝업
+// 인터뷰 모달 열기
 function openInterviewModal(house: House) {
   modalAddress.textContent = house.address;
   modalResident.textContent = `주민: ${house.residentName} (${house.primaryPump === 'own_well' ? '자체 우물 사용' : '공용 펌프'})`;
   modalDeaths.textContent = `사망자: ${house.deaths}명`;
-  modalDeaths.className = house.deaths > 0 ? 'text-red-700 font-bold' : 'text-green-700 font-bold text-lg';
+  modalDeaths.className = house.deaths > 0 ? 'text-red-700 font-black text-2xl' : 'text-green-700 font-black text-2xl';
   modalText.textContent = `"${house.interviewText}"`;
 
   const isAlready = !!currentInvestigations[house.id];
-  modalRecordBtn.textContent = isAlready ? '수첩에 이미 기록된 가구입니다' : '역학 수첩에 기록하고 지도에 점 찍기';
+  modalRecordBtn.textContent = isAlready ? '수첩에 이미 기록된 가구입니다' : '역학 수첩에 기록하고 지도에 점 찍기 (+50 EXP)';
   modalRecordBtn.disabled = isAlready;
 
-  // 이상치(양조장 등) 첫 발견 시 충격 사운드
+  // 이상치(양조장 등) 첫 발견 시 충격 사운드 및 알림
   if (house.clueType === 'brewery_anomaly' && !isAlready) {
-    setTimeout(() => sound.playShockAnomaly(), 200);
+    setTimeout(() => {
+      sound.playShockAnomaly();
+      showToast('⚠️ 결정적 모순 발견! 공기 때문이라면서 왜 맥주 공장은 0명일까?!', '💥', true);
+    }, 200);
   }
 
   interviewModal.classList.add('active');
 }
 
-// 모달 수첩 기록 완료
+// 수첩 기록 완료
 modalRecordBtn.addEventListener('click', () => {
   if (!currentHouseNear) return;
 
   sound.playClueRecorded();
+  renderer.targetZoom = 1.6; // 줌 복귀
+
+  totalExp += 50;
+  expText.textContent = String(totalExp);
+  updateRank();
 
   const record: InvestigationRecord = {
     houseId: currentHouseNear.id,
@@ -374,11 +403,26 @@ modalRecordBtn.addEventListener('click', () => {
 
   multiplayer.recordInvestigation(record);
   interviewModal.classList.remove('active');
+  showToast(`[${currentHouseNear.address}] 수첩 기록 완료! (+50 EXP)`);
 });
 
 modalCloseBtn.addEventListener('click', () => {
+  renderer.targetZoom = 1.6;
   interviewModal.classList.remove('active');
 });
+
+// 등급 갱신
+function updateRank() {
+  if (totalExp >= 450) {
+    rankTitle.textContent = '런던의 영웅';
+  } else if (totalExp >= 300) {
+    rankTitle.textContent = '수석 역학자';
+  } else if (totalExp >= 150) {
+    rankTitle.textContent = '예리한 탐정';
+  } else {
+    rankTitle.textContent = '수습 조사관';
+  }
+}
 
 // UI 갱신
 function updateProgressUI() {
@@ -386,13 +430,12 @@ function updateProgressUI() {
   const total = gameData.houses.length;
   progressText.textContent = `${count} / ${total} 가구`;
 
-  // 8가구 이상 조사 시 가설 전환 유도
   if (count >= 8 && currentHypothesis === 'miasma') {
     hypoBtn.classList.add('pulse-anim');
   }
 }
 
-// 가설 전환 버튼
+// 가설 전환
 hypoBtn.addEventListener('click', () => {
   const next = currentHypothesis === 'miasma' ? 'water' : 'miasma';
   multiplayer.switchHypothesis(next);
@@ -401,20 +444,14 @@ hypoBtn.addEventListener('click', () => {
 function updateHypothesisUI() {
   if (currentHypothesis === 'miasma') {
     hypoBtn.textContent = '가설: 나쁜 공기설(Miasma)';
-    hypoBtn.className = 'hud-btn bg-stone-900/90 text-amber-200 border-amber-800';
+    hypoBtn.className = 'hud-btn bg-stone-900/90 text-amber-200 border-amber-800 text-xs sm:text-sm';
     renderer.showMiasmaFog = true;
   } else {
     hypoBtn.textContent = '가설: 오염된 물(수계 전염설)!';
-    hypoBtn.className = 'hud-btn bg-blue-900/90 text-blue-200 border-blue-400 font-bold';
+    hypoBtn.className = 'hud-btn bg-blue-900/90 text-blue-200 border-blue-400 font-black text-xs sm:text-sm';
     renderer.showMiasmaFog = false;
   }
 }
-
-// 안개 토글
-fogBtn.addEventListener('click', () => {
-  renderer.showMiasmaFog = !renderer.showMiasmaFog;
-  fogBtn.textContent = renderer.showMiasmaFog ? '안개: 켜짐' : '안개: 꺼짐';
-});
 
 // 전체 맵 토글
 let isFullMapView = false;
@@ -434,8 +471,8 @@ function toggleFullMap() {
 function triggerVictory() {
   sound.playVictoryFanfare();
   confetti({
-    particleCount: 160,
-    spread: 90,
+    particleCount: 180,
+    spread: 100,
     origin: { y: 0.55 }
   });
   endingModal.classList.add('active');
