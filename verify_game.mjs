@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 
 async function verify() {
   const browser = await chromium.launch({ channel: 'msedge' });
-  const page = await browser.newPage();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   
   console.log('[Verification] 1. http://localhost:5173 접속 중...');
   await page.goto('http://localhost:5173');
@@ -21,13 +21,28 @@ async function verify() {
 
   // 4. 지침 숙지 버튼 클릭 후 게임 진입
   await page.click('#briefing-confirm-btn');
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(800);
 
-  // 5. 19세기 과학자 아바타 & 캔버스 고지도 & 나침반 캡처
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_3_scientist_gameplay.png' });
-  console.log('[Verification] 과학자 캐릭터 & 사실적 고지도 스크린샷 저장 완료');
+  // 5. 북쪽의 브로드 가 40번지(house_01)로 걸어가기 (W 키 누르기)
+  console.log('[Verification] 브로드 가 40번지(house_01)로 걸어가는 중...');
+  await page.keyboard.down('KeyW');
+  await page.waitForTimeout(400);
+  await page.keyboard.up('KeyW');
+  await page.waitForTimeout(500);
 
-  console.log('🎉 [Verification] 모든 신규 UX/UI 검증 100% 통과!');
+  // 6. 집 앞 [E] 프롬프트 캡처
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_3_prompt_e.png' });
+  console.log('[Verification] 집 앞 [E] 상호작용 프롬프트 캡처 완료');
+
+  // 7. E 키 눌러 가구 조사 팝업 오픈
+  await page.keyboard.press('KeyE');
+  await page.waitForTimeout(800);
+
+  // 8. 주민 인터뷰 팝업 캡처
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_4_interview.png' });
+  console.log('[Verification] 가구 인터뷰 팝업 스크린샷 저장 완료');
+
+  console.log('🎉 [Verification] 모든 E2E 게임플레이 검증 완료!');
   await browser.close();
 }
 

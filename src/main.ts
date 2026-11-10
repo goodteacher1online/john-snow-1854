@@ -193,15 +193,15 @@ startBtn.addEventListener('click', async () => {
   };
   myPlayer.color = TEAM_COLORS[team] || '#2563eb';
 
-  // 시작 위치
+  // 2200 월드 대응 시작 위치 (팀별 소호 거리 요충지)
   const TEAM_SPAWNS: Record<string, [number, number]> = {
-    team1: [480, 520],
-    team2: [540, 430],
-    team3: [180, 680],
-    team4: [400, 320],
-    team5: [160, 200]
+    team1: [960, 960],   // 폴란드 가 입구 (소호 중심부 인접 길목)
+    team2: [1000, 700],  // 북쪽 그레이트 말버러 가
+    team3: [720, 1200],  // 서쪽 딘 가
+    team4: [1400, 950],  // 동쪽 워윅 가
+    team5: [1100, 1450]  // 남쪽 골든 스퀘어 거리
   };
-  const [sx, sy] = TEAM_SPAWNS[team] || [480, 520];
+  const [sx, sy] = TEAM_SPAWNS[team] || [960, 960];
   myPlayer.x = sx;
   myPlayer.y = sy;
   renderer.cameraX = sx;
@@ -237,7 +237,7 @@ function gameLoop(now: number) {
   const dt = Math.min(50, now - lastLoopTime);
   lastLoopTime = now;
 
-  const speed = 0.22 * dt;
+  const speed = 0.35 * dt;
   let moveX = 0;
   let moveY = 0;
 
@@ -254,14 +254,14 @@ function gameLoop(now: number) {
   isPlayerMoving = (moveX !== 0 || moveY !== 0);
 
   if (isPlayerMoving) {
-    myPlayer.x = Math.max(50, Math.min(950, myPlayer.x + moveX));
-    myPlayer.y = Math.max(50, Math.min(950, myPlayer.y + moveY));
+    myPlayer.x = Math.max(60, Math.min(2140, myPlayer.x + moveX));
+    myPlayer.y = Math.max(60, Math.min(2140, myPlayer.y + moveY));
     multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
 
     footstepCooldown -= dt;
     if (footstepCooldown <= 0) {
       sound.playFootstep();
-      footstepCooldown = 280;
+      footstepCooldown = 260;
     }
   }
 
@@ -277,7 +277,7 @@ function gameLoop(now: number) {
 // 상호작용 배너
 function updateInteractionBanner() {
   let targetHouse: House | null = null;
-  let minDist = 48;
+  let minDist = 72;
 
   for (const house of gameData.houses) {
     const dist = Math.hypot(house.x - myPlayer.x, house.y - myPlayer.y);
@@ -290,9 +290,14 @@ function updateInteractionBanner() {
 
   const broadPump = gameData.pumps.find(p => p.isSource);
   const distToPump = broadPump ? Math.hypot(broadPump.x - myPlayer.x, broadPump.y - myPlayer.y) : 999;
+  const investigatedCount = Object.keys(currentInvestigations).length;
 
-  if (distToPump < 48 && !isBroadHandleRemoved) {
-    bannerText.textContent = "🚨 브로드 펌프 앞입니다! [스페이스바]로 손잡이를 제거하세요!";
+  if (distToPump < 65 && !isBroadHandleRemoved) {
+    if (investigatedCount >= 8) {
+      bannerText.textContent = "🚨 [결단의 시간] 8가구 이상 조사 완료! [스페이스바]로 브로드 펌프 손잡이를 분리하세요!";
+    } else {
+      bannerText.textContent = `⚠️ 브로드 펌프 앞입니다. 아직 구청을 설득할 데이터가 부족합니다! (현재: ${investigatedCount}/8 가구 조사)`;
+    }
     interactionBanner.classList.remove('opacity-0', 'translate-y-6', 'scale-95');
     interactionBanner.classList.add('opacity-100', 'translate-y-0', 'scale-100');
   } else if (currentHouseNear) {
@@ -345,14 +350,19 @@ function checkHouseInteraction() {
   openInterviewModal(currentHouseNear);
 }
 
-// 펌프 손잡이 제거
+// 펌프 손잡이 제거 (8가구 이상 조사 시 잠금 해제)
 function checkPumpInteraction() {
   const broadPump = gameData.pumps.find(p => p.isSource);
   if (!broadPump || isBroadHandleRemoved) return;
 
   const dist = Math.hypot(broadPump.x - myPlayer.x, broadPump.y - myPlayer.y);
-  if (dist < 48) {
-    if (confirm("🚨 [역사적 결단]\n브로드 스트리트 펌프의 손잡이를 분리하여 오염된 물 공급을 중단하시겠습니까?")) {
+  if (dist < 65) {
+    const count = Object.keys(currentInvestigations).length;
+    if (count < 8) {
+      showToast(`⚠️ 구청을 설득하려면 최소 8가구 이상의 현장 역학 조사가 필요합니다! (현재: ${count}/8)`);
+      return;
+    }
+    if (confirm("🚨 [역사적 결단: 존 스노우의 증명]\n충분한 역학 조사 데이터를 확보했습니다!\n브로드 스트리트 펌프의 손잡이를 분리하여 오염된 물 공급을 영구 중단하시겠습니까?")) {
       multiplayer.removeBroadPumpHandle();
     }
   }
