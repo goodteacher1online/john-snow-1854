@@ -488,15 +488,18 @@ function setOverview(on: boolean, withBoard = false) {
 
 /** 지금 할 일 가운데 가장 가까운 곳까지 길을 따라가는 안내선을 다시 잡는다 */
 function updateGuide() {
-  guide = null;
   if (!nav.ready) return;
-  let best: [number, number] | null = null, bd = Infinity;
+  let best: [number, number] | null = null, bd = Infinity, name = '';
   for (const id of questView(save.stage, has).targets) {
     const pos: [number, number] = id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : SITE_BY_ID[id].door;
     const d = Math.hypot(pos[0] - me.x, pos[1] - me.y);
-    if (d < bd) { bd = d; best = pos; guideName = id === 'pump' ? BROAD_PUMP.name : SITE_BY_ID[id].name; }
+    if (d < bd) { bd = d; best = pos; name = id === 'pump' ? BROAD_PUMP.name : SITE_BY_ID[id].name; }
   }
-  if (!best || bd < REACH) return;
+  if (!best || bd < REACH) { guide = null; return; }
+  // 같은 곳으로 안내선을 따라 걷는 동안에는 다시 계산하지 않는다
+  if (guide && name === guideName && Math.hypot(guide[0][0] - me.x, guide[0][1] - me.y) < 50) return;
+  guideName = name;
+  guide = null;
   const a = nav.walkable(me.x, me.y) ? [me.x, me.y] : nav.snap(me.x, me.y);
   const b = nav.walkable(best[0], best[1]) ? best : nav.snap(best[0], best[1]);
   if (a && b) guide = nav.path(a[0], a[1], b[0], b[1]);
@@ -683,7 +686,7 @@ requestAnimationFrame(frame);
 if (import.meta.env.DEV) {
   Object.assign(window, {
     __game: {
-      state: () => ({ ...save, near: nearId, others: others.map(o => o.name), x: me.x, y: me.y, walking: !!path }),
+      state: () => ({ ...save, near: nearId, others: others.map(o => o.name), x: me.x, y: me.y, walking: !!path, guide: guide?.length ?? -1, guideName }),
       doorOnScreen: (id: string) => renderer.toScreen(...SITE_BY_ID[id].door),
       iconOnScreen: (id: string) => renderer.toScreen(SITE_BY_ID[id].icon[0], SITE_BY_ID[id].icon[1] - 12),
       teleport: (x: number, y: number) => { [me.x, me.y] = nav.snap(x, y) ?? [me.x, me.y]; path = null; },

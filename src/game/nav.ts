@@ -12,6 +12,7 @@ export class Nav {
   private g = new Float32Array(0);
   private from = new Int32Array(0);
   private seen = new Uint32Array(0);
+  private done = new Uint32Array(0);
   private gen = 0;
   public ready = false;
 
@@ -31,6 +32,7 @@ export class Nav {
     this.g = new Float32Array(n);
     this.from = new Int32Array(n);
     this.seen = new Uint32Array(n);
+    this.done = new Uint32Array(n);
     this.ready = true;
   }
 
@@ -108,9 +110,11 @@ export class Nav {
     g[s] = 0; from[s] = -1; seen[s] = gen;
     heap.push(s, 0);
     let found = false, guard = 0;
-    while (heap.size && guard++ < 600000) {
+    while (heap.size && guard++ < 3000000) {
       const cur = heap.pop();
       if (cur === t) { found = true; break; }
+      if (this.done[cur] === gen) continue;      // 더 싼 길로 이미 처리한 칸
+      this.done[cur] = gen;
       const cx = cur % W, cy = (cur - cx) / W, gc = g[cur];
       for (let k = 0; k < 8; k++) {
         const nx = cx + NX[k], ny = cy + NY[k];
@@ -123,7 +127,8 @@ export class Nav {
         if (seen[ni] === gen && ng >= g[ni]) continue;
         seen[ni] = gen; g[ni] = ng; from[ni] = cur;
         const hx = Math.abs(nx - tx), hy = Math.abs(ny - ty);
-        heap.push(ni, ng + (hx > hy ? hx + 0.4142 * hy : hy + 0.4142 * hx));
+        // 남은 거리를 조금 크게 쳐서 목적지 쪽부터 뒤진다 (훨씬 빠르고 길은 거의 같다)
+        heap.push(ni, ng + 1.5 * (hx > hy ? hx + 0.4142 * hy : hy + 0.4142 * hx));
       }
     }
     if (!found) return null;
