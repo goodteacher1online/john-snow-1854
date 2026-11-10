@@ -57,7 +57,7 @@ export class Nav {
           if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
           const i = y * this.w + x;
           // 벽에 바짝 붙은 칸은 피한다
-          if (this.d[i] < 50) continue;
+          if (this.d[i] < 62) continue;
           const dd = dx * dx + dy * dy;
           if (dd < bd) { bd = dd; best = i; }
         }
@@ -67,13 +67,40 @@ export class Nav {
     return [(best % this.w + 0.5) * WORLD_SCALE, (Math.floor(best / this.w) + 0.5) * WORLD_SCALE];
   }
 
-  /** 벽을 따라 미끄러지는 이동. 소호의 길은 대부분 비스듬해서 축 분리 방식으로는 자꾸 걸린다 */
+  /** 벽까지의 거리(원본 지도 픽셀). 칸 사이는 부드럽게 잇는다 */
+  private clearance(wx: number, wy: number): number {
+    const fx = wx / WORLD_SCALE - 0.5, fy = wy / WORLD_SCALE - 0.5;
+    const x0 = Math.floor(fx), y0 = Math.floor(fy);
+    if (x0 < 0 || y0 < 0 || x0 >= this.w - 1 || y0 >= this.h - 1) return 0;
+    const tx = fx - x0, ty = fy - y0, i = y0 * this.w + x0, d = this.d;
+    return ((d[i] * (1 - tx) + d[i + 1] * tx) * (1 - ty) + (d[i + this.w] * (1 - tx) + d[i + this.w + 1] * tx) * ty) / 36;
+  }
+
+  /**
+   * 벽을 따라 미끄러지는 이동. 소호의 길은 대부분 비스듬해서, 벽에 닿으면
+   * 거리장의 기울기로 벽의 방향을 구해 그 방향으로 계속 걷게 한다.
+   */
   public slide(x: number, y: number, dx: number, dy: number): [number, number] {
-    for (const a of SLIDE_ANGLES) {
-      const c = Math.cos(a), s = Math.sin(a);
-      const nx = x + (dx * c - dy * s) * c, ny = y + (dx * s + dy * c) * c;
-      if (this.walkable(nx, ny)) return [nx, ny];
-    }
+    const here = this.clearance(x, y);
+    const free = (mx: number, my: number) => {
+      const c = this.clearance(x + mx, y + my);
+      return c >= MIN_CLEARANCE || c > here;
+    };
+    if (free(dx, dy)) return [x + dx, y + dy];
+    const e = WORLD_SCALE;
+    const gx = this.clearance(x + e, y) - this.clearance(x - e, y);
+    const gy = this.clearance(x, y + e) - this.clearance(x, y - e);
+    const gl = Math.hypot(gx, gy);
+    if (gl < 1e-4) return [x, y];
+    const nx = gx / gl, ny = gy / gl;                    // 벽에서 멀어지는 방향
+    const into = Math.min(0, dx * nx + dy * ny);
+    let tx = dx - into * nx, ty = dy - into * ny;
+    const tl = Math.hypot(tx, ty), step = Math.hypot(dx, dy);
+    if (tl < step * 0.08) return [x, y];                 // 벽을 정면으로 밀고 있다
+    const k = Math.max(tl, step * 0.75) / tl;            // 비스듬히 닿아도 걸음이 처지지 않게
+    tx = tx * k + nx * 0.15; ty = ty * k + ny * 0.15;
+    if (free(tx, ty)) return [x + tx, y + ty];
+    if (free(tx / 2, ty / 2)) return [x + tx / 2, y + ty / 2];
     return [x, y];
   }
 
@@ -139,7 +166,7 @@ export class Nav {
   }
 }
 
-const SLIDE_ANGLES = [0, 0.4, -0.4, 0.8, -0.8, 1.15, -1.15, 1.4, -1.4];
+const MIN_CLEARANCE = 1.5;   // 벽에서 이만큼(원본 픽셀)은 떨어져 걷는다
 const NX = [1, -1, 0, 0, 1, 1, -1, -1];
 const NY = [0, 0, 1, -1, 1, -1, 1, -1];
 const NC = [1, 1, 1, 1, 1.4142, 1.4142, 1.4142, 1.4142];

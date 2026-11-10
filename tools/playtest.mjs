@@ -8,7 +8,11 @@ const URL = process.env.GAME_URL || 'http://localhost:5173/';
 const OUT = process.argv[2] || 'tools/shots';
 mkdirSync(OUT, { recursive: true });
 
-const browser = await chromium.launch({ channel: 'chrome' });
+// 창 여러 개를 띄우므로 가려진 창의 화면 갱신이 멈추지 않게 한다
+const browser = await chromium.launch({
+  channel: 'chrome',
+  args: ['--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', '--disable-background-timer-throttling'],
+});
 const errors = [];
 
 async function newPlayer(name, room, viewport = { width: 1440, height: 900 }) {

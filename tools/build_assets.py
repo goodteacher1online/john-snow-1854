@@ -55,7 +55,11 @@ def street_mask(g):
     dist = ndi.distance_transform_edt(~outline)
     lab, _ = ndi.label(dist >= 2.5)
     street = ndi.binary_dilation(lab == lab[556, 700], K3, iterations=4, mask=~outline)
-    return street | ndi.binary_closing(street, K3)
+    street |= ndi.binary_closing(street, K3)
+    # 윤곽선에 붙어 벽으로 잡힌 글자(브로드 가 펌프 옆 'PU')를 길로 되돌린다
+    carve = np.zeros(g.shape, np.uint8)
+    cv2.fillPoly(carve, [np.array([(713, 541), (732, 535), (735, 549), (722, 557), (712, 552)], np.int32)], 1)
+    return street | (carve > 0)
 
 
 def clean_ink(g, street):

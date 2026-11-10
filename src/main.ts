@@ -70,6 +70,8 @@ let userZoom = 0;
 let path: [number, number][] | null = null;
 let onArrive: (() => void) | null = null;
 let nearId: string | null = null;
+let noteAt = 0;            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
+let sceneSeenAt = 0;       // 장면이 마지막으로 열려 있던 시각 (닫자마자 또 문을 두드리지 않게)
 let others: RemotePlayer[] = [];
 const keys = new Set<string>();
 
@@ -158,7 +160,7 @@ function setStage(stage: number) {
   persist();
   updateHud(true);
   mp.sendProgress(save.records, save.stage);
-  if (save.stage < STAGE.DONE) setTimeout(() => { if (!scene.isOpen) showNote(save.stage); }, 1400);
+  noteAt = performance.now() + 1400;
 }
 
 function addXp(n: number) { save.xp += n; }
@@ -370,7 +372,7 @@ function goTo(wx: number, wy: number, then?: () => void) {
 }
 
 function interact() {
-  if (!nearId || cinematic) return;
+  if (!nearId || cinematic || performance.now() - sceneSeenAt < 400) return;
   if (nearId.startsWith('pump:')) inspectPump(nearId.slice(5));
   else void interview(SITE_BY_ID[nearId]);
 }
@@ -568,8 +570,6 @@ async function start() {
   started = true;
   updateHud();
   persist();
-  if (save.noteSeen < save.stage && save.stage < STAGE.DONE) showNote(save.stage);
-
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
@@ -586,6 +586,9 @@ function frame(now: number) {
   last = now;
   if (started) {
     const paused = scene.isOpen || modalOpen() || cinematic;
+    if (scene.isOpen) sceneSeenAt = now;
+    document.body.classList.toggle('in-scene', scene.isOpen);
+    if (!paused && save.noteSeen < save.stage && save.stage < STAGE.DONE && now > noteAt) showNote(save.stage);
     if (paused) { keys.clear(); me.moving = false; } else if (nav.ready) move(dt);
     if (me.moving) {
       stepClock -= dt;
@@ -632,6 +635,7 @@ if (import.meta.env.DEV) {
       teleport: (x: number, y: number) => { [me.x, me.y] = nav.snap(x, y) ?? [me.x, me.y]; path = null; },
       door: (id: string) => SITE_BY_ID[id].door,
       pump: () => [BROAD_PUMP.x, BROAD_PUMP.y],
+      nav,
     },
   });
 }
