@@ -180,7 +180,7 @@ body.in-scene #hud { display: none; }
   left: 50%; top: 104px; transform: translate(-50%, -12px); max-width: min(640px, calc(100vw - 32px));
   padding: 12px 22px; border-radius: 14px; background: var(--ink); color: var(--on-ink); font-size: 17px; text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 12px 34px rgba(20, 12, 4, 0.45);
-  opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 45;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 20;
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 #toast.key { border-color: var(--red); box-shadow: 0 0 0 1.5px var(--red), 0 12px 34px rgba(20, 12, 4, 0.45); }

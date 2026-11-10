@@ -77,39 +77,24 @@ export class Nav {
   }
 
   /**
-   * 벽을 따라 미끄러지는 이동. 소호의 길은 대부분 비스듬해서, 벽에 닿으면
-   * 거리장의 기울기로 벽의 방향을 구해 그 방향으로 계속 걷게 한다.
+   * 벽을 따라 미끄러지는 이동. 일단 가려는 대로 옮긴 뒤, 벽에 너무 붙었으면
+   * 벽에서 멀어지는 방향(거리장의 기울기)으로 밀어낸다. 비스듬한 벽에서는 밀려난 만큼이
+   * 곧 벽을 따라 걷는 움직임이 되고, 정면으로 민 벽에서는 제자리에 선다.
    */
   public slide(x: number, y: number, dx: number, dy: number): [number, number] {
-    const here = this.clearance(x, y);
-    const free = (mx: number, my: number) => {
-      const c = this.clearance(x + mx, y + my);
-      return c >= MIN_CLEARANCE || c > here;
-    };
-    if (free(dx, dy)) return [x + dx, y + dy];
-    const e = WORLD_SCALE;
-    const gx = this.clearance(x + e, y) - this.clearance(x - e, y);
-    const gy = this.clearance(x, y + e) - this.clearance(x, y - e);
-    const gl = Math.hypot(gx, gy);
-    if (gl < 1e-4) return [x, y];
-    const nx = gx / gl, ny = gy / gl;                    // 벽에서 멀어지는 방향
-    const into = Math.min(0, dx * nx + dy * ny);
-    let tx = dx - into * nx, ty = dy - into * ny;
-    const tl = Math.hypot(tx, ty), step = Math.hypot(dx, dy);
-    if (tl < step * 0.2) {
-      // 벽을 정면으로 밀고 있다: 튀어나온 모퉁이라면 더 트인 쪽으로 비켜 돌아간다
-      const s = step * 0.75;
-      const a = this.clearance(x - ny * s, y + nx * s), b = this.clearance(x + ny * s, y - nx * s);
-      if (Math.abs(a - b) < 0.3) return [x, y];          // 양쪽이 똑같이 막힌 평평한 벽
-      const side = a > b ? 1 : -1;
-      const sx = -ny * s * side, sy = nx * s * side;
-      return free(sx, sy) ? [x + sx, y + sy] : [x, y];
+    let nx = x + dx, ny = y + dy;
+    const e = WORLD_SCALE * 2;
+    for (let i = 0; i < 4; i++) {
+      const c = this.clearance(nx, ny);
+      if (c >= MIN_CLEARANCE) return [nx, ny];
+      const gx = this.clearance(nx + e, ny) - this.clearance(nx - e, ny);
+      const gy = this.clearance(nx, ny + e) - this.clearance(nx, ny - e);
+      const gl = Math.hypot(gx, gy);
+      if (gl < 1e-4) break;
+      const push = (MIN_CLEARANCE - c + 0.05) * WORLD_SCALE;
+      nx += gx / gl * push; ny += gy / gl * push;
     }
-    const k = Math.max(tl, step * 0.75) / tl;            // 비스듬히 닿아도 걸음이 처지지 않게
-    tx = tx * k + nx * 0.15; ty = ty * k + ny * 0.15;
-    if (free(tx, ty)) return [x + tx, y + ty];
-    if (free(tx / 2, ty / 2)) return [x + tx / 2, y + ty / 2];
-    return [x, y];
+    return this.clearance(nx, ny) >= MIN_CLEARANCE - 0.25 ? [nx, ny] : [x, y];
   }
 
   /** 거리를 따라가는 최단 경로(월드 좌표 꼭짓점 목록). 길이 없으면 null */

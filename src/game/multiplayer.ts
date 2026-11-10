@@ -22,7 +22,7 @@ export class Multiplayer {
     try {
       await insertCoin({ skipLobby: true, roomCode: room });
       const self = myPlayer();
-      self.setState('profile', { name: me.name, team: me.team, gender: me.gender } satisfies Profile, true);
+      self.setState('who', { name: me.name, team: me.team, gender: me.gender } satisfies Profile, true);
       onPlayerJoin(player => {
         if (player.id === self.id) return;
         this.peers.set(player.id, { player, view: null, known: new Set(), done: false });
@@ -52,7 +52,7 @@ export class Multiplayer {
   public others(): RemotePlayer[] {
     const out: RemotePlayer[] = [];
     for (const [id, peer] of this.peers) {
-      const profile = peer.player.getState('profile') as Profile | undefined;
+      const profile = peer.player.getState('who') as Profile | undefined;
       const pos = peer.player.getState('pos') as Pos | undefined;
       if (!profile || !pos) continue;
       const prog = (peer.player.getState('prog') as Progress | undefined) ?? { records: [], stage: 0 };

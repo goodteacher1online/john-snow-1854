@@ -49,7 +49,9 @@ async function playInterview(page) {
 async function visit(page, id) {
   const [x, y] = await page.evaluate(i => window.__game.door(i), id);
   await page.evaluate(([x, y]) => window.__game.teleport(x, y), [x, y]);
-  await page.waitForTimeout(250);
+  await page.bringToFront();
+  await page.waitForTimeout(350);
+  if (process.env.DEBUG) console.log(id, JSON.stringify(await page.evaluate(() => { const s = window.__game.state(); return { near: s.near, x: s.x, y: s.y, modal: !!document.querySelector('.modal.open'), scene: !document.getElementById('scene').classList.contains('hidden') }; })));
   await page.keyboard.press('e');
   await playInterview(page);
 }

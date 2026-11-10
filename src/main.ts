@@ -312,6 +312,7 @@ function removeHandle() {
     sound.playVictoryFanfare();
     addXp(XP.handle);
     save.stage = STAGE.DONE;
+    nearId = null;              // 펌프 앞 안내 문구를 새 단계에 맞게 다시 쓴다
     persist();
     updateHud(true);
     mp.sendProgress(save.records, save.stage);
@@ -432,12 +433,12 @@ function updateNear() {
     const d = Math.hypot(s.door[0] - me.x, s.door[1] - me.y);
     if (d < bd) { bd = d; best = s.id; }
   }
-  if (!best) {
-    for (const p of PUMPS) {
-      const d = Math.hypot(p.x - me.x, p.y - me.y);
-      if (d < bd) { bd = d; best = 'pump:' + p.id; }
-    }
+  for (const p of PUMPS) {
+    const d = Math.hypot(p.x - me.x, p.y - me.y);
+    if (d < bd) { bd = d; best = 'pump:' + p.id; }
   }
+  // 손잡이를 떼러 왔을 때는 옆집 문보다 펌프가 먼저다
+  if (save.stage === STAGE.HANDLE && Math.hypot(BROAD_PUMP.x - me.x, BROAD_PUMP.y - me.y) < REACH) best = 'pump:broad';
   if (best === nearId) return;
   nearId = best;
   const prompt = $('prompt');
