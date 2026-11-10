@@ -103,7 +103,10 @@
         <button id="hypo-toggle-btn" class="hud-btn bg-stone-900/90 text-amber-200 border-amber-800 text-xs sm:text-sm font-bold">
           가설: 나쁜 공기설(Miasma)
         </button>
-        <button id="guide-open-btn" class="hud-btn bg-amber-900/90 text-amber-100 border-amber-700 font-black text-xs sm:text-sm">
+        <button id="notebook-btn" class="hud-btn bg-amber-800/90 text-amber-100 border-amber-600 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow">
+          📊 <span>역학 수첩 (N)</span>
+        </button>
+        <button id="guide-open-btn" class="hud-btn bg-stone-900/90 text-stone-200 border-stone-700 font-bold text-xs sm:text-sm">
           📜 수사 훈령
         </button>
         <button id="map-toggle-btn" class="hud-btn bg-stone-900/90 text-stone-200 border-stone-700 text-xs sm:text-sm font-bold">
@@ -220,6 +223,67 @@
         <button id="modal-record-btn" class="w-full py-4 rounded-2xl text-lg font-black bg-amber-800 text-amber-50 hover:bg-amber-900 transition-all shadow-xl active:scale-[0.99]">
           수첩에 기록하고 지도에 점 찍기 (+50 EXP)
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-1. 존 스노우 역학 조사 분석 수첩 모달 (데이터 기반 넛지 & 가설 검증) -->
+  <div id="notebook-modal" class="modal-backdrop">
+    <div class="modal-card max-w-2xl p-7 sm:p-9 font-serif">
+      <div class="flex justify-between items-start border-b-2 border-stone-300 pb-3 mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-widest font-black text-amber-800">Field Epidemiological Analysis</span>
+          <h2 class="text-2xl sm:text-3xl font-serif font-black text-stone-950 mt-1">📊 역학 조사관의 데이터 분석 수첩</h2>
+        </div>
+        <button id="notebook-close-btn" class="text-stone-500 hover:text-stone-900 text-2xl font-bold px-2">✕</button>
+      </div>
+
+      <div class="space-y-5 text-stone-800">
+        <!-- 1. 통계 요약 카드 -->
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+            <span class="text-xs text-stone-600 block">조사 가구</span>
+            <strong id="nb-house-count" class="text-xl text-stone-900">0 / 20</strong>
+          </div>
+          <div class="bg-red-50 p-3 rounded-xl border border-red-200">
+            <span class="text-xs text-stone-600 block">확인된 사망자</span>
+            <strong id="nb-death-count" class="text-xl text-red-700">0 명</strong>
+          </div>
+          <div class="bg-stone-100 p-3 rounded-xl border border-stone-300">
+            <span class="text-xs text-stone-600 block">현재 지배 가설</span>
+            <strong id="nb-current-hypo" class="text-xs sm:text-sm text-stone-800 block mt-1 font-sans">나쁜 공기설(Miasma)</strong>
+          </div>
+        </div>
+
+        <!-- 2. 식수원별 사망자 비교 표 (존 스노우의 결정적 데이터 시각화) -->
+        <div class="bg-white p-4 rounded-xl border-2 border-stone-200 shadow-sm">
+          <h3 class="text-base font-black text-stone-900 mb-2 flex items-center gap-1.5">
+            <span>💧</span> 식수 공급원별 가구 사망자 집계
+          </h3>
+          <div id="nb-pump-stats" class="space-y-2 text-sm">
+            <!-- 런타임에 동적 생성 -->
+          </div>
+        </div>
+
+        <!-- 3. 현장 조사에서 발견된 모순점 (넛지 아카이브) -->
+        <div class="bg-amber-50/80 p-4 rounded-xl border border-amber-200">
+          <h3 class="text-base font-black text-amber-950 mb-2 flex items-center gap-1.5">
+            <span>💡</span> 조사관이 마주한 가설의 모순 (현장 증언들)
+          </h3>
+          <ul id="nb-anomalies" class="space-y-2 text-sm text-stone-700">
+            <li class="italic text-stone-500">아직 결정적 모순이 발견되지 않았습니다. 양조장, 구빈원, 외곽 저택 등을 조사해보십시오.</li>
+          </ul>
+        </div>
+
+        <!-- 4. 과학적 결단: 새로운 가설 채택 -->
+        <div class="pt-3 border-t-2 border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-stone-600">
+            충분한 데이터가 모였다면 당국의 '공기 감염설'을 기각하고 '오염된 식수원' 가설을 채택하십시오.
+          </p>
+          <button id="switch-water-hypo-btn" class="w-full sm:w-auto px-5 py-3 rounded-xl font-sans font-bold text-sm bg-blue-800 text-blue-50 hover:bg-blue-900 transition-all shadow-md shrink-0">
+            🌊 가설 전환: 오염된 식수원(Water-borne)
+          </button>
+        </div>
       </div>
     </div>
   </div>

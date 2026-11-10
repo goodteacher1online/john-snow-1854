@@ -112,32 +112,8 @@ export class SohoMapRenderer {
     // 2. 가로등 조명 효과 (밤안개 속 따뜻한 오렌지 불빛)
     this.renderGasLamps(ctx);
 
-    // 3. 브로드 펌프 감염 동심원 파동
+    // 3. 조사 진행 통계 (정답 유출 펄스 완전 삭제 - 데이터 기반 자기주도 탐구 보장)
     const investigatedCount = Object.keys(investigations).length;
-    if (investigatedCount > 0) {
-      const broadPump = this.data.pumps.find(p => p.isSource);
-      if (broadPump) {
-        const [bx, by] = this.worldToScreen(broadPump.x, broadPump.y);
-        const radius = Math.min(380, (100 + investigatedCount * 14)) * this.zoom;
-        const heatGrad = ctx.createRadialGradient(bx, by, 15 * this.zoom, bx, by, radius);
-        heatGrad.addColorStop(0, 'rgba(185, 28, 28, 0.38)');
-        heatGrad.addColorStop(0.5, 'rgba(220, 38, 38, 0.16)');
-        heatGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
-
-        ctx.fillStyle = heatGrad;
-        ctx.beginPath();
-        ctx.arc(bx, by, radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(185, 28, 28, 0.45)';
-        ctx.lineWidth = 2.5;
-        ctx.setLineDash([10, 8]);
-        ctx.beginPath();
-        ctx.arc(bx, by, radius * (0.88 + Math.sin(this.animTick * 0.5) * 0.1), 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-    }
 
     // 4. 입체적인 2.5D 빅토리안 건물 (Houses) 렌더링! (게임성 대폭 강화)
     for (const house of this.data.houses) {
@@ -192,137 +168,254 @@ export class SohoMapRenderer {
     const isInvestigated = !!investigations[house.id];
     const distToPlayer = Math.hypot(house.x - myPlayer.x, house.y - myPlayer.y);
     const scale = this.zoom;
+    const isBrewery = house.id === 'house_15';
+    const isWorkhouse = house.id === 'house_16';
 
-    const w = 36 * scale;
-    const h = 26 * scale;
-    const roofH = 18 * scale;
+    // 1854 빅토리안 건축 고증 규격 (양조장/구빈원/테라스하우스)
+    const w = (isBrewery ? 52 : isWorkhouse ? 58 : 38) * scale;
+    const h = (isBrewery ? 30 : isWorkhouse ? 32 : 28) * scale;
+    const roofH = (isBrewery ? 12 : isWorkhouse ? 14 : 16) * scale;
 
     ctx.save();
     ctx.translate(hx, hy);
 
-    if (isInvestigated) {
-      // [조사 완료] 역학 점 표기 (사망자 수에 비례)
-      if (house.deaths > 0) {
-        const dotR = Math.min(28, (7 + house.deaths * 2.8) * scale);
-        ctx.beginPath();
-        ctx.arc(0, 0, dotR, 0, Math.PI * 2);
-        ctx.fillStyle = '#b91c1c';
-        ctx.fill();
-        ctx.strokeStyle = '#450a0a';
-        ctx.lineWidth = 3;
-        ctx.stroke();
+    // 1. 건물 바닥 그림자
+    ctx.beginPath();
+    ctx.ellipse(w * 0.08, h * 0.32, w * 0.62, h * 0.38, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+    ctx.fill();
 
-        ctx.font = `900 ${Math.max(12, 14 * scale)}px sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(house.deaths), 0, 0);
-      } else {
-        // 이상치 (사망 0명): 황금 테두리 녹색 방패
-        ctx.beginPath();
-        ctx.arc(0, 0, 15 * scale, 0, Math.PI * 2);
-        ctx.fillStyle = '#15803d';
-        ctx.fill();
-        ctx.strokeStyle = '#fef08a';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        ctx.font = `900 ${Math.max(11, 13 * scale)}px sans-serif`;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText("0", 0, 0);
-      }
-    } else {
-      // [미조사 가구] 정교한 2.5D 빅토리안 하우스
-
-      // 건물 바닥 그림자
-      ctx.beginPath();
-      ctx.ellipse(w * 0.1, h * 0.3, w * 0.65, h * 0.35, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fill();
-
-      // 건물 벽체 (벽돌 붉은 갈색)
-      ctx.fillStyle = '#854d27';
+    // 2. 파사드 벽체 (건축 양식별 고증 색상)
+    if (isBrewery) {
+      // 라이온 양조장: 짙은 적벽돌 공장 외벽
+      ctx.fillStyle = '#7f1d1d';
       ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.strokeStyle = '#3e1f0d';
-      ctx.lineWidth = 1.8;
+      ctx.strokeStyle = '#450a0a';
+      ctx.lineWidth = 2 * scale;
       ctx.strokeRect(-w / 2, -h / 2, w, h);
 
-      // 입체 삼각형 슬레이트 지붕
+      // 양조장 맥주통(Barrels) 3개 나열
+      const barrelR = 4 * scale;
+      [-16 * scale, -6 * scale, 4 * scale].forEach(bx => {
+        ctx.beginPath();
+        ctx.ellipse(bx, h / 2 - 2 * scale, barrelR * 1.2, barrelR, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#78350f';
+        ctx.fill();
+        ctx.strokeStyle = '#451a03';
+        ctx.lineWidth = 1 * scale;
+        ctx.stroke();
+      });
+
+      // 대형 아치 문
       ctx.beginPath();
-      ctx.moveTo(-w / 2 - 2, -h / 2);
-      ctx.lineTo(0, -h / 2 - roofH);
-      ctx.lineTo(w / 2 + 2, -h / 2);
-      ctx.closePath();
-      ctx.fillStyle = '#5c2d16'; // 짙은 지붕 타일
+      ctx.arc(14 * scale, h / 2 - 8 * scale, 7 * scale, Math.PI, 0);
+      ctx.fillStyle = '#1c1917';
       ctx.fill();
-      ctx.strokeStyle = '#2b1206';
-      ctx.lineWidth = 2;
+
+      // 양조장 높은 산업용 벽돌 굴뚝
+      const chimX = -18 * scale;
+      const chimY = -h / 2 - 20 * scale;
+      ctx.fillStyle = '#450a0a';
+      ctx.fillRect(chimX - 3 * scale, chimY, 7 * scale, 24 * scale);
+      if (Math.random() < 0.12) {
+        this.smokeParticles.push({
+          x: hx + chimX,
+          y: hy + chimY,
+          life: 0,
+          maxLife: 45 + Math.random() * 25,
+          size: (4 + Math.random() * 4) * scale
+        });
+      }
+    } else if (isWorkhouse) {
+      // 세인트 제임스 구빈원: 육중한 런던 화강암 석조 파사드
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2.2 * scale;
+      ctx.strokeRect(-w / 2, -h / 2, w, h);
+
+      // 규칙적인 3열 촘촘한 수직 격자창
+      const winW = 4.5 * scale;
+      const winH = 6 * scale;
+      [-18 * scale, 0, 18 * scale].forEach(wx => {
+        // 2층 창
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(wx - winW / 2, -h / 2 + 3 * scale, winW, winH);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(wx - winW / 2 + 0.8 * scale, -h / 2 + 3.8 * scale, winW - 1.6 * scale, winH - 1.6 * scale);
+        // 1층 창
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(wx - winW / 2, -h / 2 + 13 * scale, winW, winH);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(wx - winW / 2 + 0.8 * scale, -h / 2 + 13.8 * scale, winW - 1.6 * scale, winH - 1.6 * scale);
+      });
+
+      // 엄숙한 철제 정문
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(-5 * scale, h / 2 - 10 * scale, 10 * scale, 10 * scale);
+    } else {
+      // 빅토리안 테라스 하우스 (런던 스톡 브릭 & 흑철제 난간)
+      const brickColor = (house.deaths % 2 === 0) ? '#a36a4f' : '#94523c';
+      ctx.fillStyle = brickColor;
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.strokeStyle = '#431407';
+      ctx.lineWidth = 1.8 * scale;
+      ctx.strokeRect(-w / 2, -h / 2, w, h);
+
+      // 맨사드 슬레이트 박공 지붕
+      ctx.beginPath();
+      ctx.moveTo(-w / 2 - 2 * scale, -h / 2);
+      ctx.lineTo(0, -h / 2 - roofH);
+      ctx.lineTo(w / 2 + 2 * scale, -h / 2);
+      ctx.closePath();
+      ctx.fillStyle = '#334155'; // 슬레이트 블루그레이
+      ctx.fill();
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1.8 * scale;
       ctx.stroke();
 
-      // 굴뚝 & 연기 발생 지점
-      const chimneyX = w * 0.25;
-      const chimneyY = -h / 2 - roofH * 0.7;
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(chimneyX - 2 * scale, chimneyY - 8 * scale, 5 * scale, 10 * scale);
+      // 굴뚝 2구 테라코타 포트
+      const cx = w * 0.22;
+      const cy = -h / 2 - roofH * 0.65;
+      ctx.fillStyle = '#7c2d12';
+      ctx.fillRect(cx - 3 * scale, cy - 7 * scale, 6 * scale, 9 * scale);
+      ctx.fillStyle = '#ea580c';
+      ctx.fillRect(cx - 2.5 * scale, cy - 9 * scale, 2 * scale, 2.5 * scale);
+      ctx.fillRect(cx + 0.5 * scale, cy - 9 * scale, 2 * scale, 2.5 * scale);
 
       if (Math.random() < 0.08) {
         this.smokeParticles.push({
-          x: hx + chimneyX,
-          y: hy + chimneyY - 8 * scale,
+          x: hx + cx,
+          y: hy + cy - 9 * scale,
           life: 0,
-          maxLife: 40 + Math.random() * 20,
-          size: (3 + Math.random() * 3) * scale
+          maxLife: 35 + Math.random() * 20,
+          size: (3 + Math.random() * 2.5) * scale
         });
       }
 
-      // 창문 2개 (노란 가스등 불빛)
-      const winW = 6 * scale;
+      // 흰색 상인방(Lintel) 격자 슬라이딩 창 (Sash Windows)
+      const winW = 6.5 * scale;
       const winH = 8 * scale;
-      [-w * 0.25, w * 0.25].forEach((wx) => {
-        ctx.fillStyle = '#fef08a'; // 창문 따뜻한 불빛
-        ctx.fillRect(wx - winW / 2, -h / 2 + 4 * scale, winW, winH);
+      [-w * 0.26, w * 0.26].forEach((wx) => {
+        // 흰색 창틀
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(wx - winW / 2 - 0.8 * scale, -h / 2 + 3 * scale, winW + 1.6 * scale, winH + 1.2 * scale);
+        // 유리창 (따뜻한 호박색 불빛)
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(wx - winW / 2, -h / 2 + 3.8 * scale, winW, winH);
+        // 4칸 격자
         ctx.strokeStyle = '#451a03';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(wx - winW / 2, -h / 2 + 4 * scale, winW, winH);
+        ctx.lineWidth = 0.8 * scale;
+        ctx.beginPath();
+        ctx.moveTo(wx, -h / 2 + 3.8 * scale);
+        ctx.lineTo(wx, -h / 2 + 3.8 * scale + winH);
+        ctx.moveTo(wx - winW / 2, -h / 2 + 3.8 * scale + winH / 2);
+        ctx.lineTo(wx + winW / 2, -h / 2 + 3.8 * scale + winH / 2);
+        ctx.stroke();
       });
 
-      // 중앙 현관문 & 황동 손잡이
-      const doorW = 8 * scale;
-      const doorH = 12 * scale;
+      // 아치형 목재 현관문
+      const doorW = 7.5 * scale;
+      const doorH = 11 * scale;
       ctx.fillStyle = '#3e1c0c';
       ctx.fillRect(-doorW / 2, h / 2 - doorH, doorW, doorH);
       ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(-doorW / 2 + 2 * scale, h / 2 - doorH * 0.5, 1.5 * scale, 1.5 * scale); // 손잡이
+      ctx.fillRect(-doorW / 2 + 1.8 * scale, h / 2 - doorH * 0.5, 1.4 * scale, 1.4 * scale); // 황동 손잡이
 
-      // ★ [핵심] 가구 접근 시 큼직한 황금빛 펄스 링 & 머리 위 3D 뱃지
-      if (distToPlayer < 65) {
-        const pulse = (Math.sin(this.animTick * 2.8) + 1) / 2;
-        ctx.beginPath();
-        ctx.arc(0, 0, (w * 0.75 + pulse * 18) * scale, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(245, 158, 11, ${1 - pulse * 0.5})`;
-        ctx.lineWidth = 3.5;
-        ctx.stroke();
+      // 흑철제 난간 (Area Railings)
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1.2 * scale;
+      ctx.beginPath();
+      ctx.moveTo(-w / 2, h / 2);
+      ctx.lineTo(-doorW / 2 - 1 * scale, h / 2);
+      ctx.moveTo(doorW / 2 + 1 * scale, h / 2);
+      ctx.lineTo(w / 2, h / 2);
+      ctx.stroke();
+    }
 
-        // 머리 위 3D [E] 조사 뱃지
-        ctx.save();
-        ctx.translate(0, -h / 2 - roofH - 14 * scale);
-        ctx.fillStyle = '#f59e0b';
+    // 3. ★ [존 스노우 1854 원본 고증] 조사 완료 시 검은 사망자 막대탑(Death Bars) 스택 렌더링!
+    if (isInvestigated) {
+      if (house.deaths > 0) {
+        // 사망자 수만큼 차곡차곡 쌓이는 검은색 잉크 막대 (스노우 원본 지도 방식)
+        const barW = 16 * scale;
+        const barH = 3.6 * scale;
+        const barGap = 1.2 * scale;
+        const startY = -h / 2 - roofH - 4 * scale;
+
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1 * scale;
+
+        for (let i = 0; i < house.deaths; i++) {
+          const by = startY - i * (barH + barGap);
+          ctx.fillRect(-barW / 2, by, barW, barH);
+          ctx.strokeRect(-barW / 2, by, barW, barH);
+        }
+
+        // 막대탑 최상단 사망자 수 뱃지
+        const badgeY = startY - house.deaths * (barH + barGap) - 7 * scale;
         ctx.beginPath();
-        ctx.roundRect(-30 * scale, -15 * scale, 60 * scale, 30 * scale, 8 * scale);
+        ctx.arc(0, badgeY, 7.5 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = '#b91c1c';
         ctx.fill();
-        ctx.strokeStyle = '#451a03';
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5 * scale;
         ctx.stroke();
 
-        ctx.font = `900 ${Math.max(13, 15 * scale)}px -apple-system, sans-serif`;
-        ctx.fillStyle = '#0c0a09';
+        ctx.font = `bold ${Math.max(9, 10 * scale)}px sans-serif`;
+        ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText("조사 [E]", 0, 0);
-        ctx.restore();
+        ctx.fillText(String(house.deaths), 0, badgeY);
+      } else {
+        // 사망 0명 이상치 (양조장, 딘 가 21번지 등) : 녹색 방패 뱃지
+        const badgeY = -h / 2 - roofH - 8 * scale;
+        ctx.beginPath();
+        ctx.arc(0, badgeY, 9 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = '#15803d';
+        ctx.fill();
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+
+        ctx.font = `bold ${Math.max(9, 10 * scale)}px sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText("0", 0, badgeY);
       }
+    }
+
+    // 4. 가구 접근 시 황금빛 펄스 링 & 머리 위 3D 뱃지
+    if (distToPlayer < 65) {
+      const pulse = (Math.sin(this.animTick * 2.8) + 1) / 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, (w * 0.72 + pulse * 18) * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(245, 158, 11, ${1 - pulse * 0.5})`;
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+
+      // 머리 위 3D 조사 뱃지
+      ctx.save();
+      const topOffset = isInvestigated && house.deaths > 0 
+        ? -h / 2 - roofH - (house.deaths * 4.8 + 26) * scale 
+        : -h / 2 - roofH - 16 * scale;
+      ctx.translate(0, topOffset);
+
+      ctx.fillStyle = isInvestigated ? '#15803d' : '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(-32 * scale, -14 * scale, 64 * scale, 28 * scale, 7 * scale);
+      ctx.fill();
+      ctx.strokeStyle = '#1e1b4b';
+      ctx.lineWidth = 2 * scale;
+      ctx.stroke();
+
+      ctx.font = `900 ${Math.max(12, 13 * scale)}px sans-serif`;
+      ctx.fillStyle = isInvestigated ? '#ffffff' : '#0c0a09';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isInvestigated ? "확인 [E]" : "조사 [E]", 0, 0);
+      ctx.restore();
     }
 
     ctx.restore();
@@ -350,7 +443,7 @@ export class SohoMapRenderer {
     ctx.restore();
   }
 
-  // 빅토리안 무쇠 펌프 드로잉
+  // 빅토리안 무쇠 펌프 드로잉 (★ 모든 8개 펌프 외형 100% 동일화 - 정답 유출 방지!)
   private drawVictorianPump(
     ctx: CanvasRenderingContext2D,
     pump: Pump,
@@ -359,71 +452,61 @@ export class SohoMapRenderer {
     investigatedCount: number
   ) {
     const [px, py] = this.worldToScreen(pump.x, pump.y);
-    const isBroad = pump.isSource;
     const scale = this.zoom;
 
     ctx.save();
     ctx.translate(px, py);
 
-    // 원형 석재 기단
+    // 원형 화강암 석재 기단 (모든 펌프 동일)
     ctx.beginPath();
-    ctx.arc(0, 0, (isBroad ? 22 : 14) * scale, 0, Math.PI * 2);
-    ctx.fillStyle = isBroad ? (broadHandleRemoved ? '#475569' : '#0284c7') : '#334155';
+    ctx.arc(0, 0, 14 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = broadHandleRemoved && pump.isSource ? '#475569' : '#64748b';
     ctx.fill();
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 3.5 * scale;
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 3 * scale;
     ctx.stroke();
 
-    // 무쇠 펌프 기둥
-    ctx.fillStyle = '#0f172a';
+    // 무쇠 펌프 기둥 (모든 펌프 동일한 짙은 슬레이트 블랙)
+    ctx.fillStyle = '#1e293b';
     ctx.fillRect(-4 * scale, -15 * scale, 8 * scale, 20 * scale);
 
     // 주물 손잡이
-    if (!isBroad || !broadHandleRemoved) {
+    if (!pump.isSource || !broadHandleRemoved) {
       ctx.beginPath();
       ctx.moveTo(0, -11 * scale);
-      ctx.lineTo(15 * scale, -3 * scale);
-      ctx.strokeStyle = '#f8fafc';
-      ctx.lineWidth = 3.5 * scale;
+      ctx.lineTo(14 * scale, -3 * scale);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 3 * scale;
       ctx.stroke();
     }
 
-    // 펌프 이름 명판
-    ctx.font = `bold ${Math.max(12, 14 * scale)}px 'Georgia', serif`;
-    ctx.fillStyle = isBroad ? '#0369a1' : '#1e293b';
-    ctx.textAlign = 'center';
-    const label = pump.name + (isBroad && broadHandleRemoved ? " [손잡이 제거됨!]" : "");
-    ctx.fillText(label, 0, 28 * scale);
+    // 주둥이 (Spout)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-8 * scale, -4 * scale, 5 * scale, 4 * scale);
 
-    // 브로드 펌프 손잡이 제거 인터랙션 (8개 이상 조사 시 잠금 해제)
-    if (isBroad && !broadHandleRemoved) {
-      const dist = Math.hypot(pump.x - myPlayer.x, pump.y - myPlayer.y);
-      if (dist < 65) {
-        if (investigatedCount >= 8) {
-          ctx.fillStyle = '#dc2626';
-          ctx.beginPath();
-          ctx.roundRect(-80 * scale, -52 * scale, 160 * scale, 32 * scale, 10 * scale);
-          ctx.fill();
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 2.5;
-          ctx.stroke();
-          ctx.font = `900 ${Math.max(13, 15 * scale)}px sans-serif`;
-          ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'center';
-          ctx.fillText("손잡이 제거 [Space]", 0, -31 * scale);
-        } else {
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-          ctx.beginPath();
-          ctx.roundRect(-85 * scale, -45 * scale, 170 * scale, 26 * scale, 8 * scale);
-          ctx.fill();
-          ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-          ctx.font = `bold ${Math.max(11, 12 * scale)}px sans-serif`;
-          ctx.fillStyle = '#f8fafc';
-          ctx.textAlign = 'center';
-          ctx.fillText(`증거 데이터 필요 (${investigatedCount}/8)`, 0, -28 * scale);
-        }
+    // 펌프 이름 명판 (동일한 슬레이트 그레이)
+    ctx.font = `bold ${Math.max(11, 13 * scale)}px 'Georgia', serif`;
+    ctx.fillStyle = '#334155';
+    ctx.textAlign = 'center';
+    const label = pump.name + (pump.isSource && broadHandleRemoved ? " [손잡이 분리됨]" : "");
+    ctx.fillText(label, 0, 26 * scale);
+
+    // 펌프 앞 접근 시 안내 (브로드 펌프 특혜 표시 완전 삭제)
+    const dist = Math.hypot(pump.x - myPlayer.x, pump.y - myPlayer.y);
+    if (dist < 55) {
+      if (pump.isSource && !broadHandleRemoved && investigatedCount >= 8) {
+        // 충분한 데이터가 모였을 때만 결단 뱃지 표시
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.roundRect(-80 * scale, -48 * scale, 160 * scale, 30 * scale, 8 * scale);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.font = `900 ${Math.max(12, 14 * scale)}px sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText("손잡이 분리 [Space]", 0, -29 * scale);
       }
     }
 

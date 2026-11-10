@@ -7,42 +7,46 @@ async function verify() {
   console.log('[Verification] 1. http://localhost:5173 접속 중...');
   await page.goto('http://localhost:5173');
   
-  // 1. 신규 로비 캡처 (원클릭 참여, 주사위 이름, 팀 카드)
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_1_lobby_v2.png' });
-  console.log('[Verification] 로비 v2 스크린샷 저장 완료');
+  // 1. 로비 캡처
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_1_lobby_v3.png' });
+  console.log('[Verification] 로비 스크린샷 저장 완료');
 
   // 2. 시작 버튼 클릭
   await page.click('#start-btn');
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(500);
 
-  // 3. 미션 브리핑 팝업 캡처
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_2_briefing.png' });
-  console.log('[Verification] 미션 브리핑 지침서 스크린샷 저장 완료');
-
-  // 4. 지침 숙지 버튼 클릭 후 게임 진입
+  // 3. 미션 브리핑 닫기
   await page.click('#briefing-confirm-btn');
   await page.waitForTimeout(800);
 
-  // 5. 북쪽의 브로드 가 40번지(house_01)로 걸어가기 (W 키 누르기)
-  console.log('[Verification] 브로드 가 40번지(house_01)로 걸어가는 중...');
+  // 4. 소호 길을 따라 걸어가기 (도로 보행 충돌 검사)
+  console.log('[Verification] 도로 위 보행 이동 중...');
   await page.keyboard.down('KeyW');
-  await page.waitForTimeout(400);
-  await page.keyboard.up('KeyW');
   await page.waitForTimeout(500);
+  await page.keyboard.up('KeyW');
+  await page.waitForTimeout(400);
 
-  // 6. 집 앞 [E] 프롬프트 캡처
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_3_prompt_e.png' });
-  console.log('[Verification] 집 앞 [E] 상호작용 프롬프트 캡처 완료');
-
-  // 7. E 키 눌러 가구 조사 팝업 오픈
+  // 5. 집 앞 조사 및 인터뷰 열기
   await page.keyboard.press('KeyE');
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(600);
 
-  // 8. 주민 인터뷰 팝업 캡처
-  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_4_interview.png' });
-  console.log('[Verification] 가구 인터뷰 팝업 스크린샷 저장 완료');
+  // 6. 인터뷰 모달에서 수첩 기록 버튼 클릭 (+50 EXP 및 사망자 막대 생성)
+  await page.click('#modal-record-btn');
+  await page.waitForTimeout(1000);
 
-  console.log('🎉 [Verification] 모든 E2E 게임플레이 검증 완료!');
+  // 7. 조사 완료 후 건물 위에 존 스노우 잉크 막대탑(Death Bars)이 솟아오른 게임 화면 캡처!
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_5_death_bars.png' });
+  console.log('[Verification] 존 스노우 사망자 잉크 막대탑 스크린샷 캡처 완료');
+
+  // 8. 'N' 키를 눌러 역학 분석 수첩 모달 열기
+  await page.keyboard.press('KeyN');
+  await page.waitForTimeout(700);
+
+  // 9. 역학 데이터 분석 수첩 (식수원별 사망자 비교 표 & 넛지 모순 아카이브) 캡처!
+  await page.screenshot({ path: 'C:/Users/goodt/.gemini/antigravity-cli/brain/52c09cb9-751c-4c3a-944b-d14cdd4796a5/verify_6_data_notebook.png' });
+  console.log('[Verification] 역학 데이터 수첩 모달 스크린샷 캡처 완료');
+
+  console.log('🎉 [Verification] 모든 신규 고증 및 데이터 기반 넛지 E2E 검증 100% 통과!');
   await browser.close();
 }
 

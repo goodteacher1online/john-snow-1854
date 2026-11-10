@@ -4,6 +4,7 @@ import { SnowGameData, PlayerState, House, InvestigationRecord } from './types.t
 import { SohoMapRenderer } from './game/renderer.ts';
 import { MultiplayerManager } from './game/multiplayer.ts';
 import { sound } from './game/audio.ts';
+import { navigator } from './game/navigation.ts';
 import confetti from 'canvas-confetti';
 
 const gameData = rawData as SnowGameData;
@@ -66,6 +67,17 @@ const modalCloseBtn = document.getElementById('modal-close-btn') as HTMLButtonEl
 
 const endingModal = document.getElementById('ending-modal') as HTMLDivElement;
 const endingCloseBtn = document.getElementById('ending-close-btn') as HTMLButtonElement;
+
+// 역학 수첩 모달
+const notebookBtn = document.getElementById('notebook-btn') as HTMLButtonElement;
+const notebookModal = document.getElementById('notebook-modal') as HTMLDivElement;
+const notebookCloseBtn = document.getElementById('notebook-close-btn') as HTMLButtonElement;
+const nbHouseCount = document.getElementById('nb-house-count') as HTMLElement;
+const nbDeathCount = document.getElementById('nb-death-count') as HTMLElement;
+const nbCurrentHypo = document.getElementById('nb-current-hypo') as HTMLElement;
+const nbPumpStats = document.getElementById('nb-pump-stats') as HTMLElement;
+const nbAnomalies = document.getElementById('nb-anomalies') as HTMLElement;
+const switchWaterHypoBtn = document.getElementById('switch-water-hypo-btn') as HTMLButtonElement;
 
 // 초기 랜덤 이름
 function rollRandomName() {
@@ -149,6 +161,9 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === 'm' || e.key === 'M') {
     toggleFullMap();
+  }
+  if (e.key === 'n' || e.key === 'N') {
+    toggleNotebook();
   }
 });
 window.addEventListener('keyup', (e) => {
@@ -254,14 +269,20 @@ function gameLoop(now: number) {
   isPlayerMoving = (moveX !== 0 || moveY !== 0);
 
   if (isPlayerMoving) {
-    myPlayer.x = Math.max(60, Math.min(2140, myPlayer.x + moveX));
-    myPlayer.y = Math.max(60, Math.min(2140, myPlayer.y + moveY));
-    multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
+    // 1854년 소호 도로망 기반 충돌 및 벽 미끄러짐(Wall Sliding) 이동 판정
+    const [resolvedX, resolvedY] = navigator.resolveMove(myPlayer.x, myPlayer.y, moveX, moveY);
+    
+    // 실제로 이동이 일어난 경우에만 위치 업데이트
+    if (resolvedX !== myPlayer.x || resolvedY !== myPlayer.y) {
+      myPlayer.x = resolvedX;
+      myPlayer.y = resolvedY;
+      multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
 
-    footstepCooldown -= dt;
-    if (footstepCooldown <= 0) {
-      sound.playFootstep();
-      footstepCooldown = 260;
+      footstepCooldown -= dt;
+      if (footstepCooldown <= 0) {
+        sound.playFootstep();
+        footstepCooldown = 260;
+      }
     }
   }
 
@@ -413,13 +434,154 @@ modalRecordBtn.addEventListener('click', () => {
 
   multiplayer.recordInvestigation(record);
   interviewModal.classList.remove('active');
-  showToast(`[${currentHouseNear.address}] 수첩 기록 완료! (+50 EXP)`);
+
+  // ★ [데이터 기반 넛지] 정답을 가르쳐주지 않고 스스로 의문을 품게 만드는 질문 넛지!
+  if (currentHouseNear.id === 'house_15') {
+    setTimeout(() => {
+      showToast('💡 [역학적 의문 #1] 양조장 인부 70명은 종일 소호 공기를 마시는데 사망자 0명! (맥주/자체 우물 음용)', '💡');
+    }, 400);
+  } else if (currentHouseNear.id === 'house_16') {
+    setTimeout(() => {
+      showToast('💡 [역학적 의문 #2] 악취가 가장 심한 구빈원(500명)은 사망자 5명뿐! 악취(공기)가 원인일까요?', '💡');
+    }, 400);
+  } else if (currentHouseNear.id === 'house_17') {
+    setTimeout(() => {
+      showToast('💡 [역학적 의문 #3] 공기 맑은 시골 전원주택의 마님이 소호 브로드 가 물을 배달받아 마신 후 사망했습니다!', '💡');
+    }, 400);
+  } else {
+    showToast(`[${currentHouseNear.address}] 수첩 기록 완료! (+50 EXP)`);
+  }
+
+  updateNotebookUI();
 });
 
 modalCloseBtn.addEventListener('click', () => {
   renderer.targetZoom = 1.6;
   interviewModal.classList.remove('active');
 });
+
+// ==========================================
+// 역학 분석 수첩 (Data Notebook) 시스템
+// ==========================================
+function toggleNotebook() {
+  const isActive = notebookModal.classList.contains('active');
+  if (isActive) {
+    notebookModal.classList.remove('active');
+  } else {
+    updateNotebookUI();
+    notebookModal.classList.add('active');
+  }
+}
+notebookBtn.addEventListener('click', toggleNotebook);
+notebookCloseBtn.addEventListener('click', () => notebookModal.classList.remove('active'));
+
+// 가설 전환 버튼 핸들러
+switchWaterHypoBtn.addEventListener('click', () => {
+  currentHypothesis = 'water_borne';
+  multiplayer.changeHypothesis('water_borne');
+  updateHypothesisUI();
+  updateNotebookUI();
+  sound.playVictory();
+  showToast("🌊 가설 전환 성공! '오염된 식수원(Water-borne)'으로 결론을 내렸습니다. 이제 브로드 펌프로 가십시오!", "🔬");
+});
+
+// 수첩 내부 통계 데이터 실시간 계산 & 시각화
+function updateNotebookUI() {
+  const investigatedList = Object.values(currentInvestigations);
+  const count = investigatedList.length;
+  const totalDeaths = investigatedList.reduce((acc, cur) => acc + cur.deaths, 0);
+
+  nbHouseCount.textContent = `${count} / ${gameData.houses.length}`;
+  nbDeathCount.textContent = `${totalDeaths} 명`;
+  nbCurrentHypo.textContent = currentHypothesis === 'miasma' ? '나쁜 공기설(Miasma)' : '오염된 식수원(Water-borne)';
+  nbCurrentHypo.className = currentHypothesis === 'miasma' 
+    ? 'text-xs sm:text-sm text-stone-800 block mt-1 font-sans' 
+    : 'text-xs sm:text-sm text-blue-700 font-black block mt-1 font-sans';
+
+  // 식수 공급원별 집계
+  let broadDeaths = 0, broadHouses = 0;
+  let otherPumpDeaths = 0, otherPumpHouses = 0;
+  let ownWellDeaths = 0, ownWellHouses = 0;
+
+  for (const inv of investigatedList) {
+    if (inv.primaryPump === 'pump_broad') {
+      broadDeaths += inv.deaths;
+      broadHouses++;
+    } else if (inv.primaryPump === 'own_well') {
+      ownWellDeaths += inv.deaths;
+      ownWellHouses++;
+    } else {
+      otherPumpDeaths += inv.deaths;
+      otherPumpHouses++;
+    }
+  }
+
+  const maxDeaths = Math.max(1, broadDeaths, otherPumpDeaths, ownWellDeaths);
+
+  nbPumpStats.innerHTML = `
+    <div class="space-y-3 font-sans">
+      <!-- 브로드 가 펌프 이용 가구 -->
+      <div>
+        <div class="flex justify-between text-xs font-bold text-stone-800 mb-1">
+          <span class="text-red-700">🚨 브로드 가 공공 펌프 이용 가구 (${broadHouses}가구)</span>
+          <span class="text-red-700 font-black">${broadDeaths}명 사망</span>
+        </div>
+        <div class="w-full bg-stone-200 h-4 rounded-full overflow-hidden">
+          <div class="bg-red-600 h-full rounded-full transition-all duration-500" style="width: ${(broadDeaths / maxDeaths) * 100}%"></div>
+        </div>
+      </div>
+
+      <!-- 타 공공 펌프 이용 가구 -->
+      <div>
+        <div class="flex justify-between text-xs font-bold text-stone-800 mb-1">
+          <span>💧 타 공공 펌프 이용 가구 (${otherPumpHouses}가구)</span>
+          <span class="font-black text-stone-700">${otherPumpDeaths}명 사망</span>
+        </div>
+        <div class="w-full bg-stone-200 h-3 rounded-full overflow-hidden">
+          <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: ${(otherPumpDeaths / maxDeaths) * 100}%"></div>
+        </div>
+      </div>
+
+      <!-- 자체 우물 / 맥주 음용 (양조장, 구빈원) -->
+      <div>
+        <div class="flex justify-between text-xs font-bold text-stone-800 mb-1">
+          <span class="text-green-700">🛡️ 자체 우물 / 맥주 음용 (양조장·구빈원, ${ownWellHouses}곳)</span>
+          <span class="text-green-700 font-black">${ownWellDeaths}명 사망</span>
+        </div>
+        <div class="w-full bg-stone-200 h-3 rounded-full overflow-hidden">
+          <div class="bg-green-600 h-full rounded-full transition-all duration-500" style="width: ${(ownWellDeaths / maxDeaths) * 100}%"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 발견된 모순점 체크리스트
+  const anomalies: string[] = [];
+  if (currentInvestigations['house_15']) {
+    anomalies.push('✅ [양조장 증언] 인부 70명 전원 무사: 종일 소호 공기를 마시지만 공짜 맥주와 자체 우물물만 마심.');
+  }
+  if (currentInvestigations['house_16']) {
+    anomalies.push('✅ [구빈원 증언] 악취가 가장 심한 500명 수용시설의 사망자는 5명뿐: 성문 밖 펌프를 안 쓰고 자체 우물물 음용.');
+  }
+  if (currentInvestigations['house_17']) {
+    anomalies.push('✅ [햄스테드 증언] 소호에서 멀리 떨어진 맑은 시골 저택 마님의 사망: 소호 아들이 브로드 가 물을 마차로 배달.');
+  }
+
+  if (anomalies.length > 0) {
+    nbAnomalies.innerHTML = anomalies.map(a => `<li class="font-bold text-stone-900">${a}</li>`).join('');
+  } else {
+    nbAnomalies.innerHTML = `<li class="italic text-stone-500">아직 결정적 모순이 발견되지 않았습니다. 거리의 다양한 장소(양조장, 구빈원, 외곽 저택 등)를 조사해보십시오.</li>`;
+  }
+
+  // 가설 전환 버튼 활성화 조건 (모순 1개 이상 또는 가구 5개 이상 조사 시)
+  if (count >= 5 || anomalies.length >= 1) {
+    switchWaterHypoBtn.disabled = false;
+    switchWaterHypoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+  } else {
+    switchWaterHypoBtn.disabled = true;
+    switchWaterHypoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  }
+}
 
 // 등급 갱신
 function updateRank() {
