@@ -192,6 +192,7 @@ def build_sprites():
 
 
 if __name__ == '__main__':
+    ASSETS.mkdir(parents=True, exist_ok=True)
     what = sys.argv[1] if len(sys.argv) > 1 else 'all'
     if what in ('all', 'map'):
         build_map()
