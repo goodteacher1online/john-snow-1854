@@ -260,7 +260,7 @@ const SITE_TEXT: SiteText[] = [
     outro: '저도 그 통의 물을 마셨는지 자꾸 기억을 더듬게 됩니다.',
   },
   {
-    id: 'peter', name: '피터 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
+    id: 'littlepulteney', name: '리틀 풀트니 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '다른 펌프가 더 가까운데 브로드 가 물을 길어 마신 남매가 사망',
     npc: { name: '잭', role: '짐꾼', portrait: 'youth', mirror: true },
     people: 7, deaths: 2, smell: 'low', smellNote: '냄새가 덜한 거리',
@@ -275,12 +275,12 @@ const SITE_TEXT: SiteText[] = [
     ],
     air: [
       '나: 이 근처 냄새는 어떻습니까?',
-      '피터 가는 괜찮은 편이에요. 큰 하수구도 없고 외양간도 멀고요.',
+      '이 거리는 괜찮은 편이에요. 큰 하수구도 없고 외양간도 멀고요.',
       '그래서 더 모르겠어요. 왜 우리 집에…',
     ],
     water: [
       '나: 물은 어디서 길어 옵니까?',
-      '가까운 건 루퍼트 가 펌프예요. 그런데 형은 그 물이 미지근하고 맛없다고 싫어했어요.',
+      '가까운 건 브라이들 골목 펌프예요. 그런데 형은 그 물이 미지근하고 맛없다고 싫어했어요.',
       '짐을 나르러 브로드 가를 지날 때마다 통에 가득 길어 왔습니다. 형과 누이는 그 물만 마셨어요. 저는 일터에서 맥주를 마셨고요.',
     ],
     outro: '형이 일부러 먼 데서 길어 온 물이었는데…',
@@ -424,7 +424,7 @@ const PLACE_POINTS: [string, number, number][] = [
   ['카나비 가', 475, 510], ['카나비 가', 510, 600],
   ['케임브리지 가', 735, 580], ['케임브리지 가', 755, 630],
   ['그레이트 말버러 가', 480, 400], ['그레이트 말버러 가', 600, 350],
-  ['리틀 말버러 가', 445, 478], ['피터 가', 955, 640], ['워더 가', 930, 420], ['워더 가', 990, 560],
+  ['리틀 말버러 가', 445, 478], ['피터 가', 955, 640], ['리틀 풀트니 가', 930, 735], ['워더 가', 930, 420], ['워더 가', 990, 560],
   ['루퍼트 가', 1020, 770], ['그레이트 풀트니 가', 780, 760], ['리틀 윈드밀 가', 800, 680],
   ['실버 가', 690, 690], ['골든 스퀘어', 655, 790], ['리젠트 가', 410, 700], ['리젠트 가', 330, 450],
   ['옥스퍼드 가', 600, 160], ['옥스퍼드 가', 900, 110], ['뉴 가', 810, 580], ['브루어 가', 780, 850],
@@ -472,15 +472,15 @@ export function questView(stage: number, has: (id: string) => boolean): QuestVie
     case STAGE.REASON:
       return { title: '수첩을 펴고 기록을 견주어 보라', items: [{ label: '수첩의 추리 쪽', done: false }], targets: [] };
     case STAGE.PREDICT: {
-      const far = has('peter') || has('carnaby');
+      const far = has('littlepulteney') || has('carnaby');
       return {
         title: '가설이 맞는지 확인하라',
         items: [
           { label: '굴드 댁, 브로드 가 20번지', done: has('gould') },
           { label: '일리 형제 뇌관 공장', done: has('eley') },
-          { label: '피터 가 또는 카나비 가', done: far },
+          { label: '리틀 풀트니 가 또는 카나비 가', done: far },
         ],
-        targets: [...left(['gould', 'eley']), ...(far ? [] : ['peter', 'carnaby'])],
+        targets: [...left(['gould', 'eley']), ...(far ? [] : ['littlepulteney', 'carnaby'])],
       };
     }
     case STAGE.HEARING:
@@ -498,7 +498,7 @@ export function questView(stage: number, has: (id: string) => boolean): QuestVie
 export function stageCleared(stage: number, has: (id: string) => boolean): boolean {
   if (stage === STAGE.FIRST) return SITES.filter(s => s.deaths > 0 && has(s.id)).length >= FIRST_NEED;
   if (stage === STAGE.TEST_AIR) return has('workhouse') && has('brewery');
-  if (stage === STAGE.PREDICT) return has('gould') && has('eley') && (has('peter') || has('carnaby'));
+  if (stage === STAGE.PREDICT) return has('gould') && has('eley') && (has('littlepulteney') || has('carnaby'));
   return false;
 }
 
@@ -539,7 +539,7 @@ export const NOTES: { title: string; body: string[]; button: string }[] = [
       '좋소. 그러나 그럴듯한 생각과 증명된 사실은 다르오. 물이 원인이라면 이런 일도 있어야 하오.',
       '하나. 펌프 가까이 살아도 그 물을 마시지 않은 사람은 무사하다.',
       '둘. 멀리 살아도 그 물을 마신 사람은 앓는다.',
-      '브로드 가 20번지 굴드 씨 댁, 37번지 뇌관 공장, 그리고 다른 펌프가 더 가까운 피터 가나 카나비 가를 찾아가 확인하시오.',
+      '브로드 가 20번지 굴드 씨 댁, 37번지 뇌관 공장, 그리고 다른 펌프가 더 가까운 리틀 풀트니 가나 카나비 가를 찾아가 확인하시오.',
     ],
     button: '확인하러 간다',
   },

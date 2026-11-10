@@ -25,7 +25,7 @@
     "brewery": { "door": [814, 500], "icon": [823, 542] },
     "workhouse": { "door": [701, 425], "icon": [632, 420] },
     "gould": { "door": [838, 481], "icon": [831, 458] },
-    "peter": { "door": [950, 635], "icon": [944, 612] },
+    "littlepulteney": { "door": [935, 733], "icon": [922, 712] },
     "carnaby": { "door": [499, 560], "icon": [518, 553] },
     "marlborough": { "door": [451, 492], "icon": [431, 503] },
     "pulteney": { "door": [800, 770], "icon": [818, 762] },
