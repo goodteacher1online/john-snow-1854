@@ -23,9 +23,13 @@ export class SohoMapRenderer {
   private houseBreweryImg: HTMLImageElement | null = null;
   private houseWorkhouseImg: HTMLImageElement | null = null;
 
-  // 카메라 뷰포트 (월드 크기: 2200 x 2200)
-  public cameraX = 1100;
-  public cameraY = 1100;
+  // 1854 빅토리안 주물 무쇠 펌프 스프라이트 이미지
+  private pumpImg: HTMLImageElement | null = null;
+  private pumpNoHandleImg: HTMLImageElement | null = null;
+
+  // 카메라 뷰포트 (월드 크기: 2200 x 2064 - 고지도 1280x1201 정밀 1:1 스케일)
+  public cameraX = 1234;
+  public cameraY = 944;
   public zoom = 1.15; // 더 넓고 쾌적한 기본 시야
   public targetZoom = 1.15;
   
@@ -34,6 +38,9 @@ export class SohoMapRenderer {
 
   // 1854 존 스노우 원본 보로노이(Voronoi / Thiessen) 도보권역 시각화 토글
   public showVoronoi = false;
+
+  // 가스등 조명 온/오프
+  public showGasLamps = true;
 
   // 교실 대형 스크린(전자칠판) 전체 관제 모드
   public isBigScreenMode = false;
@@ -48,6 +55,7 @@ export class SohoMapRenderer {
     this.data = data;
     this.loadAuthenticMap();
     this.loadHouseSprites();
+    this.loadPumpSprites();
     this.resize();
     window.addEventListener('resize', () => this.resize());
   }
@@ -59,6 +67,13 @@ export class SohoMapRenderer {
     this.houseBreweryImg.src = './assets/houses/house_brewery.png';
     this.houseWorkhouseImg = new Image();
     this.houseWorkhouseImg.src = './assets/houses/house_workhouse.png';
+  }
+
+  private loadPumpSprites() {
+    this.pumpImg = new Image();
+    this.pumpImg.src = './assets/pump_cast_iron.png';
+    this.pumpNoHandleImg = new Image();
+    this.pumpNoHandleImg.src = './assets/pump_cast_iron_no_handle.png';
   }
 
   private loadAuthenticMap() {
@@ -109,14 +124,15 @@ export class SohoMapRenderer {
       this.zoom += (this.targetZoom - this.zoom) * 0.1;
     }
 
-    // 1. 2200 x 2200 광활한 1854 고지도 배경
+    // 1. 2200 x 2064 광활한 1854 고지도 배경 (1280x1201 x 1.71875 정밀 종횡비 보정)
     ctx.fillStyle = '#eddcb0';
     ctx.fillRect(0, 0, width, height);
 
-    const WORLD_SIZE = 2200;
+    const WORLD_WIDTH = 2200;
+    const WORLD_HEIGHT = 2064;
     const [originX, originY] = this.worldToScreen(0, 0);
-    const mapW = WORLD_SIZE * this.zoom;
-    const mapH = WORLD_SIZE * this.zoom;
+    const mapW = WORLD_WIDTH * this.zoom;
+    const mapH = WORLD_HEIGHT * this.zoom;
 
     if (this.mapLoaded && this.mapImage) {
       ctx.save();
@@ -145,7 +161,9 @@ export class SohoMapRenderer {
     }
 
     // 2. 가로등 조명 효과 (밤안개 속 따뜻한 오렌지 불빛)
-    this.renderGasLamps(ctx);
+    if (this.showGasLamps) {
+      this.renderGasLamps(ctx);
+    }
 
     // 3. 조사 진행 통계 (정답 유출 펄스 완전 삭제 - 데이터 기반 자기주도 탐구 보장)
     const investigatedCount = Object.keys(investigations).length;
@@ -332,21 +350,21 @@ export class SohoMapRenderer {
 
     // 1. 실사 건물 스프라이트 렌더링
     let sprite = this.houseTerraceImg;
-    let spriteW = 58 * scale;
-    let spriteH = 58 * scale;
-    let roofTopOffset = -22 * scale;
+    let spriteW = 68 * scale;
+    let spriteH = 88 * scale;
+    let roofTopOffset = -42 * scale;
 
     if (isBrewery) {
       sprite = this.houseBreweryImg;
-      spriteW = 86 * scale;
-      spriteH = 70 * scale;
-      roofTopOffset = -26 * scale;
+      spriteW = 105 * scale;
+      spriteH = 92 * scale;
+      roofTopOffset = -44 * scale;
 
       // 양조장 굴뚝 연기 파티클
       if (Math.random() < 0.12) {
         this.smokeParticles.push({
-          x: hx - 28 * scale,
-          y: hy - 32 * scale,
+          x: hx - 32 * scale,
+          y: hy - 44 * scale,
           life: 0,
           maxLife: 45 + Math.random() * 25,
           size: (4 + Math.random() * 4) * scale
@@ -354,9 +372,9 @@ export class SohoMapRenderer {
       }
     } else if (isWorkhouse) {
       sprite = this.houseWorkhouseImg;
-      spriteW = 92 * scale;
-      spriteH = 70 * scale;
-      roofTopOffset = -26 * scale;
+      spriteW = 110 * scale;
+      spriteH = 96 * scale;
+      roofTopOffset = -46 * scale;
     }
 
     if (sprite && sprite.complete && sprite.naturalWidth > 0) {
@@ -438,17 +456,17 @@ export class SohoMapRenderer {
       if (!isInvestigated) {
         ctx.fillStyle = '#f59e0b';
         ctx.beginPath();
-        ctx.roundRect(-26 * scale, roofTopOffset - 22 * scale, 52 * scale, 16 * scale, 8 * scale);
+        ctx.roundRect(-34 * scale, roofTopOffset - 26 * scale, 68 * scale, 22 * scale, 10 * scale);
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.2 * scale;
+        ctx.lineWidth = 1.5 * scale;
         ctx.stroke();
 
-        ctx.font = `900 ${Math.max(10, 11 * scale)}px sans-serif`;
-        ctx.fillStyle = '#1c1917';
+        ctx.font = `900 ${Math.max(12, 14 * scale)}px 'GangwonEduAllBold', sans-serif`;
+        ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('조사 [E]', 0, roofTopOffset - 14 * scale);
+        ctx.fillText('현장 조사 [E]', 0, roofTopOffset - 15 * scale);
       }
     }
 
@@ -477,7 +495,7 @@ export class SohoMapRenderer {
     ctx.restore();
   }
 
-  // 빅토리안 무쇠 펌프 드로잉 (★ 모든 8개 펌프 외형 100% 동일화 - 정답 유출 방지!)
+  // 빅토리안 무쇠 펌프 드로잉 (★ 모든 8개 펌프 실사 주물 스프라이트 렌더링!)
   private drawVictorianPump(
     ctx: CanvasRenderingContext2D,
     pump: Pump,
@@ -491,39 +509,59 @@ export class SohoMapRenderer {
     ctx.save();
     ctx.translate(px, py);
 
-    // 원형 화강암 석재 기단 (모든 펌프 동일)
-    ctx.beginPath();
-    ctx.arc(0, 0, 14 * scale, 0, Math.PI * 2);
-    ctx.fillStyle = broadHandleRemoved && pump.isSource ? '#475569' : '#64748b';
-    ctx.fill();
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 3 * scale;
-    ctx.stroke();
+    const isRemoved = broadHandleRemoved && pump.isSource;
+    const sprite = isRemoved ? this.pumpNoHandleImg : this.pumpImg;
 
-    // 무쇠 펌프 기둥 (모든 펌프 동일한 짙은 슬레이트 블랙)
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-4 * scale, -15 * scale, 8 * scale, 20 * scale);
-
-    // 주물 손잡이
-    if (!pump.isSource || !broadHandleRemoved) {
+    if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+      // 실사 주물 펌프 스프라이트 렌더링 (w: 36, h: 60)
+      const pw = 36 * scale;
+      const ph = 60 * scale;
+      ctx.drawImage(sprite, -pw / 2, -ph + 8 * scale, pw, ph);
+    } else {
+      // 대체 렌더링: 원형 화강암 석재 기단
       ctx.beginPath();
-      ctx.moveTo(0, -11 * scale);
-      ctx.lineTo(14 * scale, -3 * scale);
-      ctx.strokeStyle = '#cbd5e1';
+      ctx.arc(0, 0, 14 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = isRemoved ? '#475569' : '#64748b';
+      ctx.fill();
+      ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 3 * scale;
       ctx.stroke();
+
+      // 무쇠 펌프 기둥
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(-4 * scale, -15 * scale, 8 * scale, 20 * scale);
+
+      // 주물 손잡이
+      if (!pump.isSource || !broadHandleRemoved) {
+        ctx.beginPath();
+        ctx.moveTo(0, -11 * scale);
+        ctx.lineTo(14 * scale, -3 * scale);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 3 * scale;
+        ctx.stroke();
+      }
+
+      // 주둥이
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(-8 * scale, -4 * scale, 5 * scale, 4 * scale);
     }
 
-    // 주둥이 (Spout)
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-8 * scale, -4 * scale, 5 * scale, 4 * scale);
-
-    // 펌프 이름 명판 (동일한 슬레이트 그레이)
-    ctx.font = `bold ${Math.max(11, 13 * scale)}px 'Georgia', serif`;
-    ctx.fillStyle = '#334155';
+    // 펌프 이름 명판 (크고 뚜렷한 정자체 폰트, italic 금지)
+    ctx.font = `bold ${Math.max(13, 15 * scale)}px 'GangwonEduAllBold', sans-serif`;
+    ctx.fillStyle = '#1e293b';
     ctx.textAlign = 'center';
     const label = pump.name + (pump.isSource && broadHandleRemoved ? " [손잡이 분리됨]" : "");
-    ctx.fillText(label, 0, 26 * scale);
+    
+    // 명판 배경 패치로 가독성 극대화
+    const labelWidth = ctx.measureText(label).width;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.fillRect(-labelWidth / 2 - 6 * scale, 12 * scale, labelWidth + 12 * scale, 18 * scale);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1 * scale;
+    ctx.strokeRect(-labelWidth / 2 - 6 * scale, 12 * scale, labelWidth + 12 * scale, 18 * scale);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(label, 0, 24 * scale);
 
     // 펌프 앞 접근 시 안내 (브로드 펌프 특혜 표시 완전 삭제)
     const dist = Math.hypot(pump.x - myPlayer.x, pump.y - myPlayer.y);

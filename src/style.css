@@ -1,151 +1,299 @@
 @import url('https://cdn.jsdelivr.net/gh/webfontworld/gangwon/GangwonEduAllBold.css');
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Lora:ital,wght@0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&display=swap');
 
+/* Nothing Design & 1854 빅토리안 고문서 테마 SSOT */
 html, body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #0f172a;
-  font-family: 'GangwonEduAllBold', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #0c0a09;
+  font-family: 'GangwonEduAllBold', -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+  font-style: normal !important;
+  font-size: 18px; /* Nothing Design 초대형 스케일 기준 */
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* 로비 스타일 */
-.lobby-card {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
-  background-color: #1e293b;
-  border: 1.5px solid #334155;
+/* 모든 텍스트 기울임(italic) 전면 금지 규칙 */
+*, *::before, *::after {
+  font-style: normal !important;
 }
 
-/* 캐릭터 성별 선택 버튼 */
+/* 1. 1854년 당시 런던 보건 당국 공문서 양피지(Parchment) 로비 카드 */
+.lobby-parchment-card {
+  background-color: #f7f1e5;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.7) 0%, rgba(235, 222, 200, 0.45) 100%),
+    linear-gradient(135deg, rgba(160, 120, 80, 0.06) 0%, rgba(120, 80, 40, 0.1) 100%);
+  border: 4px double #8c6d46;
+  box-shadow: 
+    0 30px 70px -15px rgba(0, 0, 0, 0.95),
+    inset 0 0 50px rgba(180, 140, 95, 0.28),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+  color: #291e14;
+}
+
+/* 빅토리안 붉은 밀랍 인장/스탬프 배지 */
+.wax-seal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background-color: #881337;
+  border: 2px solid #be123c;
+  color: #fff1f2;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(136, 19, 55, 0.35);
+}
+
+/* 캐릭터 성별 선택 버튼 (고대비 Nothing Design 스타일) */
 .gender-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background-color: #0f172a;
-  border: 2px solid #334155;
-  color: #94a3b8;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background-color: #ede2cf;
+  border: 2.5px solid #a89070;
+  color: #4a3828;
   cursor: pointer;
   transition: all 0.15s ease;
+  min-height: 56px;
 }
 
 .gender-btn:hover {
-  border-color: #64748b;
-  background-color: #1e293b;
+  border-color: #5c442c;
+  background-color: #e5d8c3;
+  transform: translateY(-1px);
 }
 
 .gender-btn.active {
-  border-color: #f8fafc;
-  background-color: #0f172a;
-  box-shadow: 0 0 0 2px #f8fafc, 0 8px 16px rgba(0, 0, 0, 0.4);
-  color: #f8fafc;
+  border-color: #881337;
+  background-color: #261c14;
+  box-shadow: 0 0 0 2px #be123c, 0 8px 18px rgba(38, 28, 20, 0.4);
+  color: #fef2f2;
 }
 
-.input-field {
+.gender-btn.active span:first-child {
+  color: #ffffff !important;
+}
+
+.gender-btn.active span:last-child {
+  color: #fca5a5 !important;
+}
+
+/* 닉네임 입력창 */
+.input-field-parchment {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background-color: #0f172a;
-  border: 1.5px solid #334155;
-  color: #f8fafc;
-  font-size: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background-color: #ffffff;
+  border: 2px solid #8c6d46;
+  color: #1c140d;
+  font-size: 19px;
+  font-weight: 900;
   outline: none;
   transition: all 0.15s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
-.input-field:focus {
-  border-color: #f8fafc;
-  box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.2);
+.input-field-parchment:focus {
+  border-color: #881337;
+  box-shadow: 0 0 0 3px rgba(190, 18, 60, 0.25);
 }
 
 /* 팀 원클릭 선택 버튼 카드 */
-.team-btn {
+.team-btn-parchment {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background-color: #292524;
-  border: 2px solid #44403c;
-  color: #d6d3d1;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background-color: #ede2cf;
+  border: 2px solid #b8a082;
+  color: #2d2015;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
 }
 
-.team-btn:hover {
+.team-btn-parchment:hover {
   border-color: var(--team-color);
-  background-color: #35302d;
+  background-color: #e2d3bd;
 }
 
-.team-btn.active {
+.team-btn-parchment.active {
   border-color: var(--team-color);
-  background-color: #3b3531;
-  box-shadow: 0 0 12px rgba(0,0,0,0.4), inset 0 0 0 1px var(--team-color);
+  background-color: #261c14;
+  box-shadow: 0 0 14px rgba(0,0,0,0.35), inset 0 0 0 2px var(--team-color);
+  color: #ffffff;
+}
+
+.team-btn-parchment.active .team-name {
   color: #ffffff;
 }
 
 .team-badge {
-  font-size: 11px;
-  font-weight: 800;
-  padding: 2px 6px;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 3px 8px;
   border-radius: 6px;
   background-color: var(--team-color);
   color: #ffffff;
 }
 
 .team-name {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* 상단 HUD */
-.hud-header {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 20;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: none;
-}
-
-.hud-header > * {
-  pointer-events: auto;
-}
-
-.hud-pill {
-  padding: 8px 16px;
-  border-radius: 9999px;
-  background-color: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid #334155;
-  color: #f8fafc;
-  font-size: 15px;
-  font-weight: 700;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.hud-btn {
-  padding: 9px 18px;
-  border-radius: 12px;
   font-size: 15px;
   font-weight: 800;
-  cursor: pointer;
-  border-width: 1.5px;
-  border-style: solid;
-  transition: all 0.15s ease;
+}
+
+/* 2. 상단 중앙 초대형 [수사 메인 미션 & 현재 당국 가설 바] */
+.main-quest-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 24px;
+  border-radius: 20px;
+  background-color: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(12px);
+  border: 2px solid #d71921; /* Nothing Design 시그니처 레드 */
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 25px rgba(215, 25, 33, 0.3);
+  color: #f8fafc;
+  pointer-events: auto;
+  max-width: 92vw;
+}
+
+.quest-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background-color: #d71921;
+  box-shadow: 0 0 10px #d71921;
+  animation: pulse-dot 1.5s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* 상단 HUD 공통 캡슐 */
+.hud-pill {
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background-color: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  border: 2px solid #334155;
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* 상단 인게임 컨트롤 버튼 */
+.game-hud-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background-color: #1e293b;
+  border: 2px solid #475569;
+  color: #e2e8f0;
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 60px;
+}
+
+.game-hud-icon-btn:hover {
+  background-color: #334155;
+  border-color: #94a3b8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.game-hud-icon-btn.active {
+  background-color: #0f172a;
+  border-color: #f59e0b;
+  color: #fef08a;
+}
+
+.game-hud-icon-btn.highlight {
+  background-color: #78350f;
+  border-color: #f59e0b;
+  color: #fef3c7;
+}
+
+/* 3. 비주얼 노벨 RPG 대화창 스타일 (첨부 이미지 100% 완벽 대응) */
+#rpg-dialogue-container.active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#rpg-dialogue-container.active #dialogue-backdrop {
+  pointer-events: auto !important;
+}
+
+#rpg-dialogue-container.active #rpg-dialogue-box {
+  pointer-events: auto !important;
+}
+
+#rpg-dialogue-container.active #dialogue-player-wrapper,
+#rpg-dialogue-container.active #dialogue-npc-wrapper {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.rpg-speech-card {
+  background-color: #fbf5e8;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.7) 0%, rgba(240, 230, 210, 0.5) 100%);
+  border: 4px solid #8c765c;
+  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(214, 199, 178, 0.45);
+}
+
+.rpg-name-tag {
+  background-color: #3e1c0c;
+  border: 2.5px solid #b45309;
+  color: #fef3c7;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* 역삼각형 깜빡임 애니메이션 (첨부 이미지 ▼ 완벽 일치) */
+.rpg-blinking-arrow {
+  animation: rpg-blink 0.9s infinite alternate;
+}
+
+@keyframes rpg-blink {
+  0% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(4px);
+  }
+}
+
+.portrait-slide-up {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -157,58 +305,6 @@ html, body {
   animation: fadeIn 0.35s ease-out forwards;
 }
 
-.hud-btn:hover {
-  filter: brightness(1.2);
-  transform: translateY(-1px);
-}
-
-/* 다이내믹 인터랙션 골드 펄스 */
-.pulse-glow {
-  animation: pulse-ring 1.8s infinite;
-}
-
-@keyframes pulse-ring {
-  0%, 100% {
-    box-shadow: 0 0 20px 0 rgba(245, 158, 11, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 35px 8px rgba(245, 158, 11, 0.9);
-  }
-}
-
-.kbd-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background-color: #0c0a09;
-  color: #fbbf24;
-  font-size: 15px;
-  font-weight: 900;
-  border: 1px solid #78350f;
-}
-
-/* 모바일 D-Pad */
-.dpad-btn {
-  background-color: rgba(28, 25, 23, 0.9);
-  border: 1px solid #78716c;
-  color: #f5f5f4;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-}
-
-.dpad-btn:active {
-  transform: scale(0.93);
-  background-color: #44403c;
-}
-
 /* 빅토리안 양피지 모달 */
 .modal-backdrop {
   position: fixed;
@@ -218,7 +314,7 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: rgba(12, 10, 9, 0.75);
+  background-color: rgba(12, 10, 9, 0.8);
   backdrop-filter: blur(8px);
   opacity: 0;
   pointer-events: none;
@@ -231,12 +327,12 @@ html, body {
 }
 
 .modal-card {
-  max-width: 540px;
+  max-width: 580px;
   width: 100%;
-  border-radius: 20px;
-  background: #fbf5e8; /* 빈티지 양피지 종이 질감 */
-  border: 3px solid #8c765c;
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
+  border-radius: 24px;
+  background-color: #fbf5e8;
+  border: 3.5px solid #8c765c;
+  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.85);
   color: #292524;
 }
 

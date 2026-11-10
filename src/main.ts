@@ -5,6 +5,7 @@ import { SohoMapRenderer } from './game/renderer.ts';
 import { MultiplayerManager } from './game/multiplayer.ts';
 import { sound } from './game/audio.ts';
 import { navigator } from './game/navigation.ts';
+import { SOHO_STREETS } from './data/streets.ts';
 import confetti from 'canvas-confetti';
 
 const gameData = rawData as SnowGameData;
@@ -30,11 +31,17 @@ const canvasEl = document.getElementById('map-canvas') as HTMLCanvasElement;
 const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
 const playerNameInput = document.getElementById('player-name') as HTMLInputElement;
 const randomNameBtn = document.getElementById('random-name-btn') as HTMLButtonElement;
-const teamCards = document.querySelectorAll<HTMLButtonElement>('.team-btn');
+const teamCards = document.querySelectorAll<HTMLButtonElement>('.team-btn-parchment, .team-btn');
 const selectedTeamInput = document.getElementById('selected-team') as HTMLInputElement;
 const genderButtons = document.querySelectorAll<HTMLButtonElement>('.gender-btn');
 const selectedGenderInput = document.getElementById('selected-gender') as HTMLInputElement;
 const roomInput = document.getElementById('room-id') as HTMLInputElement;
+
+// 상단 초대형 메인 퀘스트 & 현재 가설 바 DOM
+const mainQuestBar = document.getElementById('main-quest-bar') as HTMLDivElement | null;
+const questPhaseTag = document.getElementById('quest-phase-tag') as HTMLSpanElement | null;
+const questHypoTag = document.getElementById('quest-hypo-tag') as HTMLSpanElement | null;
+const questTitleText = document.getElementById('quest-title-text') as HTMLParagraphElement | null;
 
 // HUD & 알림
 const rankTitle = document.getElementById('rank-title') as HTMLSpanElement;
@@ -68,13 +75,23 @@ const screenFlashOverlay = document.getElementById('screen-flash-overlay') as HT
 const hatStyleSelect = document.getElementById('hat-style-select') as HTMLSelectElement | null;
 const toolStyleSelect = document.getElementById('tool-style-select') as HTMLSelectElement | null;
 
-const interviewModal = document.getElementById('interview-modal') as HTMLDivElement;
-const modalAddress = document.getElementById('modal-address') as HTMLHeadingElement;
-const modalResident = document.getElementById('modal-resident') as HTMLParagraphElement;
-const modalDeaths = document.getElementById('modal-deaths') as HTMLSpanElement;
-const modalText = document.getElementById('modal-text') as HTMLParagraphElement;
-const modalRecordBtn = document.getElementById('modal-record-btn') as HTMLButtonElement;
-const modalCloseBtn = document.getElementById('modal-close-btn') as HTMLButtonElement;
+// 첨부 이미지 레퍼런스 게임 컨트롤 바 & 지역 명패
+const fullscreenBtn = document.getElementById('fullscreen-btn') as HTMLButtonElement | null;
+const soundToggleBtn = document.getElementById('sound-toggle-btn') as HTMLButtonElement | null;
+const lampToggleBtn = document.getElementById('lamp-toggle-btn') as HTMLButtonElement | null;
+const currentLocationText = document.getElementById('current-location-text') as HTMLSpanElement | null;
+
+// ★ [첨부 이미지 레퍼런스] 비주얼 노벨 RPG 대화창 DOM
+const rpgDialogueContainer = document.getElementById('rpg-dialogue-container') as HTMLDivElement;
+const rpgDialogueBox = document.getElementById('rpg-dialogue-box') as HTMLDivElement;
+const dialoguePlayerImg = document.getElementById('dialogue-player-img') as HTMLImageElement;
+const dialogueNpcImg = document.getElementById('dialogue-npc-img') as HTMLImageElement;
+const dialogueSpeakerName = document.getElementById('dialogue-speaker-name') as HTMLSpanElement;
+const dialogueDeathTag = document.getElementById('dialogue-death-tag') as HTMLDivElement;
+const dialogueText = document.getElementById('dialogue-text') as HTMLParagraphElement;
+const dialogueRecordBtn = document.getElementById('dialogue-record-btn') as HTMLButtonElement;
+const dialogueCloseBtn = document.getElementById('dialogue-close-btn') as HTMLButtonElement;
+const dialogueNextArrow = document.getElementById('dialogue-next-arrow') as HTMLDivElement;
 
 const endingModal = document.getElementById('ending-modal') as HTMLDivElement;
 const endingCloseBtn = document.getElementById('ending-close-btn') as HTMLButtonElement;
@@ -148,8 +165,8 @@ const myPlayer: PlayerState = {
   name: '존 스노우 의사',
   color: '#2563eb',
   team: 'team1',
-  x: 480,
-  y: 520,
+  x: 1200,
+  y: 920,
   lastActive: Date.now()
 };
 
@@ -228,6 +245,131 @@ function toggleVoronoi() {
 }
 voronoiToggleBtn?.addEventListener('click', toggleVoronoi);
 
+// ==========================================
+// 상단 인게임 액션 바 (첨부 이미지 우측 상단 레퍼런스 연동)
+// ==========================================
+// 1. 전체 화면 토글
+fullscreenBtn?.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+    fullscreenBtn.classList.add('active');
+  } else {
+    document.exitFullscreen().catch(() => {});
+    fullscreenBtn.classList.remove('active');
+  }
+});
+
+// 2. 소리 On/Off 토글
+let isAudioEnabled = true;
+soundToggleBtn?.addEventListener('click', () => {
+  isAudioEnabled = !isAudioEnabled;
+  sound.enabled = isAudioEnabled;
+  if (isAudioEnabled) {
+    soundToggleBtn.classList.add('active');
+    soundToggleBtn.querySelector('span')!.textContent = '소리';
+    showToast('🔊 효과음이 켜졌습니다.', '🔊');
+  } else {
+    soundToggleBtn.classList.remove('active');
+    soundToggleBtn.querySelector('span')!.textContent = '음소거';
+    showToast('🔇 효과음이 음소거되었습니다.', '🔇');
+  }
+});
+
+// 3. 거리 가스등 조명 온/오프
+let isLampActive = true;
+lampToggleBtn?.addEventListener('click', () => {
+  isLampActive = !isLampActive;
+  renderer.showGasLamps = isLampActive;
+  lampToggleBtn.classList.toggle('active', isLampActive);
+  showToast(isLampActive ? '💡 거리 가스등을 켰습니다.' : '🌙 거리 가스등을 껐습니다.', '💡');
+});
+
+// 4. 현재 위치 명패 실시간 감지 (고지도 실측 좌표 100% 반영)
+function updateCurrentLocationBadge() {
+  if (!currentLocationText) return;
+
+  const px = myPlayer.x;
+  const py = myPlayer.y;
+
+  // 1) 주요 랜드마크 근접 판정
+  if (Math.hypot(px - 1409, py - 928) < 110) {
+    currentLocationText.textContent = '라이온 맥주 양조장';
+    return;
+  }
+  if (Math.hypot(px - 1066, py - 756) < 110) {
+    currentLocationText.textContent = '세인트 제임스 구빈원';
+    return;
+  }
+  if (Math.hypot(px - 1234, py - 944) < 90) {
+    currentLocationText.textContent = '브로드 스트리트 펌프';
+    return;
+  }
+  if (Math.hypot(px - 1050, py - 1500) < 140) {
+    currentLocationText.textContent = '골든 스퀘어 광장';
+    return;
+  }
+
+  // 2) 24개 도로 중 가장 가까운 도로 탐색
+  let nearestStreetName = '소호 중심가';
+  let minStreetDist = 9999;
+
+  for (const street of SOHO_STREETS) {
+    for (let i = 0; i < street.points.length - 1; i++) {
+      const [x1, y1] = street.points[i];
+      const [x2, y2] = street.points[i + 1];
+      const dist = distToSegment(px, py, x1, y1, x2, y2);
+      if (dist < minStreetDist) {
+        minStreetDist = dist;
+        nearestStreetName = street.name;
+      }
+    }
+  }
+
+  currentLocationText.textContent = nearestStreetName;
+}
+
+// 5. 상단 초대형 메인 퀘스트 & 현재 가설 바 실시간 동기화
+function updateMainQuestBar() {
+  if (!questPhaseTag || !questHypoTag || !questTitleText) return;
+
+  if (isBroadHandleRemoved) {
+    questPhaseTag.textContent = '수사 완수: 역학의 승리';
+    questHypoTag.textContent = '콜레라 종식';
+    questTitleText.textContent = '브로드 가 펌프의 손잡이를 성공적으로 분리하여 소호의 역병을 멈추었습니다!';
+    return;
+  }
+
+  if (currentHypothesis === 'water_borne') {
+    questPhaseTag.textContent = '제3단계 역사적 결단';
+    questHypoTag.textContent = '오염된 식수원 감염설 입증됨';
+    questTitleText.textContent = '브로드 가 공공 펌프로 이동하여 오염된 펌프 손잡이를 분리하십시오! [Space]';
+    return;
+  }
+
+  // 모순 가구 발견 여부 집계 (house_15, house_16, house_17)
+  const anomaliesFound = ['house_15', 'house_16', 'house_17'].filter(id => !!currentInvestigations[id]).length;
+
+  if (anomaliesFound > 0) {
+    questPhaseTag.textContent = '제2단계 가설의 모순';
+    questHypoTag.textContent = '나쁜 공기설의 치명적 결함 발견!';
+    questTitleText.textContent = `공기설과 모순되는 증언 발견(${anomaliesFound}/3개)! 역학 수첩(N)을 열어 데이터를 분석하고 식수원 가설로 전환하십시오.`;
+    return;
+  }
+
+  const count = Object.keys(currentInvestigations).length;
+  questPhaseTag.textContent = '제1단계 긴급 수사 퀘스트';
+  questHypoTag.textContent = '현재 당국의 공식 가설: 나쁜 공기설';
+  questTitleText.textContent = `소호 거리를 수색하여 집들을 인터뷰하고, 악취가 원인인지 현장 데이터를 수집하라! (${count}/20 가구)`;
+}
+
+function distToSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+  const l2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+  if (l2 === 0) return Math.hypot(px - x1, py - y1);
+  let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+}
+
 // 대형 스크린 / 전자칠판 관제 모드 토글 함수
 function toggleBigScreen() {
   renderer.isBigScreenMode = !renderer.isBigScreenMode;
@@ -247,6 +389,26 @@ bigscreenToggleBtn?.addEventListener('click', toggleBigScreen);
 const keys: Record<string, boolean> = {};
 window.addEventListener('keydown', (e) => {
   keys[e.key.toLowerCase()] = true;
+
+  // 비주얼 노벨 대화창이 열려있을 때 Space 또는 Enter 처리
+  if (rpgDialogueContainer.classList.contains('active')) {
+    if (e.key === ' ' || e.code === 'Space' || e.key === 'Enter') {
+      e.preventDefault();
+      if (isTyping) {
+        finishTypewriter();
+      } else if (currentHouseNear && !currentInvestigations[currentHouseNear.id]) {
+        recordCurrentClue();
+      } else {
+        closeDialogue();
+      }
+      return;
+    }
+    if (e.key === 'Escape') {
+      closeDialogue();
+      return;
+    }
+  }
+
   if (e.key === 'e' || e.key === 'E') {
     checkHouseInteraction();
   }
@@ -313,15 +475,15 @@ startBtn.addEventListener('click', async () => {
   };
   myPlayer.color = TEAM_COLORS[team] || '#2563eb';
 
-  // 2200 월드 대응 시작 위치 (팀별 소호 거리 요충지)
+  // 2200 x 2064 월드 대응 시작 위치 (팀별 소호 거리 요충지 도로변)
   const TEAM_SPAWNS: Record<string, [number, number]> = {
-    team1: [960, 960],   // 폴란드 가 입구 (소호 중심부 인접 길목)
-    team2: [1000, 700],  // 북쪽 그레이트 말버러 가
-    team3: [720, 1200],  // 서쪽 딘 가
-    team4: [1400, 950],  // 동쪽 워윅 가
-    team5: [1100, 1450]  // 남쪽 골든 스퀘어 거리
+    team1: [1200, 920],  // 브로드 가 40번지 앞 (소호 중심부 브로드 거리)
+    team2: [1280, 880],  // 케임브리지 가 길목
+    team3: [1160, 910],  // 브로드 가 서쪽 골목길
+    team4: [1066, 756],  // 북서쪽 구빈원 앞 도로
+    team5: [1409, 928]   // 동쪽 라이온 양조장 앞 도로
   };
-  const [sx, sy] = TEAM_SPAWNS[team] || [960, 960];
+  const [sx, sy] = TEAM_SPAWNS[team] || [1200, 920];
   myPlayer.x = sx;
   myPlayer.y = sy;
   renderer.cameraX = sx;
@@ -409,6 +571,8 @@ function gameLoop(now: number) {
 
   updateInteractionBanner();
   updateCompass();
+  updateCurrentLocationBadge();
+  updateMainQuestBar();
 
   const otherPlayers = multiplayer.updateAndGetOtherPlayers();
   renderer.render(myPlayer, otherPlayers, currentInvestigations, isBroadHandleRemoved, isPlayerMoving);
@@ -484,7 +648,7 @@ function updateCompass() {
 
 // 가구 인터뷰 열기 (돋보기 인스펙션 줌인 연출)
 function checkHouseInteraction() {
-  if (interviewModal.classList.contains('active')) return;
+  if (rpgDialogueContainer.classList.contains('active')) return;
   if (!currentHouseNear) return;
 
   sound.playDoorKnock();
@@ -510,19 +674,100 @@ function checkPumpInteraction() {
   }
 }
 
-// 인터뷰 모달 열기
+// ==========================================
+// ★ [첨부 이미지 레퍼런스 100% 반영] 비주얼 노벨 RPG 대화 시스템
+// ==========================================
+let fullDialogueText = '';
+let typingIndex = 0;
+let isTyping = false;
+let typingTimer: any = null;
+
+function startTypewriter(text: string) {
+  if (typingTimer) clearInterval(typingTimer);
+  fullDialogueText = text;
+  typingIndex = 0;
+  isTyping = true;
+  dialogueText.textContent = '';
+  dialogueNextArrow.classList.add('hidden');
+  dialogueRecordBtn.classList.add('hidden');
+
+  typingTimer = setInterval(() => {
+    if (typingIndex < fullDialogueText.length) {
+      dialogueText.textContent += fullDialogueText.charAt(typingIndex);
+      typingIndex++;
+    } else {
+      finishTypewriter();
+    }
+  }, 22);
+}
+
+function finishTypewriter() {
+  if (typingTimer) clearInterval(typingTimer);
+  dialogueText.textContent = fullDialogueText;
+  isTyping = false;
+  dialogueNextArrow.classList.remove('hidden');
+
+  if (currentHouseNear) {
+    const isAlready = !!currentInvestigations[currentHouseNear.id];
+    dialogueRecordBtn.classList.remove('hidden');
+    dialogueRecordBtn.disabled = isAlready;
+    dialogueRecordBtn.innerHTML = isAlready 
+      ? `<span>수첩에 이미 기록된 가구</span>` 
+      : `<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span>수첩에 단서 기록 (+50 EXP)</span>`;
+  }
+}
+
+// 대화창 클릭 시 스킵 또는 기록 완료
+rpgDialogueBox.addEventListener('click', (e) => {
+  // 닫기 버튼이나 기록 버튼 직접 클릭 시 중복 처리 방지
+  if ((e.target as HTMLElement).closest('#dialogue-record-btn') || (e.target as HTMLElement).closest('#dialogue-close-btn')) {
+    return;
+  }
+  if (isTyping) {
+    finishTypewriter();
+  } else if (currentHouseNear && !currentInvestigations[currentHouseNear.id]) {
+    recordCurrentClue();
+  } else {
+    closeDialogue();
+  }
+});
+
+// 인터뷰 대화창 열기
 function openInterviewModal(house: House) {
-  modalAddress.textContent = house.address;
-  modalResident.textContent = `주민: ${house.residentName} (${house.primaryPump === 'own_well' ? '자체 우물 사용' : '공용 펌프'})`;
-  modalDeaths.textContent = `사망자: ${house.deaths}명`;
-  modalDeaths.className = house.deaths > 0 ? 'text-red-700 font-black text-2xl' : 'text-green-700 font-black text-2xl';
-  modalText.textContent = `"${house.interviewText}"`;
+  // 1. 플레이어 초상화 설정 (성별 분기)
+  dialoguePlayerImg.src = myPlayer.gender === 'female' 
+    ? './assets/portraits/player_female.png' 
+    : './assets/portraits/player_male.png';
 
+  // 2. NPC 초상화 및 화자 분기
+  let npcPortrait = './assets/portraits/npc_resident.png';
+  let speakerTitle = house.residentName || '소호 주민';
+
+  if (house.id === 'house_15') {
+    npcPortrait = './assets/portraits/npc_brewery.png';
+    speakerTitle = `양조장 수석 인부 (${house.residentName})`;
+  } else if (house.id === 'house_16') {
+    npcPortrait = './assets/portraits/npc_workhouse.png';
+    speakerTitle = `구빈원 총무 (${house.residentName})`;
+  } else if (house.id === 'house_17') {
+    npcPortrait = './assets/portraits/npc_lady.png';
+    speakerTitle = `햄스테드 마님의 하녀 (${house.residentName})`;
+  }
+
+  dialogueNpcImg.src = npcPortrait;
+  dialogueSpeakerName.textContent = speakerTitle;
+
+  // 3. 사망자 현황 배지
+  if (house.deaths > 0) {
+    dialogueDeathTag.textContent = `사망 ${house.deaths}명`;
+    dialogueDeathTag.className = 'px-3 py-1 rounded-lg text-xs font-black bg-red-100 text-red-800 border-red-300 shadow-sm';
+  } else {
+    dialogueDeathTag.textContent = `사망 0명 (전원 무사)`;
+    dialogueDeathTag.className = 'px-3 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm';
+  }
+
+  // 4. 이상치 발견 시 플래시 및 효과음
   const isAlready = !!currentInvestigations[house.id];
-  modalRecordBtn.textContent = isAlready ? '수첩에 이미 기록된 가구입니다' : '역학 수첩에 기록하고 지도에 점 찍기 (+50 EXP)';
-  modalRecordBtn.disabled = isAlready;
-
-  // 이상치(양조장/구빈원/햄스테드) 첫 발견 시 화면 플래시 연출 & 충격 사운드
   if (!isAlready) {
     if (house.clueType === 'brewery_anomaly') {
       setTimeout(() => {
@@ -545,15 +790,17 @@ function openInterviewModal(house: House) {
     }
   }
 
-  interviewModal.classList.add('active');
+  // 5. 대화창 활성화 및 타이핑 효과 시작
+  rpgDialogueContainer.classList.add('active');
+  startTypewriter(`"${house.interviewText}"`);
 }
 
-// 수첩 기록 완료
-modalRecordBtn.addEventListener('click', () => {
+// 수첩에 단서 기록 실행
+function recordCurrentClue() {
   if (!currentHouseNear) return;
 
   sound.playClueRecorded();
-  renderer.targetZoom = 1.6; // 줌 복귀
+  renderer.targetZoom = 1.6;
 
   totalExp += 50;
   expText.textContent = String(totalExp);
@@ -569,36 +816,48 @@ modalRecordBtn.addEventListener('click', () => {
   };
 
   multiplayer.recordInvestigation(record);
-  interviewModal.classList.remove('active');
+  closeDialogue();
 
-  // ★ [데이터 기반 넛지 & 실시간 학급 속보 발행]
+  // 실시간 학급 속보 및 토스트
   if (currentHouseNear.id === 'house_15') {
-    postLiveTicker(`⚡ [결정적 모순] 라이온 양조장 인부 70명 사망자 0명! (물 대신 맥주 음용)`, '#f59e0b');
+    postLiveTicker(`[결정적 모순] 라이온 양조장 인부 70명 사망자 0명! (물 대신 맥주 음용)`, '#f59e0b');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #1] 양조장 인부 70명은 종일 소호 공기를 마시는데 사망자 0명! (맥주/자체 우물 음용)', '💡');
     }, 400);
   } else if (currentHouseNear.id === 'house_16') {
-    postLiveTicker(`⚡ [결정적 모순] 구빈원 500명 중 사망 단 5명! (자체 우물 사용)`, '#a855f7');
+    postLiveTicker(`[결정적 모순] 구빈원 500명 중 사망 단 5명! (자체 우물 사용)`, '#a855f7');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #2] 악취가 가장 심한 구빈원(500명)은 사망자 5명뿐! 악취(공기)가 원인일까요?', '💡');
     }, 400);
   } else if (currentHouseNear.id === 'house_17') {
-    postLiveTicker(`⚡ [결정적 모순] 5km 밖 전원저택 사망자! (소호 브로드 펌프 물 배달)`, '#ef4444');
+    postLiveTicker(`[결정적 모순] 5km 밖 전원저택 사망자! (소호 브로드 펌프 물 배달)`, '#ef4444');
     setTimeout(() => {
       showToast('💡 [역학적 의문 #3] 공기 맑은 시골 전원주택의 마님이 소호 브로드 가 물을 배달받아 마신 후 사망했습니다!', '💡');
     }, 400);
   } else {
-    postLiveTicker(`📝 [${myPlayer.name}] ${currentHouseNear.address} 조사 완료 (+사망 ${currentHouseNear.deaths}명)`, myPlayer.color);
+    postLiveTicker(`[${myPlayer.name}] ${currentHouseNear.address} 조사 완료 (+사망 ${currentHouseNear.deaths}명)`, myPlayer.color);
     showToast(`[${currentHouseNear.address}] 수첩 기록 완료! (+50 EXP)`);
   }
 
   updateProgressUI();
   updateNotebookUI();
+}
+
+function closeDialogue() {
+  if (typingTimer) clearInterval(typingTimer);
+  isTyping = false;
+  rpgDialogueContainer.classList.remove('active');
+  renderer.targetZoom = 1.6;
+}
+
+dialogueRecordBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  recordCurrentClue();
 });
 
-modalCloseBtn.addEventListener('click', () => {
-  renderer.targetZoom = 1.6;
-  interviewModal.classList.remove('active');
+dialogueCloseBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeDialogue();
 });
 
 // ==========================================
