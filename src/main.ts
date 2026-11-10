@@ -529,43 +529,73 @@ startBtn.addEventListener('click', async () => {
   requestAnimationFrame(gameLoop);
 });
 
+// 목적지 클릭 이동 (Click-to-Move) 상태
+let targetDestination: { x: number; y: number } | null = null;
+
+// 캔버스 클릭 시 부드러운 자유 이동 및 목적지 설정
+canvasEl.addEventListener('click', (e) => {
+  if (rpgDialogueContainer.classList.contains('active')) return;
+  const rect = canvasEl.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+  const [worldX, worldY] = renderer.screenToWorld(mouseX, mouseY);
+
+  targetDestination = { x: worldX, y: worldY };
+});
+
+// 키보드 조작 시 클릭 이동 취소
+window.addEventListener('keydown', () => {
+  targetDestination = null;
+});
+
 // 메인 게임 루프
 let lastLoopTime = performance.now();
 function gameLoop(now: number) {
   const dt = Math.min(50, now - lastLoopTime);
   lastLoopTime = now;
 
-  const speed = 0.35 * dt;
+  const speed = 0.38 * dt;
   let moveX = 0;
   let moveY = 0;
 
+  // 1. 키보드 입력 우선 검사 (WASD / 화살표)
   if (keys['w'] || keys['arrowup']) moveY -= speed;
   if (keys['s'] || keys['arrowdown']) moveY += speed;
   if (keys['a'] || keys['arrowleft']) moveX -= speed;
   if (keys['d'] || keys['arrowright']) moveX += speed;
 
-  if (moveX !== 0 && moveY !== 0) {
-    moveX *= 0.7071;
-    moveY *= 0.7071;
+  if (moveX !== 0 || moveY !== 0) {
+    targetDestination = null; // 키보드 입력 시 마우스 클릭 이동 즉시 해제
+    if (moveX !== 0 && moveY !== 0) {
+      moveX *= 0.7071;
+      moveY *= 0.7071;
+    }
+  } else if (targetDestination) {
+    // 2. 마우스 클릭 목적지 부드러운 직행 이동 (Click-to-Move)
+    const distToTarget = Math.hypot(targetDestination.x - myPlayer.x, targetDestination.y - myPlayer.y);
+    if (distToTarget > 6) {
+      const step = Math.min(distToTarget, speed);
+      moveX = ((targetDestination.x - myPlayer.x) / distToTarget) * step;
+      moveY = ((targetDestination.y - myPlayer.y) / distToTarget) * step;
+    } else {
+      targetDestination = null;
+    }
   }
 
   isPlayerMoving = (moveX !== 0 || moveY !== 0);
 
   if (isPlayerMoving) {
-    // 1854년 소호 도로망 기반 충돌 및 벽 미끄러짐(Wall Sliding) 이동 판정
+    // 100% 매끄러운 자유 이동 (맵 밖 이탈 방지 클램핑만 수행)
     const [resolvedX, resolvedY] = navigator.resolveMove(myPlayer.x, myPlayer.y, moveX, moveY);
     
-    // 실제로 이동이 일어난 경우에만 위치 업데이트
-    if (resolvedX !== myPlayer.x || resolvedY !== myPlayer.y) {
-      myPlayer.x = resolvedX;
-      myPlayer.y = resolvedY;
-      multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
+    myPlayer.x = resolvedX;
+    myPlayer.y = resolvedY;
+    multiplayer.sendMyPosition(myPlayer.x, myPlayer.y);
 
-      footstepCooldown -= dt;
-      if (footstepCooldown <= 0) {
-        sound.playFootstep();
-        footstepCooldown = 260;
-      }
+    footstepCooldown -= dt;
+    if (footstepCooldown <= 0) {
+      sound.playFootstep();
+      footstepCooldown = 240;
     }
   }
 
@@ -575,7 +605,7 @@ function gameLoop(now: number) {
   updateMainQuestBar();
 
   const otherPlayers = multiplayer.updateAndGetOtherPlayers();
-  renderer.render(myPlayer, otherPlayers, currentInvestigations, isBroadHandleRemoved, isPlayerMoving);
+  renderer.render(myPlayer, otherPlayers, currentInvestigations, isBroadHandleRemoved, isPlayerMoving, targetDestination);
 
   requestAnimationFrame(gameLoop);
 }
@@ -583,7 +613,7 @@ function gameLoop(now: number) {
 // 상호작용 배너
 function updateInteractionBanner() {
   let targetHouse: House | null = null;
-  let minDist = 72;
+  let minDist = 115; // 줌 2.4에 맞춰 넉넉하고 쾌적한 상호작용 거리 보장
 
   for (const house of gameData.houses) {
     const dist = Math.hypot(house.x - myPlayer.x, house.y - myPlayer.y);
@@ -618,6 +648,11 @@ function updateInteractionBanner() {
     interactionBanner.classList.add('opacity-0', 'translate-y-6', 'scale-95');
   }
 }
+
+interactionBanner?.addEventListener('click', () => {
+  checkHouseInteraction();
+  checkPumpInteraction();
+});
 
 // 나침반 내비게이션
 function updateCompass() {
@@ -734,10 +769,10 @@ rpgDialogueBox.addEventListener('click', (e) => {
 
 // 인터뷰 대화창 열기
 function openInterviewModal(house: House) {
-  // 1. 플레이어 초상화 설정 (성별 분기)
+  // 1. 플레이어 초상화 설정 (고해상도 캐릭터 스프라이트 연동)
   dialoguePlayerImg.src = myPlayer.gender === 'female' 
-    ? './assets/portraits/player_female.png' 
-    : './assets/portraits/player_male.png';
+    ? './assets/characters/player_female.png' 
+    : './assets/characters/player_male.png';
 
   // 2. NPC 초상화 및 화자 분기
   let npcPortrait = './assets/portraits/npc_resident.png';

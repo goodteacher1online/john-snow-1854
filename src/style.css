@@ -261,6 +261,16 @@ html, body {
   opacity: 1;
 }
 
+#dialogue-player-wrapper img,
+#dialogue-npc-wrapper img {
+  height: 350px;
+  max-height: 46vh;
+  width: auto;
+  object-fit: cover;
+  object-position: top center;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.7));
+}
+
 .rpg-speech-card {
   background-color: #fbf5e8;
   background-image: 

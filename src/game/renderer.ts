@@ -27,11 +27,15 @@ export class SohoMapRenderer {
   private pumpImg: HTMLImageElement | null = null;
   private pumpNoHandleImg: HTMLImageElement | null = null;
 
+  // 1854 빅토리안 2D 실사 캐릭터 전신 스프라이트 이미지
+  private charMaleImg: HTMLImageElement | null = null;
+  private charFemaleImg: HTMLImageElement | null = null;
+
   // 카메라 뷰포트 (월드 크기: 2200 x 2064 - 고지도 1280x1201 정밀 1:1 스케일)
   public cameraX = 1234;
   public cameraY = 944;
-  public zoom = 1.15; // 더 넓고 쾌적한 기본 시야
-  public targetZoom = 1.15;
+  public zoom = 2.4; // ★ [요청 반영] 지도 2.4배 대폭 확대! 집들이 절대 겹치지 않고 골목길이 시원하게 펼쳐짐
+  public targetZoom = 2.4;
   
   // 미아스마 안개 오버레이
   public showMiasmaFog = true;
@@ -56,8 +60,23 @@ export class SohoMapRenderer {
     this.loadAuthenticMap();
     this.loadHouseSprites();
     this.loadPumpSprites();
+    this.loadCharacterSprites();
     this.resize();
     window.addEventListener('resize', () => this.resize());
+    
+    // 마우스 휠 줌 인/아웃 지원 (1.4배 ~ 3.5배 자유 시야)
+    this.canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomDelta = e.deltaY * -0.0018;
+      this.targetZoom = Math.max(1.4, Math.min(3.6, this.targetZoom + zoomDelta));
+    }, { passive: false });
+  }
+
+  private loadCharacterSprites() {
+    this.charMaleImg = new Image();
+    this.charMaleImg.src = './assets/characters/player_male.png';
+    this.charFemaleImg = new Image();
+    this.charFemaleImg.src = './assets/characters/player_female.png';
   }
 
   private loadHouseSprites() {
@@ -101,12 +120,21 @@ export class SohoMapRenderer {
     return [sx, sy];
   }
 
+  public screenToWorld(sx: number, sy: number): [number, number] {
+    const cx = this.canvas.width / 2;
+    const cy = this.canvas.height / 2;
+    const wx = this.cameraX + (sx - cx) / this.zoom;
+    const wy = this.cameraY + (sy - cy) / this.zoom;
+    return [wx, wy];
+  }
+
   public render(
     myPlayer: PlayerState,
     otherPlayers: PlayerState[],
     investigations: Record<string, InvestigationRecord>,
     broadHandleRemoved: boolean,
-    isMoving: boolean
+    isMoving: boolean,
+    targetDest: { x: number; y: number } | null = null
   ) {
     const ctx = this.ctx;
     const width = this.canvas.width;
@@ -175,6 +203,25 @@ export class SohoMapRenderer {
 
     // 굴뚝 연기 파티클 업데이트 및 렌더링
     this.updateAndDrawSmoke(ctx);
+
+    // 마우스 클릭 이동 목적지 마커 (앤틱 황금빛 펄스 링)
+    if (targetDest) {
+      const [tx, ty] = this.worldToScreen(targetDest.x, targetDest.y);
+      const pulse = (Math.sin(this.animTick * 6) + 1) * 0.5;
+      const radius = (10 + pulse * 5) * this.zoom;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(tx, ty, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2 * this.zoom;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(tx, ty, 3 * this.zoom, 0, Math.PI * 2);
+      ctx.fillStyle = '#d97706';
+      ctx.fill();
+      ctx.restore();
+    }
 
     // 5. 공공 식수 펌프 (Pumps)
     for (const pump of this.data.pumps) {
@@ -546,22 +593,25 @@ export class SohoMapRenderer {
       ctx.fillRect(-8 * scale, -4 * scale, 5 * scale, 4 * scale);
     }
 
-    // 펌프 이름 명판 (크고 뚜렷한 정자체 폰트, italic 금지)
-    ctx.font = `bold ${Math.max(13, 15 * scale)}px 'GangwonEduAllBold', sans-serif`;
-    ctx.fillStyle = '#1e293b';
-    ctx.textAlign = 'center';
+    // 펌프 이름 명판 (세련된 빅토리안 황동/다크우드 플레이트)
+    ctx.font = `bold ${Math.max(12, 13 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     const label = pump.name + (pump.isSource && broadHandleRemoved ? " [손잡이 분리됨]" : "");
-    
-    // 명판 배경 패치로 가독성 극대화
     const labelWidth = ctx.measureText(label).width;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    ctx.fillRect(-labelWidth / 2 - 6 * scale, 12 * scale, labelWidth + 12 * scale, 18 * scale);
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1 * scale;
-    ctx.strokeRect(-labelWidth / 2 - 6 * scale, 12 * scale, labelWidth + 12 * scale, 18 * scale);
+    const plateH = 22;
+    const plateY = 12 * scale;
+    
+    ctx.fillStyle = 'rgba(28, 18, 12, 0.9)';
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(-labelWidth / 2 - 8, plateY, labelWidth + 16, plateH, 6);
+    ctx.fill();
+    ctx.stroke();
 
-    ctx.fillStyle = '#0f172a';
-    ctx.fillText(label, 0, 24 * scale);
+    ctx.fillStyle = '#fef3c7';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, plateY + plateH / 2);
 
     // 펌프 앞 접근 시 안내 (브로드 펌프 특혜 표시 완전 삭제)
     const dist = Math.hypot(pump.x - myPlayer.x, pump.y - myPlayer.y);
@@ -627,7 +677,7 @@ export class SohoMapRenderer {
     }
   }
 
-  // ★ [핵심 혁신] 레고(LEGO®) 미니피규어 빅토리안 과학자 아바타 (남성/여성 캐릭터 분기 완비!)
+  // ★ [고품질 실사 2D 게임 스프라이트] 빅토리안 의사 & 간호사 조사관 아바타
   private drawScientistAvatar(
     wx: number,
     wy: number,
@@ -644,321 +694,80 @@ export class SohoMapRenderer {
     const ctx = this.ctx;
     const scale = this.zoom;
     const isFemale = gender === 'female';
+    const spriteImg = isFemale ? this.charFemaleImg : this.charMaleImg;
 
-    // 레고 특유의 뻣뻣하고 절도 있는 타닥타닥 보행 애니메이션
-    const bounceY = Math.abs(Math.sin(walkTick * 4)) * -2.5 * scale;
-    const legSwing = Math.sin(walkTick * 4) * 6 * scale;
+    // 보행 애니메이션 (상하 바운스 + 살짝 기우는 워킹 틸트)
+    const isWalking = walkTick > 0;
+    const bounceY = isWalking ? Math.abs(Math.sin(walkTick * 4)) * -4 * scale : 0;
+    const walkTilt = isWalking ? Math.sin(walkTick * 4) * 0.05 : 0;
 
     ctx.save();
     ctx.translate(sx, sy + bounceY);
+    ctx.rotate(walkTilt);
 
-    // 1. 바닥 그림자 (레고 둥근 타원)
+    // 1. 발 밑 부드러운 타원 그림자
     ctx.beginPath();
-    ctx.ellipse(0, 16 * scale, 15 * scale, 6.5 * scale, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.ellipse(0, 18 * scale, 16 * scale, 7 * scale, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
     ctx.fill();
 
-    // 2. 레고 다리 (직사각형 2분할 레고 하체)
-    const legW = 6.5 * scale;
-    const legH = 11 * scale;
-    // 왼쪽 다리
-    ctx.fillStyle = isFemale ? '#1e1b4b' : '#0f172a';
-    ctx.fillRect(-7.5 * scale, 5 * scale + legSwing, legW, legH);
-    ctx.strokeStyle = '#020617';
-    ctx.lineWidth = 1.2 * scale;
-    ctx.strokeRect(-7.5 * scale, 5 * scale + legSwing, legW, legH);
-    // 레고 왼쪽 발가락 스터드 턱
-    ctx.fillRect(-7.5 * scale, 13 * scale + legSwing, legW, 3 * scale);
+    // 2. 본체 2D 실사/일러스트 스프라이트 렌더링
+    const targetHeight = 56 * scale;
+    if (spriteImg && spriteImg.complete && spriteImg.naturalWidth > 0) {
+      const aspect = spriteImg.naturalWidth / spriteImg.naturalHeight;
+      const targetWidth = targetHeight * aspect;
+      
+      // 내 캐릭터일 경우 은은한 림라이트/하이라이트 발광
+      if (isMe) {
+        ctx.shadowColor = coatColor || '#38bdf8';
+        ctx.shadowBlur = 12 * scale;
+      }
 
-    // 오른쪽 다리
-    ctx.fillStyle = isFemale ? '#312e81' : '#1e293b';
-    ctx.fillRect(1 * scale, 5 * scale - legSwing, legW, legH);
-    ctx.strokeRect(1 * scale, 5 * scale - legSwing, legW, legH);
-    // 레고 오른쪽 발가락 스터드 턱
-    ctx.fillRect(1 * scale, 13 * scale - legSwing, legW, 3 * scale);
-
-    // 골반 힙 바 (Hips)
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-8.5 * scale, 2.5 * scale, 17 * scale, 3.5 * scale);
-
-    // 3. 레고 사다리꼴 몸통 (Torso)
-    ctx.beginPath();
-    ctx.moveTo(-7 * scale, -13 * scale); // 어깨 왼쪽
-    ctx.lineTo(7 * scale, -13 * scale);  // 어깨 오른쪽
-    ctx.lineTo(8.5 * scale, 2.5 * scale); // 허리 오른쪽
-    ctx.lineTo(-8.5 * scale, 2.5 * scale); // 허리 왼쪽
-    ctx.closePath();
-    ctx.fillStyle = coatColor;
-    ctx.fill();
-    ctx.strokeStyle = isMe ? '#ffffff' : '#0f172a';
-    ctx.lineWidth = isMe ? 2.8 * scale : 1.5 * scale;
-    ctx.stroke();
-
-    if (isFemale) {
-      // [여성 과학자]: 단정한 아이보리 프릴 블라우스 + 황동 카메오 브로치 + 우아한 주름선
-      ctx.fillStyle = '#f8fafc';
-      ctx.beginPath();
-      ctx.moveTo(-4 * scale, -13 * scale);
-      ctx.lineTo(0, -4 * scale);
-      ctx.lineTo(4 * scale, -13 * scale);
-      ctx.closePath();
-      ctx.fill();
-
-      // 황동 카메오 브로치
-      ctx.fillStyle = '#d97706';
-      ctx.beginPath();
-      ctx.ellipse(0, -9 * scale, 1.8 * scale, 2.2 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#fef3c7';
-      ctx.beginPath();
-      ctx.ellipse(0, -9 * scale, 1.1 * scale, 1.4 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 우아한 가슴 주름선
-      ctx.strokeStyle = '#cbd5e1';
-      ctx.lineWidth = 0.8 * scale;
-      ctx.beginPath();
-      ctx.moveTo(-2 * scale, -6 * scale);
-      ctx.lineTo(0, -4 * scale);
-      ctx.lineTo(2 * scale, -6 * scale);
-      ctx.stroke();
+      ctx.drawImage(
+        spriteImg,
+        -targetWidth / 2,
+        -targetHeight + 18 * scale,
+        targetWidth,
+        targetHeight
+      );
+      ctx.shadowBlur = 0;
     } else {
-      // [남성 과학자]: 토르소 빅토리안 수트 프린팅 (흰 셔츠 V넥 + 검은 보타이 + 단추)
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.moveTo(-3 * scale, -13 * scale);
-      ctx.lineTo(0, -6 * scale);
-      ctx.lineTo(3 * scale, -13 * scale);
-      ctx.closePath();
-      ctx.fill();
-
-      // 나비넥타이 (Bowtie)
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.moveTo(-2.5 * scale, -11 * scale);
-      ctx.lineTo(2.5 * scale, -9 * scale);
-      ctx.lineTo(2.5 * scale, -11 * scale);
-      ctx.lineTo(-2.5 * scale, -9 * scale);
-      ctx.closePath();
-      ctx.fill();
-
-      // 황동 단추 2개
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(0, -3 * scale, 0.9 * scale, 0, Math.PI * 2);
-      ctx.arc(0, -0.5 * scale, 0.9 * scale, 0, Math.PI * 2);
-      ctx.fill();
+      // 스프라이트 로딩 전 대체 그래픽
+      ctx.fillStyle = coatColor || '#0f172a';
+      ctx.fillRect(-10 * scale, -targetHeight + 18 * scale, 20 * scale, targetHeight);
     }
 
-    // 4. 레고 팔과 상징적인 노란색 ㄷ자 집게손 (Claw Hands)
-    // 왼쪽 팔 & 손
-    ctx.fillStyle = coatColor;
-    ctx.fillRect(-11 * scale, -12 * scale, 3.5 * scale, 9 * scale);
-    ctx.strokeStyle = '#facc15';
-    ctx.lineWidth = 2.2 * scale;
-    ctx.beginPath();
-    ctx.arc(-9.5 * scale, 0 * scale, 3.5 * scale, Math.PI * 0.25, Math.PI * 1.75);
-    ctx.stroke();
-
-    // 오른쪽 팔 & 손 (도구 쥐고 있음)
-    ctx.fillStyle = coatColor;
-    ctx.fillRect(7.5 * scale, -12 * scale, 3.5 * scale, 9 * scale);
-    ctx.strokeStyle = '#facc15';
-    ctx.lineWidth = 2.2 * scale;
-    ctx.beginPath();
-    ctx.arc(9.5 * scale, 0 * scale, 3.5 * scale, -Math.PI * 0.75, Math.PI * 0.75);
-    ctx.stroke();
-
-    // 도구 렌더링 (돋보기 / 가죽 수첩 / 황동 현미경)
-    if (toolStyle === 'notebook') {
-      // 가죽 수첩 (Dark brown leather notebook)
-      ctx.fillStyle = '#451a03';
-      ctx.fillRect(11 * scale, -7 * scale, 9 * scale, 12 * scale);
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1 * scale;
-      ctx.strokeRect(11 * scale, -7 * scale, 9 * scale, 12 * scale);
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(13 * scale, -5 * scale, 6 * scale, 8 * scale);
-    } else if (toolStyle === 'microscope') {
-      // 황동 현미경 (Brass Microscope)
-      ctx.fillStyle = '#b45309';
-      ctx.fillRect(11 * scale, -3 * scale, 4 * scale, 8 * scale);
-      ctx.fillStyle = '#d97706';
+    // 3. 내 캐릭터 표시 오라/링
+    if (isMe) {
       ctx.beginPath();
-      ctx.arc(13 * scale, -5 * scale, 3 * scale, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      // 기본: 레고 황동 돋보기
-      const glassX = 16 * scale;
-      const glassY = -4 * scale;
-      ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 2.2 * scale;
-      ctx.beginPath();
-      ctx.moveTo(9.5 * scale, 0);
-      ctx.lineTo(glassX, glassY);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(glassX, glassY, 6.5 * scale, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(186, 230, 253, 0.8)';
-      ctx.fill();
-      ctx.strokeStyle = '#f59e0b';
+      ctx.arc(0, 18 * scale, 18 * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = coatColor || '#f59e0b';
       ctx.lineWidth = 2.5 * scale;
+      ctx.setLineDash([4 * scale, 3 * scale]);
       ctx.stroke();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.4 * scale;
-      ctx.beginPath();
-      ctx.arc(glassX - 2 * scale, glassY - 2 * scale, 3.2 * scale, 0, Math.PI * 0.7);
-      ctx.stroke();
+      ctx.setLineDash([]);
     }
 
-    // 5. 레고 노란색 원통 머리 (Lego Head)
-    const headW = 12 * scale;
-    const headH = 10 * scale;
-    const headY = -23 * scale;
-
-    // 머리 위 레고 스터드 (Lego Stud)
-    ctx.fillStyle = '#eab308';
-    ctx.fillRect(-3 * scale, headY - 3 * scale, 6 * scale, 3.2 * scale);
-    ctx.strokeStyle = '#ca8a04';
-    ctx.lineWidth = 1 * scale;
-    ctx.strokeRect(-3 * scale, headY - 3 * scale, 6 * scale, 3.2 * scale);
-
-    // 얼굴 원통 (노란색)
-    ctx.fillStyle = '#facc15';
+    // 4. 머리 위 정자체 닉네임 명패 (Nothing Design 안티슬롭 정자체)
+    const labelY = -targetHeight + 2 * scale;
+    ctx.font = `900 ${Math.max(12, 13 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    const textWidth = ctx.measureText(name).width;
+    const boxH = 22;
+    
+    // 명패 배경 박스
+    ctx.fillStyle = isMe ? 'rgba(15, 23, 42, 0.92)' : 'rgba(30, 41, 59, 0.88)';
+    ctx.strokeStyle = isMe ? (coatColor || '#fbbf24') : '#94a3b8';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.roundRect(-headW / 2, headY, headW, headH, 3 * scale);
+    ctx.roundRect(-textWidth / 2 - 8, labelY - boxH, textWidth + 16, boxH, 6);
     ctx.fill();
-    ctx.strokeStyle = '#ca8a04';
-    ctx.lineWidth = 1.2 * scale;
     ctx.stroke();
 
-    // 땡그란 레고 눈 2개 (검은 눈 + 흰색 반사 하이라이트)
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.arc(-2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
-    ctx.arc(2.6 * scale, headY + 4 * scale, 1.4 * scale, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(-2.2 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
-    ctx.arc(3 * scale, headY + 3.5 * scale, 0.5 * scale, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (isFemale) {
-      // [여성 캐릭터 추가 디테일]: 속눈썹 (Eyelashes)
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1 * scale;
-      ctx.beginPath();
-      // 왼쪽 속눈썹
-      ctx.moveTo(-3.5 * scale, headY + 3.2 * scale);
-      ctx.lineTo(-4.8 * scale, headY + 2.2 * scale);
-      ctx.moveTo(-3.2 * scale, headY + 2.8 * scale);
-      ctx.lineTo(-3.8 * scale, headY + 1.8 * scale);
-      // 오른쪽 속눈썹
-      ctx.moveTo(3.5 * scale, headY + 3.2 * scale);
-      ctx.lineTo(4.8 * scale, headY + 2.2 * scale);
-      ctx.moveTo(3.2 * scale, headY + 2.8 * scale);
-      ctx.lineTo(3.8 * scale, headY + 1.8 * scale);
-      ctx.stroke();
-
-      // 수줍은 핑크빛 볼터치
-      ctx.fillStyle = 'rgba(244, 114, 182, 0.5)';
-      ctx.beginPath();
-      ctx.arc(-4 * scale, headY + 6.2 * scale, 1.6 * scale, 0, Math.PI * 2);
-      ctx.arc(4 * scale, headY + 6.2 * scale, 1.6 * scale, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 귀여운 레고 미소 입
-    ctx.strokeStyle = isFemale ? '#be185d' : '#713f12';
-    ctx.lineWidth = 1.2 * scale;
-    ctx.beginPath();
-    ctx.arc(0, headY + 5.2 * scale, 2.5 * scale, 0.15 * Math.PI, 0.85 * Math.PI);
-    ctx.stroke();
-
-    // 6. 헤어 및 모자 렌더링
-    const hatY = headY - 5 * scale;
-
-    if (isFemale) {
-      // [여성 과학자 헤어 & 모자]: 우아한 다크 브라운 올림머리 헤어번 + 단아한 깃털 장식
-      ctx.fillStyle = '#3e1c0c';
-      // 양쪽 앞머리 컬
-      ctx.beginPath();
-      ctx.arc(-4.5 * scale, headY + 1 * scale, 3.5 * scale, 0, Math.PI * 2);
-      ctx.arc(4.5 * scale, headY + 1 * scale, 3.5 * scale, 0, Math.PI * 2);
-      ctx.fill();
-      // 머리 뒤/위 올림머리 번(Bun)
-      ctx.beginPath();
-      ctx.arc(0, headY - 3 * scale, 5.5 * scale, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#271105';
-      ctx.lineWidth = 1 * scale;
-      ctx.stroke();
-
-      // 여성용 빅토리안 레이스 보닛 / 리본
-      if (hatStyle !== 'none') {
-        ctx.fillStyle = coatColor;
-        ctx.beginPath();
-        ctx.arc(0, hatY + 1 * scale, 7.5 * scale, Math.PI, 0);
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.2 * scale;
-        ctx.stroke();
-
-        // 황금 깃털 장식
-        ctx.fillStyle = '#fbbf24';
-        ctx.beginPath();
-        ctx.ellipse(5 * scale, hatY - 2 * scale, 2 * scale, 5 * scale, Math.PI * 0.25, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else {
-      // [남성 과학자 모자]: 빅토리안 실크햇 / 중산모 / 헌팅캡
-      if (hatStyle === 'bowler') {
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.arc(0, hatY, 7 * scale, Math.PI, 0);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(0, hatY + 1 * scale, 10 * scale, 2.5 * scale, 0, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (hatStyle === 'flat_cap') {
-        ctx.fillStyle = '#475569';
-        ctx.beginPath();
-        ctx.ellipse(0, hatY - 1 * scale, 8 * scale, 4 * scale, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillRect(-6 * scale, hatY - 1 * scale, 12 * scale, 3 * scale);
-      } else if (hatStyle === 'none') {
-        // 모자 없음
-      } else {
-        // 기본값: 실크햇
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.ellipse(0, hatY + 4 * scale, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#020617';
-        ctx.lineWidth = 1.2 * scale;
-        ctx.stroke();
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.roundRect(-6.5 * scale, hatY - 8 * scale, 13 * scale, 11 * scale, 2.5 * scale);
-        ctx.fill();
-        ctx.fillStyle = coatColor;
-        ctx.fillRect(-6.5 * scale, hatY + 0.5 * scale, 13 * scale, 2.8 * scale);
-      }
-    }
-
-    // 7. 초대형 고가독성 명찰 라벨
-    ctx.font = `900 ${Math.max(13, 14 * scale)}px -apple-system, sans-serif`;
-    ctx.fillStyle = '#0f172a';
+    // 닉네임 텍스트
+    ctx.fillStyle = isMe ? '#fef08a' : '#f8fafc';
     ctx.textAlign = 'center';
-    ctx.shadowColor = '#ffffff';
-    ctx.shadowBlur = 6;
-    ctx.lineWidth = 3.5 * scale;
-    ctx.strokeStyle = '#ffffff';
-    ctx.strokeText(name, 0, headY - 14 * scale);
-    ctx.fillText(name, 0, headY - 14 * scale);
-    ctx.shadowBlur = 0;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(name, 0, labelY - boxH / 2);
 
     ctx.restore();
   }
