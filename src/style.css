@@ -100,6 +100,7 @@ kbd {
 
 .choice-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .choice-row.teams { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.choice-row.teams .pick { padding: 4px 2px; gap: 5px; font-size: 15px; white-space: nowrap; }
 .pick {
   position: relative; min-height: 50px; padding: 6px; border-radius: 12px;
   border: 1.5px solid var(--rule); background: transparent; overflow: hidden;
@@ -334,6 +335,8 @@ body.in-scene #hud { display: none; }
   .scene-box { padding: 24px 18px 34px; }
   .lobby { padding: 24px 20px 20px; }
   .lobby h1 { font-size: 32px; }
+  .choice-row.teams .pick { font-size: 13px; gap: 3px; }
+  .choice-row.teams .pick i { width: 7px; height: 7px; }
   .letter { padding: 26px 22px 20px; }
   .tab { padding: 8px 13px; }
 }
