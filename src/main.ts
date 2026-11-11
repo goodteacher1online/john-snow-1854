@@ -68,6 +68,7 @@ let onArrive: (() => void) | null = null;
 let nearId: string | null = null;
 let guide: [number, number][] | null = null;   // 지금 할 일까지 길을 따라가는 안내선
 let guideName = '';
+let crowdWarned = false;
 let noteAt = 0;            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
 let sceneSeenAt = 0;       // 장면이 마지막으로 열려 있던 시각 (닫자마자 또 문을 두드리지 않게)
 let others: RemotePlayer[] = [];
@@ -133,16 +134,22 @@ function updateHud(bump = false) {
 
 /** 조사 기록판: 사망 비율이 높은 곳부터 한 줄씩. 줄을 누르면 그 집에서 들은 내용이 펼쳐진다 */
 let ledgerOpenRow = '';
+let ledgerKey = '';
 function renderLedger() {
-  const recs = [...recordedSites()].sort((a, b) => b.deaths / b.people - a.deaths / a.people);
+  // 내 기록에 더해, 같은 방 친구들이 조사한 다른 곳도 함께 싣는다 (누가 조사했는지 이름을 단다)
+  const byFriend = new Map<string, string>();
+  for (const o of others) for (const id of o.records) if (!has(id) && !byFriend.has(id)) byFriend.set(id, o.name);
+  const recs = [...recordedSites(), ...[...byFriend.keys()].map(id => SITE_BY_ID[id]).filter(Boolean)]
+    .sort((a, b) => b.deaths / b.people - a.deaths / a.people);
   const last = save.records[save.records.length - 1];
-  $('ledger-count').textContent = `${recs.length}/${SITES.length}`;
+  ledgerKey = `${save.records.length}|${byFriend.size}`;
+  $('ledger-count').textContent = byFriend.size ? `${save.records.length} + 친구 ${byFriend.size}` : `${recs.length}/${SITES.length}`;
   $('ledger-body').innerHTML = recs.length ? `
     <table>
       <thead><tr><th>조사한 곳</th><th>사망</th><th>악취</th><th>마시는 물</th></tr></thead>
       <tbody>${recs.map(s => `
         <tr data-id="${s.id}" class="${s.id === last ? 'new' : ''}${s.id === ledgerOpenRow ? ' open' : ''}">
-          <td>${esc(s.name)}</td>
+          <td>${esc(s.name)}${byFriend.has(s.id) ? `<small class="by">${esc(byFriend.get(s.id)!)} 조사</small>` : ''}</td>
           <td class="mono"><b>${s.deaths}</b>/${s.people}</td>
           <td>${smellWord(s.smell)}</td>
           <td>${esc(s.waterShort)}</td>
@@ -679,6 +686,7 @@ async function start() {
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
+  mp.onFail = () => toast('친구들과 연결하지 못했다', '혼자서도 끝까지 조사할 수 있다. 다시 하려면 새로 고친다');
   // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다)
   // 한 방에 20명까지만 들어갈 수 있어, 기본은 모둠마다 방을 따로 쓴다
   const roomCode = save.wholeClass ? save.room : `${save.room}M${save.team.slice(-1)}`;
@@ -714,6 +722,12 @@ function frame(now: number) {
       $('hud-place').textContent = placeName(me.x, me.y);
       if (board) renderBoard();
       if (me.moving) persist();
+      const friendCount = new Set(others.flatMap(o => o.records).filter(id => !has(id))).size;
+      if (ledgerKey !== `${save.records.length}|${friendCount}`) renderLedger();
+      if (others.length >= 16 && !crowdWarned) {
+        crowdWarned = true;
+        toast('한 방에 사람이 너무 많다', '스무 명 가까이 모이면 연결이 끊긴다. 모둠별로 나누어 들어오는 편이 안전하다', true);
+      }
       updateGuide();
     }
   }

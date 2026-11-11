@@ -92,7 +92,7 @@ console.log('키보드 이동 거리', Math.round(Math.hypot(after.x - before.x,
 
 // 3) 두 번째 조사관이 같은 방에 들어온다
 const p2 = await newPlayer('민서', room);
-await p2.click('#in-team .pick[data-value="team3"]');
+// 같은 방 번호, 같은 모둠이라야 한 지도에 모인다
 await p2.click('#btn-start');
 await p2.waitForSelector('#note.open');
 await p2.click('#note-ok');
@@ -104,6 +104,13 @@ await shot(p1, '07b_predict_note');
 await dismissNote(p1);                       // 공기설 시험
 await p1.waitForTimeout(900);
 await shot(p1, '07c_guide_line');
+await p1.click('#ledger-body tr[data-id] >> nth=0');
+await p1.waitForTimeout(300);
+await shot(p1, '07d_ledger_row');
+await p1.keyboard.press('r');
+await p1.waitForTimeout(300);
+await shot(p1, '07e_ledger_folded');
+await p1.keyboard.press('r');
 console.log('1단계 뒤', (await state(p1)).stage);
 await visit(p1, 'workhouse');
 await p1.waitForTimeout(400);

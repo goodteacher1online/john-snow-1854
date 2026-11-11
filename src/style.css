@@ -417,3 +417,4 @@ body.in-scene #ledger.folded { width: auto; }
 .hint { font-size: 15px; color: var(--muted); margin: -8px 0 8px; word-break: keep-all; }
 .check { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 16px; cursor: pointer; }
 .check input { width: 22px; height: 22px; accent-color: var(--ink); flex: none; }
+#ledger .by { display: block; font-size: 13px; color: var(--on-ink-muted); }

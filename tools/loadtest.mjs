@@ -7,6 +7,7 @@ import { chromium } from 'playwright';
 const URL = process.env.GAME_URL || 'http://localhost:5173/';
 const N = Number(process.argv[2] || 24);
 const SECONDS = Number(process.argv[3] || 40);
+const WHOLE = process.argv[4] === 'class';      // 'class' 를 주면 학급 전체가 한 방(20명 한계 확인용), 기본은 모둠별 방
 const room = 'T' + Math.floor(10000 + Math.random() * 89999);
 const SITES = ['lewis', 'lodging', 'cambridge', 'coffee', 'berwick', 'brewery', 'workhouse', 'gould', 'eley', 'carnaby', 'marlborough', 'pulteney', 'rupert', 'littlepulteney'];
 const TEAMS = ['team1', 'team2', 'team3', 'team4', 'team5'];
@@ -29,10 +30,11 @@ async function join(i) {
   await page.click(`#in-team .pick[data-value="${TEAMS[i % 5]}"]`);
   await page.click('#btn-room');
   await page.fill('#in-room', room);
+  if (WHOLE) await page.check('#in-all');
   await page.click('#btn-start');
   await page.waitForSelector('#note.open');
   await page.click('#note-ok');
-  return { name, page, visited: [] };
+  return { name, page, visited: [], team: i % 5 };
 }
 
 /** 쪽지·수첩이 떠 있으면 닫고, 한 곳을 찾아가 면담을 끝낸다 */
@@ -87,16 +89,18 @@ const rows = await Promise.all(bots.map(async bot => {
     const st = window.__game.state();
     return { others: st.others.length, mine: st.records.length, peers: window.__game.peerRecords(), fps: Math.round(fps) };
   });
-  return { name: bot.name, visited: bot.visited.length, ...s };
+  return { name: bot.name, team: bot.team, visited: bot.visited.length, ...s };
 }));
 
+// 같은 방에 있어야 할 사람들끼리 견준다
+const mates = r => rows.filter(o => WHOLE || o.team === r.team);
 const expectTotal = rows.reduce((n, r) => n + r.mine, 0);
-const missingPeers = rows.filter(r => r.others !== N - 1);
-const missingRecords = rows.filter(r => r.peers !== expectTotal - r.mine);
+const missingPeers = rows.filter(r => r.others !== mates(r).length - 1);
+const missingRecords = rows.filter(r => r.peers !== mates(r).reduce((n, o) => n + o.mine, 0) - r.mine);
 const fpsList = rows.map(r => r.fps).sort((a, b) => a - b);
-console.log(`\n인원 ${N}명 · 조사 ${SECONDS}초 · 전체 기록 ${expectTotal}건`);
+console.log(`\n인원 ${N}명 (${WHOLE ? '학급 전체 한 방' : '모둠별 방 5개'}) · 조사 ${SECONDS}초 · 전체 기록 ${expectTotal}건`);
 console.log(`서로 모두 보임: ${N - missingPeers.length}/${N}` + (missingPeers.length ? `  (안 맞는 창: ${missingPeers.map(r => `${r.name}=${r.others}`).join(', ')})` : ''));
-console.log(`친구 기록이 빠짐없이 전해짐: ${N - missingRecords.length}/${N}` + (missingRecords.length ? `  (안 맞는 창: ${missingRecords.slice(0, 8).map(r => `${r.name} ${r.peers}/${expectTotal - r.mine}`).join(', ')})` : ''));
+console.log(`친구 기록이 빠짐없이 전해짐: ${N - missingRecords.length}/${N}` + (missingRecords.length ? `  (안 맞는 창: ${missingRecords.slice(0, 8).map(r => `${r.name} ${r.peers}/${mates(r).reduce((n, o) => n + o.mine, 0) - r.mine}`).join(', ')})` : ''));
 console.log(`화면 갱신(초당): 최저 ${fpsList[0]} · 중간 ${fpsList[Math.floor(N / 2)]} · 최고 ${fpsList[N - 1]}  (창 ${N}개를 한 PC에서 돌린 값)`);
 console.log(errors.length ? `오류 ${errors.length}건:\n` + [...new Set(errors)].slice(0, 12).join('\n') : '콘솔 오류 없음');
 await bots[0].page.keyboard.press('b');

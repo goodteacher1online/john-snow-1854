@@ -31,10 +31,10 @@ PEOPLE = {
     'sarah':     ('sad pale tired woman aged 32, brown hair, plain white cotton cap, dark grey high-neck dress, brown wool shawl', 212),
     'ned':       ('thin anxious 17 year old apprentice boy, dark messy hair, grey waistcoat, collarless shirt', 23),
     'maryann':   ('sturdy 42 year old washerwoman, weathered kind face, faded blue headscarf, coarse linen dress and apron', 31),
-    'keeper':    ('middle-aged 52 year old shopkeeper woman, lined face, greying auburn hair in a bun, lace cap, dark green dress, white apron', 245),
+    'keeper':    ('middle-aged 52 year old shopkeeper woman, lined face, greying auburn hair in a bun, lace cap, dark green dress, white apron', 503),
     'sam':       ('broad 45 year old blacksmith, dark full beard, sooty face, leather apron over rough shirt, stern sad eyes', 52),
     'huggins':   ('stout 60 year old rich brewer, ruddy round face, bald, grey side whiskers, brown frock coat, cravat', 61),
-    'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, dark navy coat, white collar, color painting', 278),
+    'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, dark navy coat, white collar, color painting', 501),
     'scholar':   ('thoughtful 50 year old gentleman naturalist, receding dark hair, sideburns, olive green coat, silk cravat', 85),
     'foreman':   ('38 year old factory foreman, brown moustache, flat cap, grey waistcoat, white shirt, worried look', 93),
     'jack':      ('20 year old street porter, freckled face, sandy hair, cloth cap, red neckerchief, worn brown jacket, sad eyes', 104),
@@ -42,7 +42,9 @@ PEOPLE = {
     'abe':       ('72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old blue greatcoat, knitted scarf', 126),
     'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
     'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
-    'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 359),
+    'player_female_bust': ('calm determined 27 year old woman investigator, brown hair in a low bun, plain navy high-neck dress, small white collar', 611),
+    'player_male_bust':   ('calm determined 30 year old man investigator, short dark hair, clean shaven, dark navy coat, white shirt, black cravat', 622),
+    'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 502),
     'physician': ('46 year old physician, brown trimmed beard, sceptical face, dark brown coat, grey cravat, white collar, color painting', 364),
 }
 

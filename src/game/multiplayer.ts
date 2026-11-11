@@ -14,6 +14,7 @@ export class Multiplayer {
   public onJoin?: (name: string) => void;
   public onRecord?: (name: string, team: string, siteId: string) => void;
   public onFinish?: (name: string) => void;
+  public onFail?: () => void;
 
   private peers = new Map<string, { player: RoomPlayer; view: RemotePlayer | null; known: Set<string>; done: boolean }>();
   private lastSend = 0;
@@ -32,6 +33,7 @@ export class Multiplayer {
       this.connected = true;
     } catch (err) {
       console.warn('[학급 연결] 연결하지 못해 혼자 조사합니다:', err);
+      this.onFail?.();
     }
   }
 
