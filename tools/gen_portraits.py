@@ -20,31 +20,30 @@ import os
 # 모델 폴더(직접 받아 둔 diffusers 형식)나 허깅페이스 모델 이름
 MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
-STYLE = ('half-length portrait, head and full shoulders and chest in frame, centered, facing the viewer, '
-         'London 1854, early Victorian working clothes, plain flat pale grey studio background, '
-         'realistic detailed digital painting, soft even light, muted natural colors, sharp focus')
-NEG = ('cropped head, out of frame, hands, fingers, text, watermark, signature, frame, border, vignette, oval, '
-       'modern clothing, glasses reflection, deformed, disfigured, extra limbs, blurry, cartoon, anime, 3d render, '
-       'photo studio props, hat brim cut off, smiling broadly, makeup')
+# CLIP 은 77 토큰까지만 읽으므로 구도를 맨 앞에, 설명은 짧게 쓴다
+FRAME = 'close-up head and shoulders bust portrait, front view, looking at viewer,'
+STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
+NEG = ('monochrome, grayscale, black and white, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
+       'vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, jewelry, smiling')
 
 # 이름: (설명, 시드)
 PEOPLE = {
-    'sarah':     ('a tired grieving young mother aged 28, pale face, brown hair under a plain white cotton cap, dark plain dress, grey wool shawl', 11),
-    'ned':       ("a thin 17 year old tailor's apprentice boy, anxious look, dark tousled hair, waistcoat over a collarless shirt, measuring tape around his neck", 23),
-    'maryann':   ('a sturdy 42 year old washerwoman, weathered kind face, hair tied in a faded blue headscarf, sleeves rolled, coarse linen apron', 31),
-    'keeper':    ('a careful 50 year old woman who keeps a coffee shop, auburn hair in a bun under a small lace cap, dark green dress with a clean white apron', 44),
-    'sam':       ('a broad 45 year old blacksmith, dark full beard, soot on his cheeks, heavy leather apron over a rough shirt, stern grieving eyes', 52),
-    'huggins':   ('a stout prosperous 58 year old brewery owner, ruddy face, grey side whiskers, brown frock coat, patterned waistcoat and a cravat', 61),
-    'master':    ('a thin stern 52 year old workhouse master, clean shaven, small round spectacles, black coat buttoned high, stiff white collar', 77),
-    'scholar':   ('a thoughtful 50 year old gentleman naturalist, receding dark hair, dark sideburns, olive green coat, silk cravat, intelligent eyes', 85),
-    'foreman':   ('a 38 year old factory foreman, brown moustache, flat cap, grey waistcoat over a shirt with sleeves rolled, worried look', 93),
-    'jack':      ('a 20 year old street porter, freckled face, sandy hair under a cloth cap, red neckerchief, worn brown jacket, hollow sad eyes', 104),
-    'ellen':     ('a 35 year old mother in mourning, red eyes from crying, black bonnet tied under the chin, black shawl over a dark dress', 118),
-    'abe':       ('a 72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old faded blue greatcoat, knitted scarf', 126),
-    'harriet':   ('a refined wealthy 62 year old lady, silver hair in a neat bun, lavender silk dress with a lace collar and a cameo brooch', 137),
-    'hugh':      ('a 40 year old butcher, round red face, short black hair, blue and white striped apron over a white shirt, bowler hat', 149),
-    'chairman':  ('an authoritative 66 year old parish chairman, white hair, heavy white eyebrows, black frock coat, gold watch chain, doubtful frown', 158),
-    'physician': ('a 46 year old physician, dark trimmed beard, serious sceptical face, black coat, dark cravat, high white collar', 163),
+    'sarah':     ('sad pale tired woman aged 32, brown hair, plain white cotton cap, dark grey high-neck dress, brown wool shawl', 212),
+    'ned':       ('thin anxious 17 year old apprentice boy, dark messy hair, grey waistcoat, collarless shirt', 23),
+    'maryann':   ('sturdy 42 year old washerwoman, weathered kind face, faded blue headscarf, coarse linen dress and apron', 31),
+    'keeper':    ('middle-aged 52 year old shopkeeper woman, lined face, greying auburn hair in a bun, lace cap, dark green dress, white apron', 245),
+    'sam':       ('broad 45 year old blacksmith, dark full beard, sooty face, leather apron over rough shirt, stern sad eyes', 52),
+    'huggins':   ('stout 60 year old rich brewer, ruddy round face, bald, grey side whiskers, brown frock coat, cravat', 61),
+    'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, dark navy coat, white collar, color painting', 278),
+    'scholar':   ('thoughtful 50 year old gentleman naturalist, receding dark hair, sideburns, olive green coat, silk cravat', 85),
+    'foreman':   ('38 year old factory foreman, brown moustache, flat cap, grey waistcoat, white shirt, worried look', 93),
+    'jack':      ('20 year old street porter, freckled face, sandy hair, cloth cap, red neckerchief, worn brown jacket, sad eyes', 104),
+    'ellen':     ('35 year old grieving mother, red tired eyes, black bonnet tied under chin, black shawl, dark dress', 118),
+    'abe':       ('72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old blue greatcoat, knitted scarf', 126),
+    'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
+    'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
+    'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 359),
+    'physician': ('46 year old physician, brown trimmed beard, sceptical face, dark brown coat, grey cravat, white collar, color painting', 364),
 }
 
 
@@ -54,13 +53,15 @@ def generate(names):
     from rembg import remove, new_session
 
     pipe = StableDiffusionPipeline.from_pretrained(MODEL, torch_dtype=torch.float16, variant='fp16', safety_checker=None)
-    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, algorithm_type='dpmsolver++', use_karras_sigmas=True)
     pipe.to('cuda')
     session = new_session('u2net_human_seg')
     RAW.mkdir(parents=True, exist_ok=True)
     for name in names:
+        name, _, override = name.partition(':')
         desc, seed = PEOPLE[name]
-        img = pipe(f'{desc}, {STYLE}', negative_prompt=NEG, width=576, height=704, num_inference_steps=28,
+        seed = int(override) if override else seed
+        img = pipe(f'{FRAME} {desc}, {STYLE}', negative_prompt=NEG, width=576, height=704, num_inference_steps=28,
                    guidance_scale=6.5, generator=torch.Generator('cuda').manual_seed(seed)).images[0]
         img.save(RAW / f'{name}.png')
         cut = remove(img, session=session, post_process_mask=True)

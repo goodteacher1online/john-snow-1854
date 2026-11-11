@@ -58,11 +58,10 @@ export class Scene {
     this.root.classList.remove('hidden');
   }
 
-  public setNpc(name: string, role: string, portrait: string, mirror = false) {
+  public setNpc(name: string, role: string, portrait: string) {
     this.npcName = name;
     this.npcRole = role;
     this.npc.src = portrait;
-    this.npc.classList.toggle('mirror', mirror);
   }
 
   public setCard(html: string | null) {

@@ -189,8 +189,8 @@ def save_h(im, height, path, q=86):
 def build_sprites():
     for sub in ('portraits', 'characters', 'houses'):
         (ASSETS / sub).mkdir(exist_ok=True)
-    for name in ('npc_brewery', 'npc_resident_female', 'npc_resident_elder', 'npc_resident_youth',
-                 'npc_wealthy_lady', 'npc_workhouse', 'player_female_bust', 'player_male_bust'):
+    # 면담 상대의 흉상은 tools/gen_portraits.py 가 만든다
+    for name in ('player_female_bust', 'player_male_bust'):
         im = flat_bottom(fill_holes(Image.open(SRC / 'portraits' / f'{name}.png').convert('RGBA')))
         print(f'  {name}: {im.size}')
         save_h(im, 640, ASSETS / 'portraits' / f'{name}.webp')

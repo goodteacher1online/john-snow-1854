@@ -19,11 +19,7 @@ const SAVE_KEY = 'snow1854.save.v2';
 const SPEED = 92;            // 걷는 속도 (월드 단위/초)
 const REACH = 40;            // 문·펌프에 손이 닿는 거리
 const XP = { record: 40, clue: 30, reason: 100, rebut: 80, handle: 100 };
-const PORTRAIT_FILE: Record<PortraitId, string> = {
-  woman: 'npc_resident_female', youth: 'npc_resident_youth', elder: 'npc_resident_elder',
-  brewer: 'npc_brewery', widow: 'npc_wealthy_lady', official: 'npc_workhouse',
-};
-const portraitUrl = (id: PortraitId) => `./assets/portraits/${PORTRAIT_FILE[id]}.webp`;
+const portraitUrl = (id: PortraitId) => `./assets/portraits/${id}.webp`;
 const QUESTION_LABEL: Record<QuestionId, string> = {
   toll: '누가 앓았는지 묻는다', air: '주변 공기와 냄새를 묻는다', water: '마실 물을 어디서 긷는지 묻는다',
 };
@@ -249,7 +245,7 @@ async function interview(site: Site) {
   sound.playDoorKnock();
   const asked = save.asked[site.id] ?? (save.asked[site.id] = []);
   scene.open(site.name, save.name, myPortrait());
-  scene.setNpc(site.npc.name, site.npc.role, portraitUrl(site.npc.portrait), site.npc.mirror);
+  scene.setNpc(site.npc.name, site.npc.role, portraitUrl(site.npc.portrait));
   scene.setCard(cardHtml(site, has(site.id) ? [...QUESTIONS] : asked));
   try {
     if (has(site.id)) {
@@ -288,7 +284,7 @@ async function hearing() {
   if (scene.isOpen || save.stage !== STAGE.HEARING) return;
   scene.open('세인트 제임스 교구 회관 · 9월 7일 저녁', save.name, myPortrait());
   document.body.classList.add('in-hearing');     // 증거 고르기 화면이 기록판 구실을 한다
-  scene.setNpc('위원장', '교구 위원', portraitUrl('elder'));
+  scene.setNpc('위원장', '교구 위원', portraitUrl('chairman'));
   try {
     await scene.say(HEARING.intro);
     const used = new Set<string>();
@@ -316,7 +312,7 @@ async function hearing() {
         await scene.say([hearingRebuff(round.need, s)]);
       }
     }
-    scene.setNpc('위원장', '교구 위원', portraitUrl('elder'));
+    scene.setNpc('위원장', '교구 위원', portraitUrl('chairman'));
     await scene.say(HEARING.verdict);
     scene.close();
     setStage(STAGE.HANDLE);

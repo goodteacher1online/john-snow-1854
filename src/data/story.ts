@@ -18,7 +18,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'lewis', name: '브로드 가 40번지', kind: 'house', basis: 'record', proves: [],
     fact: '아기 프랜시스, 어머니 세라, 경찰관 아버지, 기저귀 물과 정화조는 화이트헤드 목사의 1855년 조사 기록. 집에 사는 사람 수와 다른 사망자는 꾸민 것.',
-    npc: { name: '세라 루이스', role: '경찰관의 아내', portrait: 'woman' },
+    npc: { name: '세라 루이스', role: '경찰관의 아내', portrait: 'sarah' },
     people: 20, deaths: 2, smell: 'high', smellNote: '지하 정화조 악취',
     drankBroad: true, waterNote: '브로드 가 펌프, 문 앞',
     intro: [
@@ -47,7 +47,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'lodging', name: '브로드 가 하숙집', kind: 'house', basis: 'composite', proves: [],
-    npc: { name: '네드', role: '재단사 견습', portrait: 'youth' },
+    npc: { name: '네드', role: '재단사 견습', portrait: 'ned' },
     people: 18, deaths: 5, smell: 'high', smellNote: '뒷마당 오물통이 넘침',
     drankBroad: true, waterNote: '브로드 가 펌프, 길 건너',
     intro: [
@@ -73,7 +73,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'cambridge', name: '케임브리지 가 모퉁이 집', kind: 'house', basis: 'composite', proves: [],
-    npc: { name: '메리 앤', role: '세탁부', portrait: 'woman', mirror: true },
+    npc: { name: '메리 앤', role: '세탁부', portrait: 'maryann' },
     people: 9, deaths: 4, smell: 'high', smellNote: '하수구 악취',
     drankBroad: true, waterNote: '브로드 가 펌프, 모퉁이',
     intro: [
@@ -100,7 +100,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'coffee', name: '브로드 가 커피 가게', kind: 'house', basis: 'record', proves: [],
     fact: '식사 때 펌프 물을 냈고 단골 아홉이 죽었다는 주인의 말은 스노우의 보고서 그대로. 가게 식구 수와 사망자는 꾸민 것.',
-    npc: { name: '커피 가게 주인', role: '기계공들의 단골집', portrait: 'widow' },
+    npc: { name: '커피 가게 주인', role: '기계공들의 단골집', portrait: 'keeper' },
     people: 5, deaths: 1, smell: 'high', smellNote: '하수구 악취',
     drankBroad: true, waterNote: '브로드 가 펌프, 식사 때 손님에게 제공',
     intro: [
@@ -126,7 +126,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'berwick', name: '버윅 가 대장간', kind: 'house', basis: 'composite', proves: [],
-    npc: { name: '샘', role: '대장장이', portrait: 'brewer' },
+    npc: { name: '샘', role: '대장장이', portrait: 'sam' },
     people: 10, deaths: 3, smell: 'high', smellNote: '뒷마당 오물통',
     drankBroad: true, waterNote: '브로드 가 펌프, 걸어서 2분',
     intro: [
@@ -155,7 +155,7 @@ const SITE_TEXT: SiteText[] = [
     fact: '주인 허긴스, 일꾼 70여 명, 사망 0명, 맥아주와 양조장 우물 모두 스노우의 보고서 그대로.',
     clue: '펌프가 대문 앞인데 70명 중 사망 0명',
     testimony: '라이온 양조장입니다. 펌프가 대문 앞인데 일꾼 70명 가운데 죽은 사람이 없습니다. 일꾼들은 맥아주와 양조장 우물물만 마십니다.',
-    npc: { name: '허긴스 씨', role: '양조장 주인', portrait: 'elder' },
+    npc: { name: '허긴스 씨', role: '양조장 주인', portrait: 'huggins' },
     people: 70, deaths: 0, smell: 'high', smellNote: '브로드 가와 같은 공기',
     drankBroad: false, waterNote: '맥아주와 양조장 안 우물',
     intro: [
@@ -184,7 +184,7 @@ const SITE_TEXT: SiteText[] = [
     fact: '수용자 535명 가운데 5명 사망, 구내 우물과 수도 모두 스노우의 보고서 그대로.',
     clue: '가장 비좁고 냄새나는 곳인데 535명 중 사망 5명',
     testimony: '폴란드 가 구빈원입니다. 535명이 비좁게 모여 살고 냄새도 지독하지만 죽은 사람은 5명입니다. 구빈원에는 우물이 따로 있습니다.',
-    npc: { name: '구빈원 관리인', role: '세인트 제임스 교구', portrait: 'official' },
+    npc: { name: '구빈원 관리인', role: '세인트 제임스 교구', portrait: 'master' },
     people: 535, deaths: 5, smell: 'high', smellNote: '비좁고 환기가 안 됨',
     drankBroad: false, waterNote: '구빈원 안 우물과 수도',
     intro: [
@@ -213,7 +213,7 @@ const SITE_TEXT: SiteText[] = [
     fact: '굴드가 2일에 돌아와 물 냄새 때문에 마시지 않은 일, 조수 프린스, 앓다 회복한 하인은 스노우의 보고서 그대로. 식구 수는 꾸민 것.',
     clue: '펌프 가까이 살지만 그 물을 마시지 않아 무사',
     testimony: '브로드 가 굴드 씨 댁입니다. 펌프 가까이 살지만 여덟 식구 모두 살아 있습니다. 굴드 씨는 물에서 냄새가 나 마시지 않았습니다.',
-    npc: { name: '존 굴드', role: '조류학자', portrait: 'official', mirror: true },
+    npc: { name: '존 굴드', role: '조류학자', portrait: 'scholar' },
     people: 8, deaths: 0, smell: 'high', smellNote: '브로드 가와 같은 공기',
     drankBroad: false, waterNote: '물에서 냄새가 나 마시지 않음',
     intro: [
@@ -243,7 +243,7 @@ const SITE_TEXT: SiteText[] = [
     fact: '직공 약 200명 가운데 18명 사망, 물통 두 개, 햄스테드의 어머니와 이즐링턴의 조카 모두 스노우의 보고서 그대로.',
     clue: '먼 햄스테드에서 이 펌프 물을 받아 마신 부인이 사망',
     testimony: '뇌관 공장 주인의 어머니입니다. 소호에서 먼 햄스테드에 살았지만 날마다 브로드 가 펌프 물을 받아 마셨고 2일에 숨졌습니다. 함께 마신 조카도 이즐링턴에서 죽었습니다.',
-    npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'brewer', mirror: true },
+    npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'foreman' },
     people: 200, deaths: 18, smell: 'mid', smellNote: '화약과 하수구 냄새',
     drankBroad: true, waterNote: '브로드 가 펌프, 작업장 물통 두 개',
     intro: [
@@ -274,7 +274,7 @@ const SITE_TEXT: SiteText[] = [
     id: 'littlepulteney', name: '리틀 풀트니 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '다른 펌프가 더 가까운데 브로드 가 물을 길어 마신 남매가 사망',
     testimony: '리틀 풀트니 가의 남매입니다. 브라이들 골목 펌프가 더 가깝고 냄새도 덜한 거리지만, 일부러 브로드 가 물을 길어 마셨고 둘 다 죽었습니다.',
-    npc: { name: '잭', role: '짐꾼', portrait: 'youth', mirror: true },
+    npc: { name: '잭', role: '짐꾼', portrait: 'jack' },
     people: 7, deaths: 2, smell: 'low', smellNote: '냄새가 덜한 거리',
     drankBroad: true, waterNote: '브로드 가 펌프, 일부러 길어 옴',
     intro: [
@@ -301,7 +301,7 @@ const SITE_TEXT: SiteText[] = [
     id: 'carnaby', name: '카나비 가 살림집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '집 앞 펌프를 쓰는 가족 중 브로드 가 펌프 물을 마신 아이만 사망',
     testimony: '카나비 가의 아홉 살 아이입니다. 가족은 집 앞 펌프 물을 마셔 모두 무사한데, 하굣길에 브로드 가 펌프 물을 마신 이 아이만 죽었습니다.',
-    npc: { name: '엘런', role: '여섯 식구의 어머니', portrait: 'woman' },
+    npc: { name: '엘런', role: '여섯 식구의 어머니', portrait: 'ellen' },
     people: 6, deaths: 1, smell: 'mid', smellNote: '시장 냄새',
     drankBroad: true, waterNote: '딸만 하굣길에 브로드 가 펌프',
     intro: [
@@ -329,7 +329,7 @@ const SITE_TEXT: SiteText[] = [
     id: 'marlborough', name: '리틀 말버러 가 골목집', kind: 'house', basis: 'composite', proves: ['smell'],
     clue: '소호에서 냄새가 가장 고약한 골목인데 사망 0명',
     testimony: '리틀 말버러 가 골목입니다. 흑사병 구덩이를 파헤쳤다는, 소호에서 냄새가 가장 고약한 곳이지만 죽은 사람이 없습니다. 이곳 사람들은 집 앞 펌프를 씁니다.',
-    npc: { name: '에이브 노인', role: '은퇴한 마부', portrait: 'elder', mirror: true },
+    npc: { name: '에이브 노인', role: '은퇴한 마부', portrait: 'abe' },
     people: 8, deaths: 0, smell: 'high', smellNote: '하수도 공사 터, 흑사병 구덩이 소문',
     drankBroad: false, waterNote: '리틀 말버러 가 펌프',
     intro: [
@@ -355,7 +355,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'pulteney', name: '그레이트 풀트니 가 저택', kind: 'house', basis: 'composite', proves: [],
-    npc: { name: '해리엇 부인', role: '골든 스퀘어 근처 주민', portrait: 'widow', mirror: true },
+    npc: { name: '해리엇 부인', role: '골든 스퀘어 근처 주민', portrait: 'harriet' },
     people: 6, deaths: 0, smell: 'low', smellNote: '길이 넓고 바람이 통함',
     drankBroad: false, waterNote: '브라이들 골목 펌프',
     intro: [
@@ -379,7 +379,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'rupert', name: '루퍼트 가 푸줏간', kind: 'house', basis: 'composite', proves: [],
-    npc: { name: '휴', role: '푸줏간 주인', portrait: 'brewer' },
+    npc: { name: '휴', role: '푸줏간 주인', portrait: 'hugh' },
     people: 7, deaths: 0, smell: 'mid', smellNote: '푸줏간 피비린내',
     drankBroad: false, waterNote: '루퍼트 가 펌프',
     intro: [
@@ -614,19 +614,19 @@ export const HEARING = {
   ],
   rounds: [
     {
-      speaker: '의사 위원', portrait: 'official' as const, need: 'smell' as Proof,
+      speaker: '의사 위원', portrait: 'physician' as const, need: 'smell' as Proof,
       claim: '말도 안 되는 소리요. 콜레라는 썩은 공기에서 생기오. 냄새가 고약한 곳에서 사람이 죽는 것이오. 그렇지 않은 곳이 하나라도 있소?',
       ask: '악취가 심한데도 죽은 사람이 거의 없는 곳의 기록을 내놓으시오.',
       ok: '…그 숫자가 사실이라면 설명하기 어렵군.',
     },
     {
-      speaker: '위원장', portrait: 'elder' as const, need: 'near' as Proof,
+      speaker: '위원장', portrait: 'chairman' as const, need: 'near' as Proof,
       claim: '죽은 이들은 모두 브로드 가 사람들이오. 그 동네 땅과 공기에 독이 서린 게지. 펌프 곁에 사는 것 자체가 위험한 거요.',
       ask: '펌프 가까이 있으면서도 무사한 곳의 기록을 내놓으시오.',
       ok: '펌프가 코앞인데 멀쩡하다… 그들은 그 물을 마시지 않았다는 말이오?',
     },
     {
-      speaker: '의사 위원', portrait: 'official' as const, need: 'far' as Proof,
+      speaker: '의사 위원', portrait: 'physician' as const, need: 'far' as Proof,
       claim: '그 펌프 물은 소호에서 가장 맑고 맛 좋은 물이오. 그 물이 사람을 죽인다면 브로드 가 밖에서도 그 물 때문에 죽은 사람이 있어야 하오.',
       ask: '브로드 가에서 떨어진 곳에서 그 물을 마시고 죽은 사람의 기록을 내놓으시오.',
       ok: '…브로드 가의 공기는 마시지 않고, 물만 마셨는데도.',
@@ -742,7 +742,7 @@ export const ABOUT: { title: string; items: string[] }[] = [
     items: [
       'John Snow, On the Mode of Communication of Cholera, 2판, 1855. 프로젝트 구텐베르크에서 전문을 볼 수 있다.',
       'Henry Whitehead, 세인트 제임스 교구 콜레라 조사위원회 보고서, 1855.',
-      '지도는 저작권이 끝난 1854년 석판 지도다. 인물과 건물 그림은 인공지능으로 만든 것이고 실제 인물의 초상이 아니다.',
+      '지도는 저작권이 끝난 1854년 석판 지도다. 인물과 건물 그림은 인공지능으로 만든 것이다. 굴드와 허긴스 같은 실존 인물도 얼굴은 지어낸 것이고 초상이 아니다.',
       '글꼴은 강원특별자치도교육청의 강원교육모두체다.',
     ],
   },

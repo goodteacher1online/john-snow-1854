@@ -1,6 +1,9 @@
 export type Smell = 'high' | 'mid' | 'low';
 export type QuestionId = 'toll' | 'air' | 'water';
-export type PortraitId = 'woman' | 'youth' | 'elder' | 'brewer' | 'widow' | 'official';
+/** tools/gen_portraits.py 가 만든 흉상 파일 이름 */
+export type PortraitId =
+  | 'sarah' | 'ned' | 'maryann' | 'keeper' | 'sam' | 'huggins' | 'master' | 'scholar' | 'foreman'
+  | 'jack' | 'ellen' | 'abe' | 'harriet' | 'hugh' | 'chairman' | 'physician';
 export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
 export type PlayerGender = 'male' | 'female';
 
@@ -15,7 +18,7 @@ export interface Site {
   door: [number, number];
   icon: [number, number];
   nearestPump: string;
-  npc: { name: string; role: string; portrait: PortraitId; mirror?: boolean };
+  npc: { name: string; role: string; portrait: PortraitId };
   people: number;
   deaths: number;
   smell: Smell;

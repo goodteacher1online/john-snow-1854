@@ -52,6 +52,7 @@ src/game/multiplayer.ts 학급 연결 (Playroom Kit)
 src/ui/                면담 장면, 수첩
 tools/build_assets.py  고지도에서 게임 지도·보행 마스크·도보권역을 만든다
 tools/build_buildings.py 주택 그림의 벽돌·창·지붕으로 양조장·공장·구빈원을 같은 화풍으로 합성한다
+tools/gen_portraits.py   면담 상대 16명의 흉상을 로컬 GPU(Stable Diffusion, DreamShaper 8)로 생성한다
 tools/playtest.mjs     한 판을 처음부터 끝까지 자동으로 돌려 보는 점검
 tools/source/          원본 고지도와 고해상도 그림
 ```
@@ -67,4 +68,4 @@ tools/source/          원본 고지도와 고해상도 그림
 - 숫자와 사례의 원전: John Snow, *On the Mode of Communication of Cholera*, 2판(1855). 구빈원, 양조장, 뇌관 공장, 햄스테드의 부인, 커피 가게, 굴드의 일화는 이 보고서 그대로다.
 - 40번지 루이스 가족과 정화조: Henry Whitehead의 1855년 교구 조사위원회 보고.
 - 플레이어가 맡은 조사관, 주민과 위원의 대사, "꾸민 가구" 여덟 곳은 창작이다. 게임 안 도움말의 "선생님께"와 수첩의 각 기록에 구분해 적어 두었다.
-- 지도: 저작권이 끝난 1854년 석판 지도. 인물·건물 그림: 인공지능 생성물과 그 합성. 글꼴: 강원교육모두체(강원특별자치도교육청).
+- 지도: 저작권이 끝난 1854년 석판 지도. 면담 상대 16명의 흉상: DreamShaper 8(CreativeML OpenRAIL-M)로 생성한 지어낸 얼굴. 조사관·건물 그림: 이전 작업의 인공지능 생성물과 그 합성. 글꼴: 강원교육모두체(강원특별자치도교육청).

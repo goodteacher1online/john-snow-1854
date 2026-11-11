@@ -208,9 +208,7 @@ body.in-scene #hud { display: none; }
   height: min(46vh, 430px); width: auto; display: block; filter: brightness(0.55) saturate(0.7);
   transform-origin: bottom center; transition: filter 0.25s ease, transform 0.25s ease;
 }
-.portrait.right.mirror { transform: scaleX(-1); }
 .portrait.speaking { filter: none; transform: scale(1.04); }
-.portrait.right.mirror.speaking { transform: scaleX(-1) scale(1.04); }
 .portrait[src=''], .portrait:not([src]) { visibility: hidden; }
 
 .card { align-self: center; width: 350px; padding: 18px 20px; margin-bottom: 30px; pointer-events: none; }
