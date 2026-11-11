@@ -21,9 +21,9 @@ import os
 MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
 # CLIP 은 77 토큰까지만 읽으므로 구도를 맨 앞에, 설명은 짧게 쓴다
-FRAME = 'close-up head and shoulders bust portrait, front view, looking at viewer,'
+FRAME = 'symmetrical front-facing passport photo style bust portrait, head straight, eyes looking directly into camera,'
 STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
-NEG = ('monochrome, grayscale, black and white, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
+NEG = ('looking away, looking down, head turned, three-quarter view, tilted head, monochrome, grayscale, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
        'vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, jewelry, smiling')
 
 # 이름: (설명, 시드)
