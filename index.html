@@ -47,6 +47,10 @@
         <span>학급 방 번호</span>
         <input id="in-room" type="text" maxlength="8" class="mono" placeholder="없으면 비움">
       </label>
+      <div class="hidden" id="scope-row">
+        <p class="hint">같은 방 번호를 넣은 같은 모둠 친구들과 한 지도에서 조사한다.</p>
+        <label class="check"><input type="checkbox" id="in-all"><span>학급 전체가 한 방에 모인다. 스무 명 이하일 때만</span></label>
+      </div>
 
       <button id="btn-start" type="submit" class="btn primary wide">조사 시작</button>
       <button id="btn-reset" type="button" class="btn ghost wide hidden">처음부터 다시</button>
@@ -71,9 +75,9 @@
         <svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/></svg>
         <span>지도</span><kbd>M</kbd>
       </button>
-      <button class="tool" id="btn-board" title="학급 상황판">
+      <button class="tool" id="btn-board" title="함께 조사하는 친구들">
         <svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M2.5 19a5.5 5.5 0 0 1 11 0M14 19a4 4 0 0 1 7.5-1.5"/></svg>
-        <span>학급</span><kbd>B</kbd>
+        <span>함께</span><kbd>B</kbd>
       </button>
       <button class="tool" id="btn-sound" title="소리">
         <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7" id="sound-wave"/></svg>

@@ -545,8 +545,8 @@ function renderBoard() {
   const teams = TEAMS.map(t => ({ ...t, members: all.filter(p => p.team === t.id) })).filter(t => t.members.length);
   const union = new Set(all.flatMap(p => p.records));
   const head = save.room
-    ? `<h3>학급 조사 현황 · ${all.length}명 · ${union.size}/${SITES.length}곳</h3><p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>`
-    : `<h3>혼자 조사하는 중</h3><p class="room">학급과 함께 하려면 첫 화면에서 방 번호를 넣는다.</p>`;
+    ? `<h3>${save.wholeClass ? '학급' : '모둠'} 조사 현황 · ${all.length}명 · ${union.size}/${SITES.length}곳</h3><p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>`
+    : `<h3>혼자 조사하는 중</h3><p class="room">친구들과 함께 하려면 첫 화면에서 방 번호를 넣는다.</p>`;
   $('board').innerHTML = head + teams.map(t => `
     <h4 style="--c:${t.color}"><i></i>${t.name}</h4>
     <ul>${t.members.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>`).join('');
@@ -608,7 +608,7 @@ $('about-reset').addEventListener('click', () => {
 });
 $('board').addEventListener('click', e => {
   if (!(e.target as HTMLElement).closest('[data-copy]')) return;
-  const link = `${location.origin}${location.pathname}#r=${encodeURIComponent(save.room)}`;
+  const link = `${location.origin}${location.pathname}#class=${encodeURIComponent(save.room)}${save.wholeClass ? '&all=1' : ''}`;
   void navigator.clipboard?.writeText(link).then(() => toast('초대 주소를 복사했다', link));
 });
 $('btn-sound').addEventListener('click', () => {
@@ -629,12 +629,17 @@ function radioGroup(id: string, value: string, onPick: (v: string) => void) {
 
 function setupLobby() {
   $('in-team').innerHTML = TEAMS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i>${t.name}</button>`).join('');
-  const roomFromLink = new URLSearchParams(location.hash.slice(1)).get('r');
-  const room = roomFromLink || save.room;
+  // 초대 주소: #class=방번호(&all=1). '#r=' 은 연결 라이브러리가 제 방 이름을 적는 자리라 쓰지 않는다
+  const link = new URLSearchParams(location.hash.slice(1));
+  const room = link.get('class') || save.room;
+  if (link.get('class')) save.wholeClass = link.get('all') === '1';
+  $<HTMLInputElement>('in-all').checked = !!save.wholeClass;
   $('room-row').classList.toggle('hidden', !room);
+  $('scope-row').classList.toggle('hidden', !room);
   $('btn-room').classList.toggle('hidden', !!room);
   $('btn-room').addEventListener('click', () => {
     $('room-row').classList.remove('hidden');
+    $('scope-row').classList.remove('hidden');
     $('btn-room').classList.add('hidden');
     $<HTMLInputElement>('in-room').focus();
   });
@@ -655,7 +660,8 @@ function setupLobby() {
 
 async function start() {
   save.name = $<HTMLInputElement>('in-name').value.trim() || '조사관';
-  save.room = $<HTMLInputElement>('in-room').value.trim();
+  save.room = $<HTMLInputElement>('in-room').value.trim().replace(/[^0-9A-Za-z가-힣]/g, '');
+  save.wholeClass = $<HTMLInputElement>('in-all').checked;
   Object.assign(me, { name: save.name, team: save.team, gender: save.gender });
   await navReady;
 
@@ -674,7 +680,9 @@ async function start() {
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
   // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다)
-  if (save.room) void mp.connect(save.room, me).then(() => mp.sendProgress(save.records, save.stage));
+  // 한 방에 20명까지만 들어갈 수 있어, 기본은 모둠마다 방을 따로 쓴다
+  const roomCode = save.wholeClass ? save.room : `${save.room}M${save.team.slice(-1)}`;
+  if (save.room) void mp.connect(roomCode, me).then(() => mp.sendProgress(save.records, save.stage));
 }
 
 // ---------------------------------------------------------------------------
