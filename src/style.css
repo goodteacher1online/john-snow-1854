@@ -363,3 +363,11 @@ body.in-scene #hud { display: none; }
 #board .room .btn { margin-left: auto; color: var(--on-ink); border-color: rgba(255, 255, 255, 0.4); }
 #board .room .btn:hover { background: var(--on-ink); color: var(--ink); }
 #btn-room, #btn-reset { margin-top: 8px; }
+
+/* ---------- 추가: 기록의 근거, 선생님께 ---------- */
+.fact { margin-top: 6px; font-size: 15px; line-height: 1.5; color: var(--muted); word-break: keep-all; }
+.about { width: min(760px, 100%); }
+.about h3 { margin: 18px 0 6px; font-size: 21px; }
+.about ul { display: grid; gap: 6px; }
+.about li { position: relative; padding-left: 18px; font-size: 18px; word-break: keep-all; }
+.about li::before { content: ''; position: absolute; left: 2px; top: 0.72em; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }

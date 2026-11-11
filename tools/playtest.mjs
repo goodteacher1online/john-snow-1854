@@ -176,6 +176,11 @@ await shot(p1, '20_ending_report');
 await p1.click('#ending-actions .btn.primary');
 await p1.waitForTimeout(800);
 await shot(p1, '21_after');
+await p1.click('#btn-help');
+await p1.click('#help-about');
+await p1.waitForTimeout(400);
+await shot(p1, '21b_about');
+await p1.click('#about-close');
 const end = await state(p1);
 console.log('끝', { stage: end.stage, records: end.records.length, xp: end.xp, misses: end.misses });
 

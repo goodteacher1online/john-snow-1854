@@ -310,19 +310,16 @@ export class Renderer {
     // 스노우의 지도처럼 사망자 한 명에 검은 막대 하나
     const mine = f.records.has(s.id);
     if (!mine && !(f.board && f.classRecords.has(s.id))) return;
-    const bw = 12 * z, bh = 2.6 * z, pitch = 4 * z, perCol = 9;
-    const left = x - w / 2 - 5 * z - bw;
+    // 멀리서 보아도 한 줄 한 줄이 구별되도록 최소 크기를 둔다
+    const bw = Math.max(12 * z, 16), bh = Math.max(2.6 * z, 3.6), pitch = Math.max(4 * z, 5.6), perCol = 9;
+    const left = x - w / 2 - Math.max(5 * z, 5) - bw;
+    const cols = Math.max(1, Math.ceil(s.deaths / perCol));
+    const topY = y - Math.min(s.deaths, perCol) * pitch;
+    this.label(`${s.deaths}명`, left + bw / 2 - (cols - 1) * (bw + 3) / 2, topY - 6, 17, INK, 2);
     ctx.fillStyle = INK;
     for (let i = 0; i < s.deaths; i++) {
       const col = Math.floor(i / perCol), row = i % perCol;
-      ctx.fillRect(left - col * (bw + 3 * z), y - bh - row * pitch, bw, bh);
-    }
-    if (s.deaths === 0) {
-      ctx.strokeStyle = INK;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(left + bw / 2, y - 5 * z, 4 * z, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.fillRect(left - col * (bw + 3), y - bh - row * pitch, bw, bh);
     }
   }
 

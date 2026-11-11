@@ -26,6 +26,8 @@ export interface Site {
   basis: 'record' | 'composite';
   proves: Proof[];
   clue?: string;
+  /** 기록에 남은 사례에서 무엇이 원전 그대로이고 무엇을 꾸몄는지 */
+  fact?: string;
   /** 위원회에서 이 기록을 내놓으며 하는 말 */
   testimony?: string;
   intro: string[];

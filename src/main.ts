@@ -2,7 +2,7 @@
 import './style.css';
 import { Avatar, PlayerGender, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, TEAMS, RANKS,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, TEAMS, RANKS, ABOUT,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
@@ -189,7 +189,7 @@ function record(site: Site) {
     toast(site.clue, `${site.name} 기록 완료`, true);
   } else {
     sound.playClueRecorded();
-    toast(`${site.name} 기록 완료`, `${site.people}명 가운데 ${site.deaths}명 사망`);
+    toast(`${site.name} 기록 완료`, site.deaths ? `${site.people}명 가운데 ${site.deaths}명 사망 · 지도에 검은 막대 ${site.deaths}개를 그렸다` : `${site.people}명 가운데 사망 없음`);
   }
   persist();
   updateHud();
@@ -526,7 +526,7 @@ window.addEventListener('keydown', e => {
   if (k === 'escape') {
     if (notebook.isOpen) notebook.close();
     else if (overview) setOverview(false);
-    ['help', 'snowmap'].forEach(closeModal);
+    ['help', 'snowmap', 'about'].forEach(closeModal);
     return;
   }
   if (k === 'n' && (!modalOpen() || notebook.isOpen)) { notebook.isOpen ? notebook.close() : notebook.open(); return; }
@@ -559,6 +559,16 @@ $('help-note').addEventListener('click', () => {
   if (save.stage >= STAGE.DONE) openEnding(0); else showNote(save.stage);
 });
 $('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
+$('about-body').innerHTML = ABOUT.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+$('help-about').addEventListener('click', () => { closeModal('help'); openModal('about'); });
+$('about-close').addEventListener('click', () => closeModal('about'));
+$('about-reset').addEventListener('click', () => {
+  const b = $('about-reset');
+  // 실수로 지우지 않게 두 번 눌러야 한다
+  if (b.dataset.armed) { localStorage.removeItem(SAVE_KEY); location.reload(); return; }
+  b.dataset.armed = '1';
+  b.textContent = '기록이 모두 지워진다. 한 번 더 누르면 지운다';
+});
 $('board').addEventListener('click', e => {
   if (!(e.target as HTMLElement).closest('[data-copy]')) return;
   const link = `${location.origin}${location.pathname}#r=${encodeURIComponent(save.room)}`;

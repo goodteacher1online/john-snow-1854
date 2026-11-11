@@ -21,5 +21,6 @@ export function factsHtml(s: Site, asked?: QuestionId[], fresh?: QuestionId): st
 }
 
 export function basisTag(s: Site): string {
-  return `<span class="tag">${s.basis === 'record' ? '스노우의 보고서에 실린 사례' : '당시 기록으로 꾸민 가구'}</span>`;
+  if (s.basis === 'composite') return `<span class="tag">당시 기록으로 꾸민 가구</span>`;
+  return `<span class="tag">기록에 남은 사례</span><p class="fact">${esc(s.fact ?? '')}</p>`;
 }
