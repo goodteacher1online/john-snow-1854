@@ -132,6 +132,25 @@ function updateHud(bump = false) {
   $('hud-xp-bar').style.width = next ? `${(save.xp - floor) / (next[0] - floor) * 100}%` : '100%';
   $('hud-count').textContent = `기록 ${save.records.length}/${SITES.length}`;
   $('notebook-dot').classList.toggle('hidden', !notebook.needsReason);
+  renderLedger();
+}
+
+/** 조사 기록판: 사망 비율이 높은 곳부터 한 줄씩 */
+function renderLedger() {
+  const recs = [...recordedSites()].sort((a, b) => b.deaths / b.people - a.deaths / a.people);
+  $('ledger-count').textContent = `${recs.length}/${SITES.length}`;
+  $('ledger-body').innerHTML = recs.length ? `
+    <table>
+      <thead><tr><th>조사한 곳</th><th>사망</th><th>악취</th><th>브로드 가 물</th></tr></thead>
+      <tbody>${recs.map(s => `
+        <tr class="${s.id === save.records[save.records.length - 1] ? 'new' : ''}">
+          <td>${esc(s.name)}</td>
+          <td class="mono"><b>${s.deaths}</b>/${s.people}</td>
+          <td>${smellWord(s.smell)}</td>
+          <td><i class="mark${s.drankBroad ? ' on' : ''}"></i>${s.drankBroad ? '마심' : '안 마심'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : '<p>문을 두드려 세 가지를 물으면, 기록이 여기에 나란히 쌓인다.</p>';
 }
 
 function showNote(stage: number) {
@@ -268,6 +287,7 @@ async function interview(site: Site) {
 async function hearing() {
   if (scene.isOpen || save.stage !== STAGE.HEARING) return;
   scene.open('세인트 제임스 교구 회관 · 9월 7일 저녁', save.name, myPortrait());
+  document.body.classList.add('in-hearing');     // 증거 고르기 화면이 기록판 구실을 한다
   scene.setNpc('위원장', '교구 위원', portraitUrl('elder'));
   try {
     await scene.say(HEARING.intro);
@@ -550,6 +570,7 @@ canvas.addEventListener('wheel', e => {
 
 $('prompt').addEventListener('click', interact);
 $('btn-notebook').addEventListener('click', () => notebook.open());
+$('ledger-open').addEventListener('click', () => { if (!scene.isOpen) notebook.open('compare'); });
 $('btn-map').addEventListener('click', () => setOverview(!overview || board));
 $('btn-board').addEventListener('click', () => setOverview(!board, true));
 $('btn-help').addEventListener('click', () => openModal('help'));
@@ -629,6 +650,7 @@ async function start() {
 
   $('lobby').classList.add('hidden');
   $('hud').classList.remove('hidden');
+  $('ledger').classList.remove('hidden');
   started = true;
   updateHud();
   persist();
@@ -651,6 +673,7 @@ function frame(now: number) {
     const paused = scene.isOpen || modalOpen() || cinematic;
     if (scene.isOpen) sceneSeenAt = now;
     document.body.classList.toggle('in-scene', scene.isOpen);
+    if (!scene.isOpen) document.body.classList.remove('in-hearing');
     if (!paused && save.noteSeen < save.stage && save.stage < STAGE.DONE && now > noteAt) showNote(save.stage);
     if (paused) { keys.clear(); me.moving = false; } else if (nav.ready) move(dt);
     if (me.moving) {

@@ -170,6 +170,17 @@ def fill_holes(im):
     return Image.fromarray(a.astype(np.uint8))
 
 
+def flat_bottom(im):
+    """아래쪽이 타원으로 좁아지는 흉상은, 폭이 다시 좁아지기 직전 높이에서 수평으로 자른다."""
+    a = np.array(im)[..., 3] > 128
+    width = a.sum(axis=1)
+    lower = width[len(width) // 2:]
+    full = lower.max()
+    rows = np.nonzero(width >= full * 0.93)[0]
+    cut = int(rows.max()) + 1
+    return im.crop((0, 0, im.width, cut)) if cut < im.height - 4 else im
+
+
 def save_h(im, height, path, q=86):
     w = round(im.width * height / im.height)
     im.resize((w, height), Image.LANCZOS).save(path, quality=q, method=6)
@@ -180,12 +191,14 @@ def build_sprites():
         (ASSETS / sub).mkdir(exist_ok=True)
     for name in ('npc_brewery', 'npc_resident_female', 'npc_resident_elder', 'npc_resident_youth',
                  'npc_wealthy_lady', 'npc_workhouse', 'player_female_bust', 'player_male_bust'):
-        im = fill_holes(Image.open(SRC / 'portraits' / f'{name}.png').convert('RGBA'))
+        im = flat_bottom(fill_holes(Image.open(SRC / 'portraits' / f'{name}.png').convert('RGBA')))
+        print(f'  {name}: {im.size}')
         save_h(im, 640, ASSETS / 'portraits' / f'{name}.webp')
     for name in ('player_male', 'player_female'):
         im = fill_holes(Image.open(SRC / 'characters' / f'{name}.png').convert('RGBA'))
         save_h(im, 360, ASSETS / 'characters' / f'{name}.webp', 90)
-    for name in ('house_terrace', 'house_brewery', 'house_workhouse'):
+    # 양조장·공장·구빈원은 tools/build_buildings.py 가 주택 그림에서 합성한다
+    for name in ('house_terrace',):
         im = Image.open(SRC / 'houses' / f'{name}.png').convert('RGBA')
         save_h(im, min(360, im.height), ASSETS / 'houses' / f'{name}.webp', 90)
     pump = Image.open(SRC / 'pump_cast_iron.png').convert('RGBA')
