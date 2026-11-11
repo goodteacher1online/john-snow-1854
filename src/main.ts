@@ -742,6 +742,7 @@ if (import.meta.env.DEV) {
       door: (id: string) => SITE_BY_ID[id].door,
       pump: () => [BROAD_PUMP.x, BROAD_PUMP.y],
       nav,
+      peerRecords: () => others.reduce((n, o) => n + o.records.length, 0),
     },
   });
 }

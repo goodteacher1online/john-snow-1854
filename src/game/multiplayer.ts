@@ -17,10 +17,11 @@ export class Multiplayer {
 
   private peers = new Map<string, { player: RoomPlayer; view: RemotePlayer | null; known: Set<string>; done: boolean }>();
   private lastSend = 0;
+  private lastKey = '';
 
   public async connect(room: string, me: Avatar) {
     try {
-      await insertCoin({ skipLobby: true, roomCode: room });
+      await insertCoin({ skipLobby: true, roomCode: room, maxPlayersPerRoom: 60 });
       const self = myPlayer();
       self.setState('who', { name: me.name, team: me.team, gender: me.gender } satisfies Profile, true);
       onPlayerJoin(player => {
@@ -34,13 +35,19 @@ export class Multiplayer {
     }
   }
 
-  /** 초당 10번까지만 위치를 보낸다 */
+  /**
+   * 위치는 달라졌을 때만, 초당 4번까지 보낸다. 유실될 수 있는 빠른 통로(P2P)는 학교 망에서 막히기 쉽고
+   * 한 번도 못 받은 친구는 화면에 나타나지 않으므로, 반드시 도착하는 통로로 보낸다.
+   */
   public sendPosition(a: Avatar) {
     if (!this.connected) return;
     const now = performance.now();
-    if (now - this.lastSend < 100) return;
+    if (now - this.lastSend < 250) return;
+    const key = `${Math.round(a.x)},${Math.round(a.y)},${a.facing},${a.moving}`;
+    if (key === this.lastKey && now - this.lastSend < 5000) return;      // 서 있을 때는 5초에 한 번만
     this.lastSend = now;
-    myPlayer().setState('pos', { x: Math.round(a.x), y: Math.round(a.y), f: a.facing, m: a.moving } satisfies Pos, false);
+    this.lastKey = key;
+    myPlayer().setState('pos', { x: Math.round(a.x), y: Math.round(a.y), f: a.facing, m: a.moving } satisfies Pos, true);
   }
 
   public sendProgress(records: string[], stage: number) {
@@ -64,8 +71,8 @@ export class Multiplayer {
       }
       const v = peer.view;
       v.tx = pos.x; v.ty = pos.y; v.facing = pos.f; v.moving = pos.m;
-      v.x += (v.tx - v.x) * 0.2;
-      v.y += (v.ty - v.y) * 0.2;
+      v.x += (v.tx - v.x) * 0.12;
+      v.y += (v.ty - v.y) * 0.12;
       v.records = prog.records; v.stage = prog.stage;
       for (const r of prog.records) {
         if (!peer.known.has(r)) { peer.known.add(r); this.onRecord?.(v.name, v.team, r); }

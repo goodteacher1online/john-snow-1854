@@ -22,7 +22,7 @@ async function join(i) {
   const name = `학생${String(i + 1).padStart(2, '0')}`;
   const ctx = await browser.newContext({ viewport: { width: 800, height: 520 } });
   const page = await ctx.newPage();
-  page.on('pageerror', e => errors.push(`[${name}] ${e.message}`));
+  page.on('pageerror', e => errors.push(`[${name}] ${e.message} ${(e.stack || '').split(/\n/).slice(0, 4).join(' | ').slice(0, 400)}`));
   page.on('console', m => { if (m.type() === 'error') errors.push(`[${name}] console: ${m.text().slice(0, 160)}`); });
   await page.goto(URL);
   await page.fill('#in-name', name);
@@ -82,9 +82,9 @@ await sleep(3000);          // 마지막 기록이 퍼질 시간
 // 결과: 각 창이 본 것
 const rows = await Promise.all(bots.map(async bot => {
   const s = await bot.page.evaluate(async () => {
-    const st = window.__game.state();
-    // 3초 동안 화면이 몇 번 그려지는지 (끊김 확인)
+    // 3초 동안 화면이 몇 번 그려지는지 (끊김 확인). 가려진 창은 그리기를 쉬므로, 상태는 그린 뒤에 읽는다
     const fps = await new Promise(res => { let n = 0; const t = performance.now(); const f = () => { n++; performance.now() - t < 3000 ? requestAnimationFrame(f) : res(n / 3); }; requestAnimationFrame(f); });
+    const st = window.__game.state();
     return { others: st.others.length, mine: st.records.length, peers: window.__game.peerRecords(), fps: Math.round(fps) };
   });
   return { name: bot.name, visited: bot.visited.length, ...s };
