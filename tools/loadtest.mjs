@@ -8,7 +8,7 @@ const URL = process.env.GAME_URL || 'http://localhost:5173/';
 const N = Number(process.argv[2] || 24);
 const SECONDS = Number(process.argv[3] || 40);
 const WHOLE = process.argv[4] === 'class';      // 'class' 를 주면 모두 한 영역(한 방 한계 확인용), 기본은 영역 5개에 고루
-const room = 'T' + Math.floor(10000 + Math.random() * 89999);
+const room = process.env.ROOM || ('반' + Math.floor(10000 + Math.random() * 89999));
 const SITES = ['lewis', 'lodging', 'cambridge', 'coffee', 'berwick', 'brewery', 'workhouse', 'gould', 'eley', 'carnaby', 'marlborough', 'pulteney', 'rupert', 'littlepulteney'];
 const TEAMS = ['team1', 'team2', 'team3', 'team4', 'team5'];
 

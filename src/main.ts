@@ -172,7 +172,8 @@ function toggleLedger(open?: boolean) {
   try { localStorage.setItem('snow1854.ledger', next ? '1' : '0'); } catch { /* 무시 */ }
 }
 $('ledger-toggle').addEventListener('click', () => toggleLedger());
-try { if (localStorage.getItem('snow1854.ledger') === '0') toggleLedger(false); } catch { /* 무시 */ }
+// 좁은 화면에서는 지도를 가리지 않게 접은 채로 시작한다
+try { if (localStorage.getItem('snow1854.ledger') === '0' || matchMedia('(max-width: 820px)').matches) toggleLedger(false); } catch { /* 무시 */ }
 
 function showNote(stage: number) {
   const note = NOTES[stage];
@@ -233,7 +234,7 @@ function record(site: Site) {
     toast(`${site.name} 기록 완료`, site.deaths ? `${site.people}명 가운데 ${site.deaths}명 사망 · 지도에 검은 막대 ${site.deaths}개를 그렸다` : `${site.people}명 가운데 사망 없음`);
   }
   persist();
-  toggleLedger(true);
+  if (!matchMedia('(max-width: 820px)').matches) toggleLedger(true);
   updateHud();
   mp.sendProgress(save.records, save.stage);
   if (stageCleared(save.stage, has)) setStage(save.stage + 1);
@@ -664,7 +665,6 @@ function radioGroup(id: string, value: string, onPick: (v: string) => void) {
 
 function setupLobby() {
   $('in-team').innerHTML = AREAS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i><span>${t.name}</span><small>최대 ${AREA_CAP}명</small></button>`).join('');
-  $('area-cap').textContent = `한 영역에 ${AREA_CAP}명까지`;
   // 초대 주소: #class=방번호(&all=1). '#r=' 은 연결 라이브러리가 제 방 이름을 적는 자리라 쓰지 않는다
   const link = new URLSearchParams(location.hash.slice(1));
   const room = link.get('class') || save.room;
@@ -716,7 +716,8 @@ async function start() {
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
   mp.onFail = () => toast('친구들과 연결하지 못했다', '혼자서도 끝까지 조사할 수 있다. 다시 하려면 새로 고친다');
   // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다). 영역마다 따로 방을 쓴다
-  const roomCode = `${save.room}A${save.team.slice(-1)}`;
+  // '3반'처럼 한글이 섞여도 되도록, 연결 서비스에는 글자마다 숫자로 바꾼 이름을 넘긴다
+  const roomCode = `${Array.from(save.room, c => c.codePointAt(0)!.toString(36)).join('')}A${save.team.slice(-1)}`;
   if (save.room) void mp.connect(roomCode, me).then(() => mp.sendProgress(save.records, save.stage));
 }
 
