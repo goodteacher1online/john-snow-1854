@@ -23,9 +23,9 @@ RAW = ROOT / 'tools' / 'source' / 'portraits_gen'
 CUT = RAW / 'cut'
 OUT = ROOT / 'public' / 'assets' / 'portraits'
 
-OUT_W, OUT_H = 520, 560
-FACE_W = 300          # 얼굴 폭 (출력 픽셀)
-FACE_Y = 0.40         # 얼굴 중심 높이 (출력 높이에 대한 비율)
+OUT_W, OUT_H = 520, 500
+FACE_W = 230          # 얼굴 폭 (출력 픽셀)
+FACE_Y = 0.47         # 얼굴 중심 높이 (출력 높이에 대한 비율)
 
 _casc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
@@ -53,10 +53,13 @@ def frame(name: str) -> str:
     out = Image.new('RGBA', (OUT_W, OUT_H))
     ox, oy = round(OUT_W / 2 - cx * s), round(OUT_H * FACE_Y - cy * s)
     out.alpha_composite(big, (ox, oy)) if ox >= 0 and oy >= 0 else out.paste(big, (ox, oy), big)
-    # 그림이 판 아래까지 닿지 않으면 바닥이 떠 보인다
+    # 그림이 판 아래까지 닿지 않으면 바닥이 떠 보이므로, 옷 끝 몇 줄을 아래로 늘여 메운다
     gap = OUT_H - (oy + big.height)
+    if gap > 0:
+        edge = out.crop((0, OUT_H - gap - 3, OUT_W, OUT_H - gap))
+        out.alpha_composite(edge.resize((OUT_W, gap + 1), Image.BILINEAR), (0, OUT_H - gap - 1))
     out.save(OUT / f'{name}.webp', quality=88, method=6)
-    return f'{name}: 얼굴 폭 {fw:.0f} -> {FACE_W}, 배율 {s:.2f}' + (f'  [아래 {gap}px 빔]' if gap > 0 else '')
+    return f'{name}: 얼굴 폭 {fw:.0f} -> {FACE_W}, 배율 {s:.2f}' + (f'  (아래 {gap}px 메움)' if gap > 0 else '')
 
 
 def sheet(names):

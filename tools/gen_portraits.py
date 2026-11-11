@@ -11,6 +11,7 @@
 import sys
 from pathlib import Path
 from PIL import Image
+from frame_portraits import frame
 
 sys.stdout.reconfigure(encoding='utf-8')
 ROOT = Path(__file__).resolve().parent.parent
@@ -67,7 +68,9 @@ def generate(names):
                    guidance_scale=6.5, generator=torch.Generator('cuda').manual_seed(seed)).images[0]
         img.save(RAW / f'{name}.png')
         cut = remove(img, session=session, post_process_mask=True)
-        cut.resize((round(cut.width * 640 / cut.height), 640), Image.LANCZOS).save(OUT / f'{name}.webp', quality=88, method=6)
+        (RAW / 'cut').mkdir(exist_ok=True)
+        cut.save(RAW / 'cut' / f'{name}.png')
+        print('  ', frame(name))                      # 얼굴 크기와 위치를 다른 인물과 맞춘다
         print('  생성', name)
 
 
