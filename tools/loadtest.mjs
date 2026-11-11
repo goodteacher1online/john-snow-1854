@@ -27,7 +27,7 @@ async function join(i) {
   page.on('console', m => { if (m.type() === 'error') errors.push(`[${name}] console: ${m.text().slice(0, 160)}`); });
   await page.goto(URL);
   await page.fill('#in-name', name);
-  await page.click('#btn-room');
+  await page.click('#in-mode .pick[data-value="class"]');
   await page.fill('#in-room', room);
   await page.click(`#in-team .pick[data-value="${TEAMS[WHOLE ? 0 : i % 5]}"]`);
   await page.click('#btn-start');

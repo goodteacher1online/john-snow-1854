@@ -22,7 +22,7 @@ async function newPlayer(name, room, viewport = { width: 1440, height: 900 }) {
   page.on('console', m => { if (m.type() === 'error') errors.push(`[${name}] console: ${m.text()}`); });
   await page.goto(URL);
   await page.fill('#in-name', name);
-  if (room) { await page.click('#btn-room'); await page.fill('#in-room', room); }
+  if (room) { await page.click('#in-mode .pick[data-value="class"]'); await page.fill('#in-room', room); }
   return page;
 }
 const state = page => page.evaluate(() => window.__game.state());

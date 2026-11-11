@@ -38,9 +38,17 @@
         </div>
       </div>
 
-      <label class="field inline hidden" id="room-row">
-        <span>학급 방 번호</span>
-        <input id="in-room" type="text" maxlength="8" class="mono" placeholder="없으면 비움">
+      <div class="field">
+        <span>조사 방식</span>
+        <div class="choice-row mode" id="in-mode" role="radiogroup">
+          <button type="button" class="pick" data-value="solo" role="radio">혼자 조사</button>
+          <button type="button" class="pick" data-value="class" role="radio">친구들과 함께</button>
+        </div>
+      </div>
+
+      <label class="field hidden" id="room-row">
+        <span>방 번호 <small>선생님이 알려 준 번호</small></span>
+        <input id="in-room" type="text" maxlength="8" placeholder="예: 3반">
       </label>
       <div class="field hidden" id="area-row">
         <span>영역</span>
@@ -50,7 +58,6 @@
 
       <button id="btn-start" type="submit" class="btn primary wide">조사 시작</button>
       <button id="btn-reset" type="button" class="btn ghost wide hidden">처음부터 다시</button>
-      <button id="btn-room" type="button" class="btn ghost wide">친구들과 함께 하기</button>
     </form>
   </section>
 

@@ -539,11 +539,14 @@ function setOverview(on: boolean, withBoard = false) {
   $('quest').classList.toggle('hidden', board);
   const legend = $('legend');
   legend.classList.toggle('hidden', !on);
-  legend.innerHTML = save.stage >= STAGE.PREDICT
-    ? '<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · 검은 막대 하나가 사망자 한 명'
-    : '검은 막대 하나가 사망자 한 명';
+  legend.innerHTML = legendText();
   $('prompt').classList.toggle('hidden', !nearId || on);
   if (board) renderBoard();
+}
+
+function legendText() {
+  const deaths = '검은 원 속 숫자가 사망자 수 · 가까이 보면 막대 하나가 한 사람';
+  return save.stage >= STAGE.PREDICT ? `<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · ${deaths}` : deaths;
 }
 
 /** 지금 할 일 가운데 가장 가까운 곳까지 길을 따라가는 안내선을 다시 잡는다 */
@@ -609,7 +612,8 @@ canvas.addEventListener('pointerdown', e => onTap(e.clientX, e.clientY));
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   if (overview) return;
-  userZoom = Math.max(1.2, Math.min(3.4, (userZoom || renderer.baseZoom) * (e.deltaY < 0 ? 1.1 : 0.9)));
+  // 소호 전체가 한 화면에 들어올 때까지 줄일 수 있다
+  userZoom = Math.max(renderer.overviewZoom, Math.min(3.4, (userZoom || renderer.baseZoom) * (e.deltaY < 0 ? 1.1 : 0.9)));
   renderer.zoomTarget = userZoom;
 }, { passive: false });
 
@@ -663,19 +667,18 @@ function radioGroup(id: string, value: string, onPick: (v: string) => void) {
   set(value);
 }
 
+let lobbyMode = 'solo';
 function setupLobby() {
   $('in-team').innerHTML = AREAS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i><span>${t.name}</span><small>최대 ${AREA_CAP}명</small></button>`).join('');
   // 초대 주소: #class=방번호(&all=1). '#r=' 은 연결 라이브러리가 제 방 이름을 적는 자리라 쓰지 않는다
   const link = new URLSearchParams(location.hash.slice(1));
   const room = link.get('class') || save.room;
-  $('room-row').classList.toggle('hidden', !room);
-  $('area-row').classList.toggle('hidden', !room);
-  $('btn-room').classList.toggle('hidden', !!room);
-  $('btn-room').addEventListener('click', () => {
-    $('room-row').classList.remove('hidden');
-    $('area-row').classList.remove('hidden');
-    $('btn-room').classList.add('hidden');
-    $<HTMLInputElement>('in-room').focus();
+  // 혼자 조사 / 친구들과 함께: 언제든 다시 고를 수 있다
+  radioGroup('in-mode', room ? 'class' : 'solo', v => {
+    lobbyMode = v;
+    $('room-row').classList.toggle('hidden', v !== 'class');
+    $('area-row').classList.toggle('hidden', v !== 'class');
+    if (v === 'class' && started === false && document.activeElement?.closest('#in-mode')) $<HTMLInputElement>('in-room').focus();
   });
   $<HTMLInputElement>('in-name').value = save.name;
   $<HTMLInputElement>('in-room').value = room;
@@ -694,7 +697,7 @@ function setupLobby() {
 
 async function start() {
   save.name = $<HTMLInputElement>('in-name').value.trim() || '조사관';
-  save.room = $<HTMLInputElement>('in-room').value.trim().replace(/[^0-9A-Za-z가-힣]/g, '');
+  save.room = lobbyMode === 'class' ? $<HTMLInputElement>('in-room').value.trim().replace(/[^0-9A-Za-z가-힣]/g, '') : '';
   Object.assign(me, { name: save.name, team: save.team, gender: save.gender });
   await navReady;
 
@@ -750,6 +753,11 @@ function frame(now: number) {
       $('hud-place').textContent = placeName(me.x, me.y);
       if (board) renderBoard();
       if (me.moving) persist();
+      if (!overview) {
+        const far = renderer.zoom < 1.15;
+        $('legend').classList.toggle('hidden', !far);
+        if (far) $('legend').innerHTML = legendText();
+      }
       const friendCount = new Set(others.flatMap(o => o.records).filter(id => !has(id))).size;
       if (ledgerKey !== `${save.records.length}|${friendCount}`) renderLedger();
       if (others.length >= AREA_CAP && !crowdWarned) {

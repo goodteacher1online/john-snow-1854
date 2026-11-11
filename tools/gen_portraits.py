@@ -22,7 +22,7 @@ import os
 MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
 # CLIP 은 77 토큰까지만 읽으므로 구도를 맨 앞에, 설명은 짧게 쓴다
-FRAME = 'symmetrical front-facing passport photo style bust portrait, head straight, eyes looking directly into camera,'
+FRAME = 'symmetrical front-facing bust portrait, head straight, eyes looking at camera, both shoulders fully visible, upper chest,'
 STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
 NEG = ('looking away, looking down, head turned, three-quarter view, tilted head, monochrome, grayscale, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
        'vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, jewelry, smiling')
@@ -44,7 +44,7 @@ PEOPLE = {
     'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
     'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
     'player_female_bust': ('calm determined 27 year old woman investigator, brown hair in a low bun, plain navy high-neck dress, small white collar', 611),
-    'player_male_bust':   ('calm determined 30 year old man investigator, short dark hair, clean shaven, dark navy coat, white shirt, black cravat', 622),
+    'player_male_bust':   ('calm 30 year old man investigator, short dark hair, clean shaven, buttoned dark navy frock coat, white high collar, black silk cravat', 622),
     'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 502),
     'physician': ('46 year old physician, brown trimmed beard, sceptical face, dark brown coat, grey cravat, white collar, color painting', 364),
 }
@@ -64,7 +64,7 @@ def generate(names):
         name, _, override = name.partition(':')
         desc, seed = PEOPLE[name]
         seed = int(override) if override else seed
-        img = pipe(f'{FRAME} {desc}, {STYLE}', negative_prompt=NEG, width=576, height=704, num_inference_steps=28,
+        img = pipe(f'{FRAME} {desc}, {STYLE}', negative_prompt=NEG, width=768, height=704, num_inference_steps=28,
                    guidance_scale=6.5, generator=torch.Generator('cuda').manual_seed(seed)).images[0]
         img.save(RAW / f'{name}.png')
         cut = remove(img, session=session, post_process_mask=True)
