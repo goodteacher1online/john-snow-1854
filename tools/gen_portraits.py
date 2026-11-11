@@ -44,7 +44,7 @@ PEOPLE = {
     'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
     'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
     'player_female_bust': ('calm determined 27 year old woman investigator, brown hair in a low bun, plain navy high-neck dress, small white collar', 611),
-    'player_male_bust':   ('calm 30 year old man investigator, short dark hair, clean shaven, buttoned dark navy frock coat, white high collar, black silk cravat', 622),
+    'player_male_bust':   ('calm 30 year old man investigator, short dark hair, clean shaven, buttoned dark navy frock coat, white high collar, black silk cravat', 706),
     'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 502),
     'physician': ('46 year old physician, brown trimmed beard, sceptical face, dark brown coat, grey cravat, white collar, color painting', 364),
 }
