@@ -84,6 +84,8 @@ export interface SaveData {
   reasonStep: number;
   misses: number;
   noteSeen: number;
+  /** 지난번에 시작한 방과 영역. 바뀌면 새 영역의 시작 장소에서 출발한다 */
+  startKey?: string;
   /** 구빈원·양조장을 보기 전에 한 예상 (0: 많이 죽었을 것, 1: 거의 안 죽었을 것) */
   predict?: number;
   x: number;

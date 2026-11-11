@@ -458,3 +458,15 @@ body.in-scene #hint-click { display: none; }
 .choice-row.mode .pick { min-height: 48px; font-size: 17px; }
 #room-row input { font-size: 18px; min-height: 46px; }
 #room-row input::placeholder { color: #b3a68a; }
+
+/* ---------- 시작 전에 알아 두기 ---------- */
+.primer { width: min(720px, 100%); }
+.primer h2 { margin-top: 22px; }
+.primer h2:first-child { margin-top: 0; }
+.glossary { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; margin-top: 6px; font-size: 17px; }
+.glossary dt { white-space: nowrap; }
+.glossary dd { color: var(--ink-soft); word-break: keep-all; }
+#btn-primer { margin-top: 8px; font-size: 16px; }
+@media (max-width: 820px) { .glossary { grid-template-columns: 1fr; gap: 2px; } .glossary dd { margin-bottom: 10px; } }
+/* 입장 화면(z 50)에서도 열리도록 그 위에 띄운다 */
+#primer, #about { z-index: 55; }

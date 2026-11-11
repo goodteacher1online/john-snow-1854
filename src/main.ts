@@ -2,7 +2,7 @@
 import './style.css';
 import { Avatar, PlayerGender, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, AREA_CAP, RANKS, SOURCES,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
@@ -105,7 +105,10 @@ function flash() {
 const modalOpen = () => !!document.querySelector('.modal.open');
 function openModal(id: string) {
   $(id).classList.add('open');
-  $(id).querySelector<HTMLElement>('.btn.primary')?.focus();
+  // 단추에 초점을 주되 글이 긴 종이는 맨 위부터 읽게 한다
+  $(id).querySelector<HTMLElement>('.btn.primary')?.focus({ preventScroll: true });
+  const sheet = $(id).querySelector<HTMLElement>('.sheet');
+  if (sheet) sheet.scrollTop = 0;
 }
 const closeModal = (id: string) => $(id).classList.remove('open');
 
@@ -593,7 +596,7 @@ window.addEventListener('keydown', e => {
   if (k === 'escape') {
     if (notebook.isOpen) notebook.close();
     else if (overview) setOverview(false);
-    ['help', 'snowmap', 'about'].forEach(closeModal);
+    ['help', 'snowmap', 'about', 'primer'].forEach(closeModal);
     return;
   }
   if (k === 'r' && !modalOpen()) { toggleLedger(); return; }
@@ -631,6 +634,11 @@ $('help-note').addEventListener('click', () => {
 $('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
 $('about-body').innerHTML = SOURCES.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
 $('help-about').addEventListener('click', () => { closeModal('help'); openModal('about'); });
+$('primer-body').innerHTML = PRIMER.map(s => `<h2>${esc(s.title)}</h2>${s.body.map(b => `<p>${esc(b)}</p>`).join('')}`).join('')
+  + `<h2>낱말 풀이</h2><dl class="glossary">${GLOSSARY.map(([w, d]) => `<dt>${esc(w)}</dt><dd>${esc(d)}</dd>`).join('')}</dl>`;
+$('btn-primer').addEventListener('click', () => openModal('primer'));
+$('help-primer').addEventListener('click', () => { closeModal('help'); openModal('primer'); });
+$('primer-close').addEventListener('click', () => closeModal('primer'));
 $('about-close').addEventListener('click', () => closeModal('about'));
 $('about-reset').addEventListener('click', () => {
   const b = $('about-reset');
@@ -704,6 +712,8 @@ async function start() {
   // 처음이면 고른 영역의 시작 장소에서 (혼자일 때는 브로드 가 펌프 앞에서) 출발한다
   const startId = save.room ? AREAS.find(a => a.id === save.team)?.start ?? 'pump' : 'pump';
   const startAt = startId === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y - 14] : SITE_BY_ID[startId].door;
+  const startKey = save.room ? `${save.room}|${save.team}` : 'solo';
+  if (save.startKey !== startKey) { save.x = 0; save.y = 0; save.startKey = startKey; }
   const spawn = save.x ? [save.x, save.y] : startAt;
   [me.x, me.y] = nav.snap(spawn[0], spawn[1]) ?? [BROAD_PUMP.x, BROAD_PUMP.y];
   renderer.jumpTo(me.x, me.y);

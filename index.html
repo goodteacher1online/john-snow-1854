@@ -57,6 +57,7 @@
       </div>
 
       <button id="btn-start" type="submit" class="btn primary wide">조사 시작</button>
+      <button id="btn-primer" type="button" class="btn ghost wide">시작 전에 알아 두기 · 배경과 낱말 풀이</button>
       <button id="btn-reset" type="button" class="btn ghost wide hidden">처음부터 다시</button>
     </form>
   </section>
@@ -201,9 +202,20 @@
       </dl>
       <div class="actions">
         <button id="about-reset" class="btn ghost">처음부터 다시</button>
+        <button id="help-primer" class="btn ghost">배경과 낱말</button>
         <button id="help-about" class="btn ghost">출처</button>
         <button id="help-note" class="btn ghost">박사의 쪽지 다시 보기</button>
         <button id="help-close" class="btn primary">닫기</button>
+      </div>
+    </article>
+  </div>
+
+  <!-- 시작 전에 알아 두기 -->
+  <div id="primer" class="modal">
+    <article class="sheet letter primer">
+      <div id="primer-body"></div>
+      <div class="actions">
+        <button id="primer-close" class="btn primary">닫기</button>
       </div>
     </article>
   </div>
