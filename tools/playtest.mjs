@@ -92,7 +92,7 @@ console.log('키보드 이동 거리', Math.round(Math.hypot(after.x - before.x,
 
 // 3) 두 번째 조사관이 같은 방에 들어온다
 const p2 = await newPlayer('민서', room);
-// 같은 방 번호, 같은 모둠이라야 한 지도에 모인다
+// 같은 방 번호, 같은 영역이라야 한 지도에 모인다
 await p2.click('#btn-start');
 await p2.waitForSelector('#note.open');
 await p2.click('#note-ok');

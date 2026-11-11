@@ -2,8 +2,8 @@
 import './style.css';
 import { Avatar, PlayerGender, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, TEAMS, RANKS, ABOUT,
-  questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, AREA_CAP, RANKS, SOURCES,
+  questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
 import { Nav } from './game/nav.ts';
@@ -202,7 +202,8 @@ $('note-ok').addEventListener('click', () => {
   save.noteSeen = Math.max(save.noteSeen, save.stage);
   persist();
   if (save.stage === STAGE.REASON || save.stage === STAGE.HEARING) notebook.open('reason');
-  else if (first) toast('방향키로 걷거나 지도를 눌러 이동한다', '붉은 고리가 뜬 문이 지금 조사할 곳이다');
+  else if (first) toast('붉은 점선을 따라가면 지금 조사할 집이 나온다', '붉은 고리가 뜬 문을 누르면 그 앞까지 걸어가 문을 두드린다');
+  if (first) showClickHint();
 });
 
 // ---------------------------------------------------------------------------
@@ -418,6 +419,21 @@ function openEnding(page: number) {
 // ---------------------------------------------------------------------------
 // 이동과 상호작용
 // ---------------------------------------------------------------------------
+let clickHintTimer = 0;
+function showClickHint() {
+  let seen = 0;
+  try { seen = Number(localStorage.getItem('snow1854.clickhint') || 0); } catch { /* 무시 */ }
+  if (seen >= 2) return;
+  $('hint-click').classList.remove('hidden');
+  clickHintTimer = window.setTimeout(hideClickHint, 30000);
+}
+function hideClickHint(learned = false) {
+  clearTimeout(clickHintTimer);
+  $('hint-click').classList.add('hidden');
+  if (!learned) return;
+  try { localStorage.setItem('snow1854.clickhint', String(Number(localStorage.getItem('snow1854.clickhint') || 0) + 1)); } catch { /* 무시 */ }
+}
+
 function goTo(wx: number, wy: number, then?: () => void) {
   if (!nav.ready) return;
   const dest = nav.walkable(wx, wy) ? [wx, wy] : nav.snap(wx, wy);
@@ -427,6 +443,7 @@ function goTo(wx: number, wy: number, then?: () => void) {
   if (!p) return;
   path = p;
   onArrive = then ?? null;
+  if (!$('hint-click').classList.contains('hidden')) hideClickHint(true);
 }
 
 function interact() {
@@ -549,14 +566,18 @@ function updateGuide() {
 
 function renderBoard() {
   const all = [{ name: save.name + ' (나)', team: save.team, records: save.records, stage: save.stage }, ...others];
-  const teams = TEAMS.map(t => ({ ...t, members: all.filter(p => p.team === t.id) })).filter(t => t.members.length);
   const union = new Set(all.flatMap(p => p.records));
-  const head = save.room
-    ? `<h3>${save.wholeClass ? '학급' : '모둠'} 조사 현황 · ${all.length}명 · ${union.size}/${SITES.length}곳</h3><p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>`
-    : `<h3>혼자 조사하는 중</h3><p class="room">친구들과 함께 하려면 첫 화면에서 방 번호를 넣는다.</p>`;
-  $('board').innerHTML = head + teams.map(t => `
-    <h4 style="--c:${t.color}"><i></i>${t.name}</h4>
-    <ul>${t.members.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>`).join('');
+  if (!save.room) {
+    $('board').innerHTML = `<h3>혼자 조사하는 중</h3><p class="room">친구들과 함께 하려면 첫 화면에서 방 번호와 영역을 고른다.</p>`;
+    return;
+  }
+  const full = all.length > AREA_CAP;
+  $('board').innerHTML = `
+    <h3>${esc(areaName(save.team))} 영역 · <span class="${full ? 'over' : ''}">${all.length} / ${AREA_CAP}명</span> · ${union.size}/${SITES.length}곳</h3>
+    <p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>
+    ${full ? '<p class="room over">이 영역에 사람이 너무 많다. 연결이 끊길 수 있다.</p>' : ''}
+    <ul>${all.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>
+    <p class="room"><button class="btn small" data-move>다른 영역으로 옮기기</button></p>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -603,7 +624,7 @@ $('help-note').addEventListener('click', () => {
   if (save.stage >= STAGE.DONE) openEnding(0); else showNote(save.stage);
 });
 $('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
-$('about-body').innerHTML = ABOUT.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+$('about-body').innerHTML = SOURCES.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
 $('help-about').addEventListener('click', () => { closeModal('help'); openModal('about'); });
 $('about-close').addEventListener('click', () => closeModal('about'));
 $('about-reset').addEventListener('click', () => {
@@ -614,8 +635,15 @@ $('about-reset').addEventListener('click', () => {
   b.textContent = '기록이 모두 지워진다. 한 번 더 누르면 지운다';
 });
 $('board').addEventListener('click', e => {
+  if ((e.target as HTMLElement).closest('[data-move]')) {
+    // 조사 기록은 그대로 두고 첫 화면으로 돌아가 영역만 다시 고른다
+    persist();
+    location.hash = `class=${encodeURIComponent(save.room)}`;
+    location.reload();
+    return;
+  }
   if (!(e.target as HTMLElement).closest('[data-copy]')) return;
-  const link = `${location.origin}${location.pathname}#class=${encodeURIComponent(save.room)}${save.wholeClass ? '&all=1' : ''}`;
+  const link = `${location.origin}${location.pathname}#class=${encodeURIComponent(save.room)}`;
   void navigator.clipboard?.writeText(link).then(() => toast('초대 주소를 복사했다', link));
 });
 $('btn-sound').addEventListener('click', () => {
@@ -635,18 +663,17 @@ function radioGroup(id: string, value: string, onPick: (v: string) => void) {
 }
 
 function setupLobby() {
-  $('in-team').innerHTML = TEAMS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i>${t.name}</button>`).join('');
+  $('in-team').innerHTML = AREAS.map(t => `<button type="button" class="pick" data-value="${t.id}" role="radio" style="--c:${t.color}"><i></i><span>${t.name}</span><small>최대 ${AREA_CAP}명</small></button>`).join('');
+  $('area-cap').textContent = `한 영역에 ${AREA_CAP}명까지`;
   // 초대 주소: #class=방번호(&all=1). '#r=' 은 연결 라이브러리가 제 방 이름을 적는 자리라 쓰지 않는다
   const link = new URLSearchParams(location.hash.slice(1));
   const room = link.get('class') || save.room;
-  if (link.get('class')) save.wholeClass = link.get('all') === '1';
-  $<HTMLInputElement>('in-all').checked = !!save.wholeClass;
   $('room-row').classList.toggle('hidden', !room);
-  $('scope-row').classList.toggle('hidden', !room);
+  $('area-row').classList.toggle('hidden', !room);
   $('btn-room').classList.toggle('hidden', !!room);
   $('btn-room').addEventListener('click', () => {
     $('room-row').classList.remove('hidden');
-    $('scope-row').classList.remove('hidden');
+    $('area-row').classList.remove('hidden');
     $('btn-room').classList.add('hidden');
     $<HTMLInputElement>('in-room').focus();
   });
@@ -668,12 +695,13 @@ function setupLobby() {
 async function start() {
   save.name = $<HTMLInputElement>('in-name').value.trim() || '조사관';
   save.room = $<HTMLInputElement>('in-room').value.trim().replace(/[^0-9A-Za-z가-힣]/g, '');
-  save.wholeClass = $<HTMLInputElement>('in-all').checked;
   Object.assign(me, { name: save.name, team: save.team, gender: save.gender });
   await navReady;
 
-  const teamIndex = TEAMS.findIndex(t => t.id === save.team);
-  const spawn = save.x ? [save.x, save.y] : [BROAD_PUMP.x + (teamIndex - 2) * 16, BROAD_PUMP.y - 14];
+  // 처음이면 고른 영역의 시작 장소에서 (혼자일 때는 브로드 가 펌프 앞에서) 출발한다
+  const startId = save.room ? AREAS.find(a => a.id === save.team)?.start ?? 'pump' : 'pump';
+  const startAt = startId === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y - 14] : SITE_BY_ID[startId].door;
+  const spawn = save.x ? [save.x, save.y] : startAt;
   [me.x, me.y] = nav.snap(spawn[0], spawn[1]) ?? [BROAD_PUMP.x, BROAD_PUMP.y];
   renderer.jumpTo(me.x, me.y);
 
@@ -687,9 +715,8 @@ async function start() {
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);
   mp.onFail = () => toast('친구들과 연결하지 못했다', '혼자서도 끝까지 조사할 수 있다. 다시 하려면 새로 고친다');
-  // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다)
-  // 한 방에 20명까지만 들어갈 수 있어, 기본은 모둠마다 방을 따로 쓴다
-  const roomCode = save.wholeClass ? save.room : `${save.room}M${save.team.slice(-1)}`;
+  // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다). 영역마다 따로 방을 쓴다
+  const roomCode = `${save.room}A${save.team.slice(-1)}`;
   if (save.room) void mp.connect(roomCode, me).then(() => mp.sendProgress(save.records, save.stage));
 }
 
@@ -724,9 +751,9 @@ function frame(now: number) {
       if (me.moving) persist();
       const friendCount = new Set(others.flatMap(o => o.records).filter(id => !has(id))).size;
       if (ledgerKey !== `${save.records.length}|${friendCount}`) renderLedger();
-      if (others.length >= 16 && !crowdWarned) {
+      if (others.length >= AREA_CAP && !crowdWarned) {
         crowdWarned = true;
-        toast('한 방에 사람이 너무 많다', '스무 명 가까이 모이면 연결이 끊긴다. 모둠별로 나누어 들어오는 편이 안전하다', true);
+        toast(`${areaName(save.team)} 영역이 가득 찼다`, `한 영역에 ${AREA_CAP}명까지 권한다. 함께 단추에서 다른 영역으로 옮길 수 있다`, true);
       }
       updateGuide();
     }

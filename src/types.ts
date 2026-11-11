@@ -55,6 +55,7 @@ export interface Pump {
 export interface Avatar {
   id: string;
   name: string;
+  /** 함께 할 때 고른 영역 (AREAS 의 id) */
   team: string;
   gender: PlayerGender;
   x: number;
@@ -73,10 +74,9 @@ export interface RemotePlayer extends Avatar {
 export interface SaveData {
   name: string;
   gender: PlayerGender;
+  /** 함께 할 때 고른 영역 (AREAS 의 id) */
   team: string;
   room: string;
-  /** 학급 전체가 한 방을 쓴다 (연결 서비스 제한: 18명까지 안정, 20명부터 끊김). 기본은 같은 모둠끼리 한 방 */
-  wholeClass?: boolean;
   stage: number;
   records: string[];
   asked: Record<string, QuestionId[]>;

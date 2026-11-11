@@ -709,54 +709,52 @@ export const EPILOGUE: { title: string; body: string[] }[] = [
 export const RANKS: [number, string][] = [[0, '수습 조사관'], [200, '현장 조사관'], [500, '수석 조사관'], [900, '역학의 개척자']];
 export const rankOf = (xp: number) => RANKS.filter(r => xp >= r[0]).pop()![1];
 
-export const TEAMS: { id: string; name: string; color: string }[] = [
-  { id: 'team1', name: '1모둠', color: '#2f6fb3' },
-  { id: 'team2', name: '2모둠', color: '#2f8a57' },
-  { id: 'team3', name: '3모둠', color: '#b07a1e' },
-  { id: 'team4', name: '4모둠', color: '#7a4fa3' },
-  { id: 'team5', name: '5모둠', color: '#a8443c' },
+/**
+ * 친구들과 함께 할 때 고르는 영역. 영역마다 따로 방을 쓰고(같은 지도의 다른 판), 시작하는 곳이 다르다.
+ * 연결 서비스가 한 방에 스무 명 가까이 모이면 끊기므로 한 영역에 AREA_CAP 명까지 권한다.
+ * id 는 예전 저장 자료와 맞추려고 team1~5 를 그대로 쓴다.
+ */
+export const AREA_CAP = 16;
+export const AREAS: { id: string; name: string; color: string; start: string }[] = [
+  { id: 'team1', name: '브로드 가', color: '#2f6fb3', start: 'pump' },
+  { id: 'team2', name: '폴란드 가', color: '#2f8a57', start: 'workhouse' },
+  { id: 'team3', name: '버윅 가', color: '#b07a1e', start: 'berwick' },
+  { id: 'team4', name: '카나비 가', color: '#7a4fa3', start: 'carnaby' },
+  { id: 'team5', name: '골든 스퀘어', color: '#a8443c', start: 'pulteney' },
 ];
-export const teamColor = (id: string) => TEAMS.find(t => t.id === id)?.color ?? '#2f6fb3';
+export const teamColor = (id: string) => AREAS.find(t => t.id === id)?.color ?? '#2f6fb3';
+export const areaName = (id: string) => AREAS.find(t => t.id === id)?.name ?? '';
 
 
 // ---------------------------------------------------------------------------
-// 사실과 꾸밈, 수업 안내, 출처
+// 출처 (게임 안 '출처' 화면). 수업 안내는 docs/선생님_안내.md 에 따로 둔다
 // ---------------------------------------------------------------------------
-export const ABOUT: { title: string; items: string[] }[] = [
+export const SOURCES: { title: string; items: string[] }[] = [
   {
-    title: '기록 그대로인 것',
+    title: '원전',
     items: [
-      '구빈원 535명 중 5명, 양조장 70여 명 중 0명, 뇌관 공장 약 200명 중 18명, 햄스테드의 부인과 조카, 커피 가게 단골 9명, 굴드의 일화는 존 스노우의 1855년 보고서에 실려 있다.',
-      '열흘 사이 500명 넘게 쓰러졌고 모두 616명이 숨졌다. 9월 7일 저녁 스노우가 교구 위원회를 만났고 이튿날 손잡이가 떼어졌다.',
-      '지도는 스노우의 1854년 지도다. 펌프 위치와 거리 모양이 실제와 같고, 붉은 도보권역은 그 지도에서 계산했다.',
+      'John Snow, On the Mode of Communication of Cholera, 2판, 런던: John Churchill, 1855. 구빈원, 양조장, 뇌관 공장, 햄스테드의 부인, 커피 가게, 굴드의 일화와 숫자가 이 책에서 왔다. 전문은 프로젝트 구텐베르크 72894번에서 볼 수 있다.',
+      'Cholera Inquiry Committee, Report on the Cholera Outbreak in the Parish of St. James, Westminster, during the Autumn of 1854, 1855. 브로드 가 40번지 루이스 가족과 정화조 이야기는 이 보고서에 실린 헨리 화이트헤드 목사의 조사에서 왔다.',
     ],
   },
   {
-    title: '이 게임이 꾸민 것',
+    title: '지도',
     items: [
-      '실제 조사는 스노우가 직접 했다. 플레이어가 맡은 조사관은 지어낸 인물이다.',
-      '주민과 위원의 말은 모두 새로 썼다. 수첩에 "꾸민 가구"라고 적힌 여덟 곳은 당시 기록에 흔히 나오는 사정을 모아 만든 집이다.',
-      '기록에 남은 곳도 식구 수 같은 일부 숫자는 견주기 쉽게 정했다. 무엇을 정했는지는 수첩의 각 기록에 적혀 있다.',
-      '위원회에서 오간 반박과 대답은 스노우의 논거를 바탕으로 재구성한 것이다.',
+      '스노우의 같은 책에 실린 첫 번째 지도(석판 C. F. Cheffins, 1855)다. 사망자 막대를 지우고 색을 입혔다. 전체 지도의 붉은 길은 이 지도의 거리를 따라 걸어서 계산했다.',
     ],
   },
   {
-    title: '수업에서 쓰는 법',
+    title: '창작한 것',
     items: [
-      '한 판은 20분에서 30분쯤 걸린다. 여덟 곳만 조사해도 끝낼 수 있고 열네 곳을 다 보면 지도가 완성된다.',
-      '함께 하려면 첫 화면에서 같은 방 번호를 넣는다. 같은 모둠끼리 한 지도에 모이고, 함께 단추를 누르면 친구들의 진행과 모은 기록이 보인다.',
-      '한 방에 스무 명 가까이 모이면 연결이 끊긴다. 학급이 열여섯 명 이하이면 첫 화면에서 학급 전체가 한 방에 모이도록 고를 수 있다.',
-      '함께 이야기할 거리: 왜 사람들은 냄새를 의심했을까? 구빈원 숫자를 보고 무엇이 달라졌나? 손잡이를 떼기 전에 병이 줄고 있었다면 스노우는 틀린 것일까?',
-      '기기를 다음 반이 쓸 때는 아래의 처음부터 다시를 누른다.',
+      '조사관, 주민과 위원의 대사, 수첩에 "꾸민 가구"라고 적힌 여덟 곳은 창작이다. 기록에 남은 곳에서 무엇이 원전 그대로인지는 수첩의 각 기록에 적었다.',
     ],
   },
   {
-    title: '출처와 그림',
+    title: '그림과 글꼴',
     items: [
-      'John Snow, On the Mode of Communication of Cholera, 2판, 1855. 프로젝트 구텐베르크에서 전문을 볼 수 있다.',
-      'Henry Whitehead, 세인트 제임스 교구 콜레라 조사위원회 보고서, 1855.',
-      '지도는 저작권이 끝난 1854년 석판 지도다. 인물과 건물 그림은 인공지능으로 만든 것이다. 굴드와 허긴스 같은 실존 인물도 얼굴은 지어낸 것이고 초상이 아니다.',
-      '글꼴은 강원특별자치도교육청의 강원교육모두체다.',
+      '인물 흉상은 Stable Diffusion(DreamShaper 8)으로 만든 지어낸 얼굴이다. 굴드, 허긴스 같은 실존 인물의 초상이 아니다.',
+      '지도 위 인물과 건물은 인공지능으로 만든 그림과 그것을 이어 붙인 합성이다.',
+      '글꼴: 강원교육모두, 강원특별자치도교육청.',
     ],
   },
 ];
