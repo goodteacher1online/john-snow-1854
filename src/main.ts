@@ -131,23 +131,41 @@ function updateHud(bump = false) {
   renderLedger();
 }
 
-/** 조사 기록판: 사망 비율이 높은 곳부터 한 줄씩 */
+/** 조사 기록판: 사망 비율이 높은 곳부터 한 줄씩. 줄을 누르면 그 집에서 들은 내용이 펼쳐진다 */
+let ledgerOpenRow = '';
 function renderLedger() {
   const recs = [...recordedSites()].sort((a, b) => b.deaths / b.people - a.deaths / a.people);
+  const last = save.records[save.records.length - 1];
   $('ledger-count').textContent = `${recs.length}/${SITES.length}`;
   $('ledger-body').innerHTML = recs.length ? `
     <table>
-      <thead><tr><th>조사한 곳</th><th>사망</th><th>악취</th><th>브로드 가 물</th></tr></thead>
+      <thead><tr><th>조사한 곳</th><th>사망</th><th>악취</th><th>마시는 물</th></tr></thead>
       <tbody>${recs.map(s => `
-        <tr class="${s.id === save.records[save.records.length - 1] ? 'new' : ''}">
+        <tr data-id="${s.id}" class="${s.id === last ? 'new' : ''}${s.id === ledgerOpenRow ? ' open' : ''}">
           <td>${esc(s.name)}</td>
           <td class="mono"><b>${s.deaths}</b>/${s.people}</td>
           <td>${smellWord(s.smell)}</td>
-          <td><i class="mark${s.drankBroad ? ' on' : ''}"></i>${s.drankBroad ? '마심' : '안 마심'}</td>
-        </tr>`).join('')}
+          <td>${esc(s.waterShort)}</td>
+        </tr>${s.id === ledgerOpenRow ? `<tr class="detail"><td colspan="4">${factsHtml(s)}</td></tr>` : ''}`).join('')}
       </tbody>
-    </table>` : '<p>문을 두드려 세 가지를 물으면, 기록이 여기에 나란히 쌓인다.</p>';
+    </table>` : '<p>문을 두드려 세 가지를 물으면, 조사한 곳의 기록이 여기에 나란히 쌓인다.</p>';
 }
+$('ledger-body').addEventListener('click', e => {
+  const row = (e.target as HTMLElement).closest<HTMLElement>('tr[data-id]');
+  if (!row) return;
+  ledgerOpenRow = ledgerOpenRow === row.dataset.id ? '' : row.dataset.id!;
+  renderLedger();
+});
+
+function toggleLedger(open?: boolean) {
+  const el = $('ledger');
+  const next = open ?? el.classList.contains('folded');
+  el.classList.toggle('folded', !next);
+  $('ledger-toggle').setAttribute('aria-expanded', String(next));
+  try { localStorage.setItem('snow1854.ledger', next ? '1' : '0'); } catch { /* 무시 */ }
+}
+$('ledger-toggle').addEventListener('click', () => toggleLedger());
+try { if (localStorage.getItem('snow1854.ledger') === '0') toggleLedger(false); } catch { /* 무시 */ }
 
 function showNote(stage: number) {
   const note = NOTES[stage];
@@ -207,6 +225,7 @@ function record(site: Site) {
     toast(`${site.name} 기록 완료`, site.deaths ? `${site.people}명 가운데 ${site.deaths}명 사망 · 지도에 검은 막대 ${site.deaths}개를 그렸다` : `${site.people}명 가운데 사망 없음`);
   }
   persist();
+  toggleLedger(true);
   updateHud();
   mp.sendProgress(save.records, save.stage);
   if (stageCleared(save.stage, has)) setStage(save.stage + 1);
@@ -545,6 +564,7 @@ window.addEventListener('keydown', e => {
     ['help', 'snowmap', 'about'].forEach(closeModal);
     return;
   }
+  if (k === 'r' && !modalOpen()) { toggleLedger(); return; }
   if (k === 'n' && (!modalOpen() || notebook.isOpen)) { notebook.isOpen ? notebook.close() : notebook.open(); return; }
   if (modalOpen() || cinematic) return;
   if (k === 'm') { setOverview(!overview || board); return; }

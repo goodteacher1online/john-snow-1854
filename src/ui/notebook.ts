@@ -1,5 +1,5 @@
 import { Site, Smell } from '../types.ts';
-import { SITES, STAGE, REASONING, questView, smellWord } from '../data/story.ts';
+import { SITES, STAGE, REASONING, WATER_GROUPS, questView, smellWord } from '../data/story.ts';
 import { esc, factsHtml, basisTag } from './cards.ts';
 
 type Tab = 'records' | 'compare' | 'reason';
@@ -81,7 +81,7 @@ export class Notebook {
     const smell = (v: Smell) => (s: Site) => s.smell === v;
     const defs: [string, (s: Site) => boolean][] = this.groupBy === 'smell'
       ? [['악취가 심한 곳', smell('high')], ['악취가 보통인 곳', smell('mid')], ['악취가 약한 곳', smell('low')]]
-      : [['브로드 가 펌프 물을 마신 곳', s => s.drankBroad], ['그 물을 마시지 않은 곳', s => !s.drankBroad]];
+      : WATER_GROUPS.map(([kind, label]): [string, (s: Site) => boolean] => [label, s => s.waterKind === kind]);
     const groups = defs.map(([label, test]) => {
       const sites = recs.filter(test);
       const people = sites.reduce((n, s) => n + s.people, 0), deaths = sites.reduce((n, s) => n + s.deaths, 0);
@@ -94,7 +94,7 @@ export class Notebook {
       <p class="sub">같은 기록을 두 가지 기준으로 묶어 본다. 어느 쪽이 죽음을 더 뚜렷이 가르는가?</p>
       <div class="seg">
         <button data-by="smell" aria-pressed="${this.groupBy === 'smell'}">악취로 묶기</button>
-        <button data-by="water" aria-pressed="${this.groupBy === 'water'}">마신 물로 묶기</button>
+        <button data-by="water" aria-pressed="${this.groupBy === 'water'}">마시는 물로 묶기</button>
       </div>
       ${groups.map(g => `
         <section class="group${g.rate === max && groups.length > 1 ? ' worst' : ''}">
@@ -106,14 +106,14 @@ export class Notebook {
         </section>`).join('')}
       <h3 class="table-title">곳마다 나란히 놓기 <small>사망 비율이 높은 곳부터</small></h3>
       <table class="data">
-        <thead><tr><th>조사한 곳</th><th>사망</th><th>백 명에</th><th>악취</th><th>브로드 가 펌프 물</th></tr></thead>
+        <thead><tr><th>조사한 곳</th><th>사망</th><th>백 명에</th><th>악취</th><th>마시는 물</th></tr></thead>
         <tbody>${[...recs].sort((a, b) => b.deaths / b.people - a.deaths / a.people).map(s => `
           <tr>
             <td>${esc(s.name)}</td>
             <td class="num">${s.deaths} / ${s.people}</td>
             <td class="num"><b>${(s.deaths / s.people * 100).toFixed(1)}</b></td>
             <td>${smellWord(s.smell)}</td>
-            <td><i class="mark${s.drankBroad ? ' on' : ''}"></i>${s.drankBroad ? '마심' : '안 마심'}</td>
+            <td>${esc(s.waterShort)}</td>
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -166,7 +166,7 @@ export class Notebook {
       document.getElementById('go-hearing')!.addEventListener('click', () => { this.close(); this.host.startHearing(); });
     } else {
       this.body.innerHTML = `
-        <p class="sub">조사의 결론</p>
+        <p class="sub">기록이 뒷받침한 가설</p>
         <h3>콜레라는 브로드 가 펌프의 물로 퍼졌다</h3>
         <ul class="steps">
           <li class="done">악취가 심해도 거의 죽지 않은 곳이 있었다</li>

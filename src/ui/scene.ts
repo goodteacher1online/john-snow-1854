@@ -35,6 +35,7 @@ export class Scene {
     window.addEventListener('keydown', e => {
       if (!this.isOpen) return;
       if (e.key === 'Escape') { this.close(); return; }
+      if (e.key.toLowerCase() === 'r') { document.getElementById('ledger-toggle')?.click(); return; }
       if (this.pick) {
         const n = Number(e.key);
         const btn = n >= 1 ? this.choices.querySelectorAll<HTMLButtonElement>('.opt')[n - 1] : null;

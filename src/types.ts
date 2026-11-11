@@ -8,6 +8,7 @@ export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
 export type PlayerGender = 'male' | 'female';
 
 /** 위원회에서 이 기록이 반박할 수 있는 주장 */
+export type WaterKind = 'broad' | 'pump' | 'well' | 'none';
 export type Proof = 'smell' | 'near' | 'far';
 
 export interface Site {
@@ -25,6 +26,9 @@ export interface Site {
   smellNote: string;
   drankBroad: boolean;
   waterNote: string;
+  /** 기록판에 적는 물의 출처와 그 갈래 */
+  waterKind: WaterKind;
+  waterShort: string;
   /** record: 스노우 보고서에 실린 사례 / composite: 당시 기록을 바탕으로 꾸민 가구 */
   basis: 'record' | 'composite';
   proves: Proof[];

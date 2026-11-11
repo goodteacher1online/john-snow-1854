@@ -1,5 +1,5 @@
 import geo from './geo.gen.json';
-import { Site, Pump, Proof, Smell } from '../types.ts';
+import { Site, Pump, Proof, Smell, WaterKind } from '../types.ts';
 
 /** 원본 지도 픽셀 → 월드 좌표 */
 export const WORLD_SCALE = 2;
@@ -12,7 +12,7 @@ const w = (p: number[]): [number, number] => [p[0] * WORLD_SCALE, p[1] * WORLD_S
 // 대사에서 '나: '로 시작하는 줄은 조사관(플레이어), '('로 시작하는 줄은 지문이다.
 // 주민은 자기가 본 사실만 말한다. 물이 원인이라는 해석은 플레이어가 기록을 견주어 찾아낸다.
 // ---------------------------------------------------------------------------
-type SiteText = Omit<Site, 'door' | 'icon' | 'nearestPump'>;
+type SiteText = Omit<Site, 'door' | 'icon' | 'nearestPump' | 'waterKind' | 'waterShort'>;
 
 const SITE_TEXT: SiteText[] = [
   {
@@ -211,7 +211,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'gould', name: '브로드 가 굴드 댁', kind: 'house', basis: 'record', proves: ['smell', 'near'],
     fact: '굴드가 2일에 돌아와 물 냄새 때문에 마시지 않은 일, 조수 프린스, 앓다 회복한 하인은 스노우의 보고서 그대로. 식구 수는 꾸민 것.',
-    clue: '펌프 가까이 살지만 그 물을 마시지 않아 무사',
+    clue: '펌프 가까이 사는데 여덟 식구 모두 무사',
     testimony: '브로드 가 굴드 씨 댁입니다. 펌프 가까이 살지만 여덟 식구 모두 살아 있습니다. 굴드 씨는 물에서 냄새가 나 마시지 않았습니다.',
     npc: { name: '존 굴드', role: '조류학자', portrait: 'scholar' },
     people: 8, deaths: 0, smell: 'high', smellNote: '브로드 가와 같은 공기',
@@ -241,7 +241,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'eley', name: '일리 형제 뇌관 공장', kind: 'factory', basis: 'record', proves: ['far'],
     fact: '직공 약 200명 가운데 18명 사망, 물통 두 개, 햄스테드의 어머니와 이즐링턴의 조카 모두 스노우의 보고서 그대로.',
-    clue: '먼 햄스테드에서 이 펌프 물을 받아 마신 부인이 사망',
+    clue: '소호에서 먼 햄스테드에 사는 부인이 사망',
     testimony: '뇌관 공장 주인의 어머니입니다. 소호에서 먼 햄스테드에 살았지만 날마다 브로드 가 펌프 물을 받아 마셨고 2일에 숨졌습니다. 함께 마신 조카도 이즐링턴에서 죽었습니다.',
     npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'foreman' },
     people: 200, deaths: 18, smell: 'mid', smellNote: '화약과 하수구 냄새',
@@ -272,7 +272,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'littlepulteney', name: '리틀 풀트니 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
-    clue: '다른 펌프가 더 가까운데 브로드 가 물을 길어 마신 남매가 사망',
+    clue: '냄새가 덜한 거리인데 남매가 사망',
     testimony: '리틀 풀트니 가의 남매입니다. 브라이들 골목 펌프가 더 가깝고 냄새도 덜한 거리지만, 일부러 브로드 가 물을 길어 마셨고 둘 다 죽었습니다.',
     npc: { name: '잭', role: '짐꾼', portrait: 'jack' },
     people: 7, deaths: 2, smell: 'low', smellNote: '냄새가 덜한 거리',
@@ -299,7 +299,7 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'carnaby', name: '카나비 가 살림집', kind: 'house', basis: 'composite', proves: ['far'],
-    clue: '집 앞 펌프를 쓰는 가족 중 브로드 가 펌프 물을 마신 아이만 사망',
+    clue: '여섯 식구 가운데 막내 한 명만 사망',
     testimony: '카나비 가의 아홉 살 아이입니다. 가족은 집 앞 펌프 물을 마셔 모두 무사한데, 하굣길에 브로드 가 펌프 물을 마신 이 아이만 죽었습니다.',
     npc: { name: '엘런', role: '여섯 식구의 어머니', portrait: 'ellen' },
     people: 6, deaths: 1, smell: 'mid', smellNote: '시장 냄새',
@@ -404,9 +404,21 @@ const SITE_TEXT: SiteText[] = [
   },
 ];
 
+// 마시는 물: 기록판에는 '어디 물인지'만 적는다. 그 물이 원인인지는 플레이어가 견주어 찾는다
+const WATER: Record<string, [WaterKind, string]> = {
+  lewis: ['broad', '브로드 가 펌프'], lodging: ['broad', '브로드 가 펌프'], cambridge: ['broad', '브로드 가 펌프'],
+  coffee: ['broad', '브로드 가 펌프'], berwick: ['broad', '브로드 가 펌프'], eley: ['broad', '브로드 가 펌프'],
+  littlepulteney: ['broad', '브로드 가 펌프'], carnaby: ['broad', '집 앞 펌프, 막내만 브로드 가 펌프'],
+  brewery: ['well', '양조장 우물과 맥아주'], workhouse: ['well', '구빈원 우물'], gould: ['none', '펌프 물을 마시지 않음'],
+  marlborough: ['pump', '리틀 말버러 가 펌프'], pulteney: ['pump', '브라이들 골목 펌프'], rupert: ['pump', '루퍼트 가 펌프'],
+};
+export const WATER_GROUPS: [WaterKind, string][] = [
+  ['broad', '브로드 가 펌프 물'], ['pump', '다른 거리의 펌프 물'], ['well', '건물 안 우물물'], ['none', '펌프 물을 마시지 않음'],
+];
+
 const G = geo.sites as Record<string, { door: number[]; icon: number[]; nearestPump: string }>;
 export const SITES: Site[] = SITE_TEXT.map(s => ({
-  ...s, door: w(G[s.id].door), icon: w(G[s.id].icon), nearestPump: G[s.id].nearestPump,
+  ...s, waterKind: WATER[s.id][0], waterShort: WATER[s.id][1], door: w(G[s.id].door), icon: w(G[s.id].icon), nearestPump: G[s.id].nearestPump,
 }));
 export const SITE_BY_ID: Record<string, Site> = Object.fromEntries(SITES.map(s => [s.id, s]));
 
