@@ -37,15 +37,15 @@ NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, cr
 # id: (사람, 옷차림, 상반신 시드, 전신 시드). 옷차림은 두 그림에 똑같이 쓴다
 INVESTIGATORS = {
     'f1': ('calm determined 27 year old woman, brown hair in a low bun', 'plain navy high-neck dress with small white collar', 611, 1001),
-    'f2': ('lively 22 year old woman, red hair in a braid, freckles', 'moss green wool dress, cream knitted shawl', 1102, 1002),
+    'f2': ('lively 22 year old woman, red hair in a braid, freckles', 'moss green wool dress, cream knitted shawl', 1102, 4002),
     'f3': ('serious 34 year old woman, black hair, white cotton cap', 'dark grey dress, long white apron', 1103, 1003),
     'f4': ('kind 45 year old woman, auburn hair, straw bonnet', 'plum purple dress, brown cape', 1104, 1004),
     'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'long mustard yellow dress to the ankles, short brown jacket', 1105, 1005),
-    'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 1006),
+    'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 4002),
     'm1': ('calm 30 year old man, short dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
-    'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 1012),
+    'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 4001),
     'm3': ('steady 42 year old man, bald, short dark beard', 'grey frock coat, red cravat', 3413, 3113),
-    'm4': ('eager 19 year old man, curly black hair', 'brown corduroy jacket, blue scarf', 1114, 1014),
+    'm4': ('eager 19 year old man, curly black hair', 'brown corduroy jacket, blue scarf', 1114, 4001),
     'm5': ('dignified 58 year old man, white moustache, black top hat', 'black overcoat, grey waistcoat', 1115, 1015),
     'm6': ('thoughtful 30 year old Black man, short black hair, trimmed beard', 'dark green frock coat, cream waistcoat, white cravat', 1116, 1016),
 }

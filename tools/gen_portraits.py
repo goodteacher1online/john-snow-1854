@@ -50,6 +50,12 @@ PEOPLE = {
 }
 
 
+# 영역 조사 집 40곳의 주민 (src/data/district_people.json)
+import json as _json
+for _p in _json.loads((ROOT / 'src' / 'data' / 'district_people.json').read_text(encoding='utf-8'))['people']:
+    PEOPLE[f"r_{_p['id']}"] = (_p['desc'], _p['seed'])
+
+
 def generate(names):
     import torch
     from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
