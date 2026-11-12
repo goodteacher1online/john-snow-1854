@@ -110,7 +110,7 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
     const role = p.role, nm = p.name;
     const site: Site = {
       id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimonies, area: g.area,
-      fact: `사망자 수는 스노우의 지도에서 막대를 세어 옮겼다(원본 해상도가 낮아 대략 센 값). 주민과 마신 물, 대사는 꾸몄다.`,
+      fact: '사망자 수는 스노우 지도의 막대를 대략 센 값. 주민·마신 물·대사는 꾸밈.',
       npc: { name: nm, role, portrait: `r_${g.id}` as PortraitId },
       people: peopleCount, deaths, smell, smellNote,
       drankBroad: kind === 'broad', waterNote: note, waterKind: kind, waterShort: short,
