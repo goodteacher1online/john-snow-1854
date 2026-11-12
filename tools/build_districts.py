@@ -1,0 +1,176 @@
+# -*- coding: utf-8 -*-
+"""영역마다 맡아 조사할 집 8곳을 스노우의 지도에서 고른다.
+
+  python tools/build_districts.py pick     # 후보를 골라 확대 그림을 만든다 (막대는 사람이 눈으로 센다)
+  python tools/build_districts.py build    # 눈으로 센 값(src/data/districts.counts.json)을 합쳐 districts.gen.json 을 만든다
+
+영역마다 막대(사망자)가 있는 집 5곳과 막대가 없는 집 3곳을 고른다.
+문은 가장 가까운 길 위, 건물 그림은 막대가 있던 자리(블록 안쪽)에 둔다.
+걸어서 가장 가까운 펌프는 build_assets.py 의 도보권역 계산과 같은 방식으로 구한다.
+"""
+import sys, json, heapq
+from pathlib import Path
+import numpy as np, cv2
+from scipy import ndimage as ndi
+
+sys.stdout.reconfigure(encoding='utf-8')
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / 'tools' / 'source' / 'snow_map.jpg'
+DATA = ROOT / 'src' / 'data'
+OUT_PICK = ROOT / 'tools' / 'source' / 'districts'
+
+AREAS = {   # story.ts 의 AREAS.start 와 같다
+    'team1': (718, 556), 'team2': (690, 340), 'team3': (858, 410), 'team4': (505, 600), 'team5': (610, 800),
+}
+PER_AREA_DEATH, PER_AREA_CLEAR = 5, 3
+SPACING = 46            # 집끼리, 그리고 이야기 14곳과 떨어질 거리(원본 픽셀)
+
+
+def load():
+    g = cv2.imread(str(SRC), cv2.IMREAD_GRAYSCALE)
+    walk = cv2.imread(str(ROOT / 'public' / 'assets' / 'walk_mask.png'), cv2.IMREAD_GRAYSCALE)
+    return g, walk
+
+
+def bar_stacks(g, walk):
+    """막대 묶음의 가운데와 크기. 길 위의 글자·펌프 점은 뺀다"""
+    bars = ndi.binary_opening(g < 100, np.ones((2, 2), bool)) & ~ndi.binary_dilation(walk > 0, iterations=1)
+    lab, _ = ndi.label(ndi.binary_dilation(bars, np.ones((5, 5), bool)))
+    out = []
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        comp = (lab[sl] == i) & bars[sl]
+        a = int(comp.sum())
+        h, w = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        if a < 12 or a > 420 or max(h, w) > 40:      # 너무 큰 것은 건물 선이나 여러 집이 붙은 것
+            continue
+        ys, xs = np.nonzero(comp)
+        out.append((int(xs.mean() + sl[1].start), int(ys.mean() + sl[0].start), a))
+    return out, bars
+
+
+def nearest_area(x, y):
+    return min(AREAS, key=lambda k: (AREAS[k][0] - x) ** 2 + (AREAS[k][1] - y) ** 2)
+
+
+def snap_street(walk, x, y, r=40):
+    d = ndi.distance_transform_edt(walk > 0)
+    best, bd = None, 1e9
+    for yy in range(max(0, y - r), min(walk.shape[0], y + r)):
+        for xx in range(max(0, x - r), min(walk.shape[1], x + r)):
+            if d[yy, xx] >= 2.5:
+                dd = (xx - x) ** 2 + (yy - y) ** 2
+                if dd < bd:
+                    bd, best = dd, (xx, yy)
+    return best
+
+
+def existing_points():
+    geo = json.loads((DATA / 'geo.gen.json').read_text(encoding='utf-8'))
+    pts = []
+    for s in geo['sites'].values():
+        pts += [tuple(s['door']), tuple(s['icon'])]
+    return pts
+
+
+def far_from(p, pts, d=SPACING):
+    return all((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 >= d * d for q in pts)
+
+
+def pick():
+    g, walk = load()
+    stacks, bars = bar_stacks(g, walk)
+    taken = existing_points()
+    chosen = []
+    for area, (ax, ay) in AREAS.items():
+        mine = sorted([s for s in stacks if nearest_area(s[0], s[1]) == area], key=lambda s: (s[0] - ax) ** 2 + (s[1] - ay) ** 2)
+        n = 0
+        for x, y, a in mine:
+            if n >= PER_AREA_DEATH or not far_from((x, y), taken):
+                continue
+            door = snap_street(walk, x, y)
+            if door is None or not far_from(door, taken, 30):
+                continue
+            chosen.append({'area': area, 'icon': [x, y], 'door': list(door), 'bars': True})
+            taken += [(x, y), door]
+            n += 1
+        # 막대 없는 집: 영역 안 블록 가장자리 가운데 둘레 26px 안에 막대가 하나도 없는 곳
+        near_bar = ndi.binary_dilation(bars, iterations=26)
+        edge = (walk == 0) & ndi.binary_dilation(walk > 0, iterations=6) & ~ndi.binary_dilation(walk > 0, iterations=3) & ~near_bar
+        ys, xs = np.nonzero(edge)
+        order = np.argsort((xs - ax) ** 2 + (ys - ay) ** 2)
+        n = 0
+        for i in order[::7]:
+            x, y = int(xs[i]), int(ys[i])
+            if n >= PER_AREA_CLEAR or nearest_area(x, y) != area or not far_from((x, y), taken, SPACING + 10):
+                continue
+            door = snap_street(walk, x, y)
+            if door is None or not far_from(door, taken, 30):
+                continue
+            chosen.append({'area': area, 'icon': [x, y], 'door': list(door), 'bars': False})
+            taken += [(x, y), door]
+            n += 1
+    for i, c in enumerate(chosen):
+        c['id'] = f'd{i + 1:02d}'
+    OUT_PICK.mkdir(parents=True, exist_ok=True)
+    (OUT_PICK / 'picked.json').write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding='utf-8')
+    # 사람이 막대를 셀 확대 그림: 한 장에 열 곳
+    tiles = []
+    for c in chosen:
+        x, y = c['icon']
+        crop = cv2.cvtColor(g[max(0, y - 30):y + 30, max(0, x - 30):x + 30], cv2.COLOR_GRAY2BGR)
+        crop = cv2.resize(crop, (360, 360), interpolation=cv2.INTER_NEAREST)
+        cv2.putText(crop, c['id'], (6, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        tiles.append(crop)
+    for k in range(0, len(tiles), 10):
+        row = tiles[k:k + 10] + [np.full((360, 360, 3), 255, np.uint8)] * (10 - len(tiles[k:k + 10]))
+        cv2.imwrite(str(OUT_PICK / f'count_{k // 10 + 1}.png'), np.vstack([np.hstack(row[:5]), np.hstack(row[5:])]))
+    # 전체 위치
+    vis = cv2.cvtColor(g, cv2.COLOR_GRAY2BGR)
+    for c in chosen:
+        cv2.circle(vis, tuple(c['icon']), 9, (0, 0, 255) if c['bars'] else (0, 160, 0), 2)
+        cv2.putText(vis, c['id'], (c['icon'][0] + 8, c['icon'][1] - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (200, 0, 0), 1)
+    cv2.imwrite(str(OUT_PICK / 'where.png'), vis)
+    print(f'{len(chosen)}곳을 골랐다. 확대 그림:', OUT_PICK)
+
+
+def build():
+    """눈으로 센 사망자 수를 합치고, 걸어서 가장 가까운 펌프를 구한다"""
+    g, walk = load()
+    picked = json.loads((OUT_PICK / 'picked.json').read_text(encoding='utf-8'))
+    counts = json.loads((DATA / 'districts.counts.json').read_text(encoding='utf-8'))
+    geo = json.loads((DATA / 'geo.json').read_text(encoding='utf-8'))
+    street = walk > 0
+    H, W = street.shape
+    owner = np.full((H, W), -1, np.int16)
+    best = np.full((H, W), np.inf, np.float32)
+    pump_ids = list(geo['pumps'])
+    heap = []
+    for i, pid in enumerate(pump_ids):
+        x, y = snap_street(walk, *geo['pumps'][pid])
+        best[y, x] = 0
+        heap.append((0.0, x, y, i))
+    heapq.heapify(heap)
+    NB = [(1, 0, 1), (-1, 0, 1), (0, 1, 1), (0, -1, 1), (1, 1, 1.4142), (1, -1, 1.4142), (-1, 1, 1.4142), (-1, -1, 1.4142)]
+    while heap:
+        d, x, y, i = heapq.heappop(heap)
+        if d > best[y, x] or owner[y, x] >= 0:
+            continue
+        owner[y, x] = i
+        for dx, dy, c in NB:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < W and 0 <= ny < H and street[ny, nx] and d + c < best[ny, nx]:
+                best[ny, nx] = d + c
+                heapq.heappush(heap, (d + c, nx, ny, i))
+    out = []
+    for c in picked:
+        deaths = int(counts.get(c['id'], 0)) if c['bars'] else 0
+        x, y = c['door']
+        near = pump_ids[int(owner[y, x])]
+        out.append({**c, 'deaths': deaths, 'nearestPump': near, 'walkToBroad': round(float(best[y, x])) if near == 'broad' else None})
+    (DATA / 'districts.gen.json').write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding='utf-8')
+    for o in out:
+        print(f"  {o['id']} {o['area']} 사망 {o['deaths']:2d}  가까운 펌프 {o['nearestPump']}")
+
+
+if __name__ == '__main__':
+    {'pick': pick, 'build': build}[sys.argv[1] if len(sys.argv) > 1 else 'pick']()
