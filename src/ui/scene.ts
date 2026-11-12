@@ -62,6 +62,9 @@ export class Scene {
   public setNpc(name: string, role: string, portrait: string) {
     this.npcName = name;
     this.npcRole = role;
+    // 그림이 아직 없으면 깨진 그림 표시 대신 빈자리로 둔다
+    this.npc.style.visibility = '';
+    this.npc.onerror = () => { this.npc.style.visibility = 'hidden'; };
     this.npc.src = portrait;
   }
 
