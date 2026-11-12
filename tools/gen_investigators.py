@@ -5,6 +5,7 @@
   <diffusers 가 깔린 파이썬> tools/gen_investigators.py            # 전부
   <같은 파이썬> tools/gen_investigators.py f2 m3:1234              # 일부, 이름:시드 로 다시 뽑기
   <같은 파이썬> tools/gen_investigators.py --body m3:1234          # 전신만 다시
+  <같은 파이썬> tools/gen_investigators.py --bust f4:1234          # 상반신만 다시
 
 상반신: tools/source/portraits_gen/(cut/)inv_<id>.png → public/assets/portraits/inv_<id>.webp (frame_portraits 로 크기 맞춤)
 전신:   tools/source/characters_gen/inv_<id>.png → public/assets/characters/inv_<id>.webp
@@ -26,10 +27,11 @@ MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
 STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
 BUST = 'symmetrical front-facing bust portrait, head straight, eyes looking at camera, both shoulders fully visible, upper chest,'
-BODY = 'full body portrait of one person standing straight, whole figure from head to shoes, front view, arms at sides, small figure,'
+# 지도 위에서 걷는 방향이 보이도록 오른쪽을 보고 걷는 옆모습으로 그린다 (왼쪽으로 걸을 때는 뒤집어 쓴다)
+BODY = 'side view full body of one person walking to the right, profile facing right, whole figure from head to shoes, small figure,'
 NEG_BUST = ('looking away, head turned, three-quarter view, profile, monochrome, full body, hands, cropped head, text, watermark, '
             'frame, border, vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, smiling')
-NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, crowd, sitting, walking, side view, back view, '
+NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, crowd, sitting, front view, facing camera, facing viewer, facing left, back view, short skirt, '
             'monochrome, text, watermark, frame, modern clothing, deformed, extra limbs, blurry, cartoon, anime, 3d render')
 
 # id: (사람, 옷차림, 상반신 시드, 전신 시드). 옷차림은 두 그림에 똑같이 쓴다
@@ -38,7 +40,7 @@ INVESTIGATORS = {
     'f2': ('lively 22 year old woman, red hair in a braid, freckles', 'moss green wool dress, cream knitted shawl', 1102, 1002),
     'f3': ('serious 34 year old woman, black hair, white cotton cap', 'dark grey dress, long white apron', 1103, 1003),
     'f4': ('kind 45 year old woman, auburn hair, straw bonnet', 'plum purple dress, brown cape', 1104, 1004),
-    'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'mustard yellow dress, short brown jacket', 1105, 1005),
+    'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'long mustard yellow dress to the ankles, short brown jacket', 1105, 1005),
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 1006),
     'm1': ('calm 30 year old man, short dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
     'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 1012),
@@ -62,6 +64,7 @@ def main(args):
         d.mkdir(parents=True, exist_ok=True)
 
     body_only = '--body' in args
+    bust_only = '--bust' in args
     names = [a for a in args if not a.startswith('--')] or list(INVESTIGATORS)
     for spec in names:
         iid, _, override = spec.partition(':')
@@ -69,11 +72,13 @@ def main(args):
         name = f'inv_{iid}'
         gen = lambda s: torch.Generator('cuda').manual_seed(s)
         if not body_only:
-            img = pipe(f'{BUST} {who}, {outfit}, {STYLE}', negative_prompt=NEG_BUST, width=768, height=704,
+            img = pipe(f'{BUST} {who}, {outfit}, {STYLE}, small head, chest visible', negative_prompt=NEG_BUST, width=768, height=704,
                        num_inference_steps=28, guidance_scale=6.5, generator=gen(int(override) if override else bust_seed)).images[0]
             img.save(RAW_BUST / f'{name}.png')
             remove(img, session=session, post_process_mask=True).save(RAW_BUST / 'cut' / f'{name}.png')
             print('  상반신', frame(name))
+        if bust_only:
+            continue
         img = pipe(f'{BODY} {who}, {outfit}, {STYLE}', negative_prompt=NEG_BODY, width=512, height=896,
                    num_inference_steps=28, guidance_scale=7, generator=gen(int(override) if override and body_only else body_seed)).images[0]
         img.save(RAW_BODY / f'{name}.png')

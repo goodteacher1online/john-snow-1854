@@ -470,3 +470,10 @@ body.in-scene #hint-click { display: none; }
 @media (max-width: 820px) { .glossary { grid-template-columns: 1fr; gap: 2px; } .glossary dd { margin-bottom: 10px; } }
 /* 입장 화면(z 50)에서도 열리도록 그 위에 띄운다 */
 #primer, #about { z-index: 55; }
+
+/* ---------- 조사관 열둘 ---------- */
+.choice-row.looks { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.choice-row.looks .pick { padding: 0; min-height: 0; aspect-ratio: 1 / 1; align-items: flex-end; }
+.choice-row.looks .pick img { width: 100%; height: auto; margin: 0; }
+#room-row .error { display: block; margin-top: 6px; font-size: 15px; font-style: normal; color: var(--red); }
+@media (max-width: 820px) { .choice-row.looks { grid-template-columns: repeat(4, 1fr); } }

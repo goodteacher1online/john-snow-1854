@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 import './style.css';
-import { Avatar, PlayerGender, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
+import { Avatar, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
@@ -30,14 +30,18 @@ const STAGE_LABEL = ['첫 조사', '공기설 시험', '추리', '가설 확인'
 // ---------------------------------------------------------------------------
 function freshSave(keep?: Partial<SaveData>): SaveData {
   return {
-    name: keep?.name ?? '', gender: keep?.gender ?? 'female', team: keep?.team ?? 'team1', room: keep?.room ?? '',
+    name: keep?.name ?? '', look: keep?.look ?? LOOKS[Math.floor(Math.random() * LOOKS.length)], team: keep?.team ?? 'team1', room: keep?.room ?? '',
     stage: 0, records: [], asked: {}, xp: 0, reasonStep: 0, misses: 0, noteSeen: -1, x: 0, y: 0,
   };
 }
 function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) return { ...freshSave(), ...JSON.parse(raw) };
+    if (raw) {
+      const old = JSON.parse(raw);
+      if (!old.look && old.gender) old.look = old.gender === 'male' ? 'm1' : 'f1';
+      return { ...freshSave(), ...old };
+    }
   } catch { /* 저장소를 못 쓰는 환경이면 새로 시작한다 */ }
   return freshSave();
 }
@@ -47,7 +51,7 @@ function persist() {
 }
 
 let save = loadSave();
-const me: Avatar = { id: 'me', name: '', team: 'team1', gender: 'female', x: BROAD_PUMP.x, y: BROAD_PUMP.y, facing: 1, moving: false };
+const me: Avatar = { id: 'me', name: '', team: 'team1', look: 'f1', x: BROAD_PUMP.x, y: BROAD_PUMP.y, facing: 1, moving: false };
 
 const scene = new Scene();
 const renderer = new Renderer($<HTMLCanvasElement>('map'));
@@ -69,7 +73,8 @@ let nearId: string | null = null;
 let guide: [number, number][] | null = null;   // 지금 할 일까지 길을 따라가는 안내선
 let guideName = '';
 let crowdWarned = false;
-let noteAt = 0;            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
+let noteAt = 0;
+let afterNote: (() => void) | null = null;   // 쪽지를 닫은 뒤에 할 일            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
 let sceneSeenAt = 0;       // 장면이 마지막으로 열려 있던 시각 (닫자마자 또 문을 두드리지 않게)
 let others: RemotePlayer[] = [];
 const keys = new Set<string>();
@@ -208,6 +213,7 @@ $('note-ok').addEventListener('click', () => {
   if (save.stage === STAGE.REASON || save.stage === STAGE.HEARING) notebook.open('reason');
   else if (first) toast('붉은 점선을 따라가면 지금 조사할 집이 나온다', '붉은 고리가 뜬 문을 누르면 그 앞까지 걸어가 문을 두드린다');
   if (first) showClickHint();
+  if (afterNote) { const f = afterNote; afterNote = null; setTimeout(f, first ? 3600 : 300); }
 });
 
 // ---------------------------------------------------------------------------
@@ -264,7 +270,7 @@ const notebook = new Notebook({
 // ---------------------------------------------------------------------------
 // 면담
 // ---------------------------------------------------------------------------
-const myPortrait = () => `./assets/portraits/player_${save.gender}_bust.webp`;
+const myPortrait = () => `./assets/portraits/inv_${save.look}.webp`;
 
 function cardHtml(site: Site, asked: QuestionId[], fresh?: QuestionId) {
   return `<h3>조사 기록</h3><p class="card-name">${esc(site.name)}</p>${factsHtml(site, asked, fresh)}`;
@@ -690,7 +696,8 @@ function setupLobby() {
   });
   $<HTMLInputElement>('in-name').value = save.name;
   $<HTMLInputElement>('in-room').value = room;
-  radioGroup('in-gender', save.gender, v => { save.gender = v as PlayerGender; });
+  $('in-look').innerHTML = LOOKS.map(l => `<button type="button" class="pick" data-value="${l}" role="radio" aria-label="조사관 ${l}"><img src="./assets/portraits/inv_${l}.webp" alt=""></button>`).join('');
+  radioGroup('in-look', LOOKS.includes(save.look) ? save.look : 'f1', v => { save.look = v; });
   radioGroup('in-team', save.team, v => { save.team = v; });
   const resumable = save.records.length > 0 || save.noteSeen >= 0;
   $('btn-start').textContent = resumable ? '이어서 조사하기' : '조사 시작';
@@ -700,18 +707,28 @@ function setupLobby() {
     $('btn-start').textContent = '조사 시작';
     $('btn-reset').classList.add('hidden');
   });
-  $('lobby-form').addEventListener('submit', e => { e.preventDefault(); void start(); });
+  $('lobby-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (lobbyMode === 'class' && !$<HTMLInputElement>('in-room').value.trim()) {
+      $('room-error').classList.remove('hidden');
+      $<HTMLInputElement>('in-room').focus();
+      return;
+    }
+    void start();
+  });
+  $('in-room').addEventListener('input', () => $('room-error').classList.add('hidden'));
 }
 
 async function start() {
   save.name = $<HTMLInputElement>('in-name').value.trim() || '조사관';
   save.room = lobbyMode === 'class' ? $<HTMLInputElement>('in-room').value.trim().replace(/[^0-9A-Za-z가-힣]/g, '') : '';
-  Object.assign(me, { name: save.name, team: save.team, gender: save.gender });
+  Object.assign(me, { name: save.name, team: save.team, look: save.look });
   await navReady;
 
   // 처음이면 고른 영역의 시작 장소에서 (혼자일 때는 브로드 가 펌프 앞에서) 출발한다
-  const startId = save.room ? AREAS.find(a => a.id === save.team)?.start ?? 'pump' : 'pump';
-  const startAt = startId === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y - 14] : SITE_BY_ID[startId].door;
+  const area = save.room ? AREAS.find(a => a.id === save.team) : undefined;
+  const startAt = area ? [area.start[0] * WORLD_SCALE, area.start[1] * WORLD_SCALE] : [BROAD_PUMP.x, BROAD_PUMP.y - 14];
+  const fresh = save.startKey !== (save.room ? `${save.room}|${save.team}` : 'solo');
   const startKey = save.room ? `${save.room}|${save.team}` : 'solo';
   if (save.startKey !== startKey) { save.x = 0; save.y = 0; save.startKey = startKey; }
   const spawn = save.x ? [save.x, save.y] : startAt;
@@ -724,6 +741,11 @@ async function start() {
   started = true;
   updateHud();
   persist();
+  // 쪽지가 뜰 참이면 쪽지를 닫은 뒤에 알린다 (쪽지가 알림을 가린다)
+  if (area && fresh) {
+    const say = () => toast(`${area.name}에서 출발한다`, `같은 방 번호에서 ${area.name} 영역을 고른 친구들과 한 지도`);
+    if (save.noteSeen < save.stage) afterNote = say; else setTimeout(say, 600);
+  }
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);
   mp.onRecord = (name, team, id) => tick(`${name} · ${SITE_BY_ID[id]?.name ?? id} 기록`, teamColor(team));
   mp.onFinish = name => tick(`${name} 조사관이 펌프 손잡이를 떼어 냈다`);

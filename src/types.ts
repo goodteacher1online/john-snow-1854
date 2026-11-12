@@ -5,7 +5,8 @@ export type PortraitId =
   | 'sarah' | 'ned' | 'maryann' | 'keeper' | 'sam' | 'huggins' | 'master' | 'scholar' | 'foreman'
   | 'jack' | 'ellen' | 'abe' | 'harriet' | 'hugh' | 'chairman' | 'physician';
 export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
-export type PlayerGender = 'male' | 'female';
+/** 조사관 모습: f1~f6, m1~m6 (tools/gen_investigators.py) */
+export type Look = string;
 
 /** 위원회에서 이 기록이 반박할 수 있는 주장 */
 export type WaterKind = 'broad' | 'pump' | 'well' | 'none';
@@ -57,7 +58,7 @@ export interface Avatar {
   name: string;
   /** 함께 할 때 고른 영역 (AREAS 의 id) */
   team: string;
-  gender: PlayerGender;
+  look: Look;
   x: number;
   y: number;
   facing: 1 | -1;
@@ -73,7 +74,7 @@ export interface RemotePlayer extends Avatar {
 
 export interface SaveData {
   name: string;
-  gender: PlayerGender;
+  look: Look;
   /** 함께 할 때 고른 영역 (AREAS 의 id) */
   team: string;
   room: string;

@@ -715,13 +715,17 @@ export const rankOf = (xp: number) => RANKS.filter(r => xp >= r[0]).pop()![1];
  * id 는 예전 저장 자료와 맞추려고 team1~5 를 그대로 쓴다.
  */
 export const AREA_CAP = 16;
-export const AREAS: { id: string; name: string; color: string; start: string }[] = [
-  { id: 'team1', name: '브로드 가', color: '#2f6fb3', start: 'pump' },
-  { id: 'team2', name: '폴란드 가', color: '#2f8a57', start: 'workhouse' },
-  { id: 'team3', name: '버윅 가', color: '#b07a1e', start: 'berwick' },
-  { id: 'team4', name: '카나비 가', color: '#7a4fa3', start: 'carnaby' },
-  { id: 'team5', name: '골든 스퀘어', color: '#a8443c', start: 'pulteney' },
+// start: 그 거리 한복판(원본 지도 픽셀). 브로드 가 펌프에서 화면 하나 넘게 떨어진 곳들이다
+export const AREAS: { id: string; name: string; color: string; start: [number, number] }[] = [
+  { id: 'team1', name: '브로드 가', color: '#2f6fb3', start: [718, 556] },
+  { id: 'team2', name: '폴란드 가', color: '#2f8a57', start: [690, 340] },
+  { id: 'team3', name: '버윅 가', color: '#b07a1e', start: [858, 410] },
+  { id: 'team4', name: '카나비 가', color: '#7a4fa3', start: [505, 600] },
+  { id: 'team5', name: '골든 스퀘어', color: '#a8443c', start: [610, 800] },
 ];
+
+/** 고를 수 있는 조사관 열둘. 그림은 portraits/inv_<id>.webp(상반신)와 characters/inv_<id>.webp(전신) */
+export const LOOKS = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6'];
 export const teamColor = (id: string) => AREAS.find(t => t.id === id)?.color ?? '#2f6fb3';
 export const areaName = (id: string) => AREAS.find(t => t.id === id)?.name ?? '';
 

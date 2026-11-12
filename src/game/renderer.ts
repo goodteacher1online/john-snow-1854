@@ -58,7 +58,13 @@ export class Renderer {
   private catchment = load('./assets/catchment.png');
   private pump = load('./assets/pump.webp');
   private pumpNoHandle = load('./assets/pump_no_handle.webp');
-  private chars = { male: load('./assets/characters/player_male.webp'), female: load('./assets/characters/player_female.webp') };
+  /** 조사관 전신 그림. 처음 쓸 때 불러온다 */
+  private chars = new Map<string, HTMLImageElement>();
+  private char(look: string) {
+    let img = this.chars.get(look);
+    if (!img) { img = load(`./assets/characters/inv_${look}.webp`); this.chars.set(look, img); }
+    return img;
+  }
   private icons: Record<SiteKind, HTMLImageElement> = {
     house: load('./assets/houses/house_terrace.webp'),
     brewery: load('./assets/houses/house_brewery.webp'),
@@ -386,7 +392,7 @@ export class Renderer {
     const ctx = this.ctx, z = this.zoom;
     const [x, y] = this.toScreen(a.x + shift, a.y);
     if (x < -80 || y < -40 || x > this.vw + 80 || y > this.vh + 160) return;
-    const img = this.chars[a.gender];
+    const img = this.char(a.look || 'f1');
     const h = AVATAR_H * z, w = ok(img) ? h * img.naturalWidth / img.naturalHeight : h * 0.35;
     const step = a.moving ? time * 9 : 0;
     const bob = a.moving ? Math.abs(Math.sin(step)) * 2.2 * z : 0;

@@ -1,7 +1,7 @@
 import { insertCoin, onPlayerJoin, myPlayer, PlayerState as RoomPlayer } from 'playroomkit';
 import { Avatar, RemotePlayer } from '../types.ts';
 
-interface Profile { name: string; team: string; gender: 'male' | 'female' }
+interface Profile { name: string; team: string; look: string }
 interface Pos { x: number; y: number; f: 1 | -1; m: boolean }
 interface Progress { records: string[]; stage: number }
 
@@ -24,7 +24,7 @@ export class Multiplayer {
     try {
       await insertCoin({ skipLobby: true, roomCode: room, maxPlayersPerRoom: 60 });
       const self = myPlayer();
-      self.setState('who', { name: me.name, team: me.team, gender: me.gender } satisfies Profile, true);
+      self.setState('who', { name: me.name, team: me.team, look: me.look } satisfies Profile, true);
       onPlayerJoin(player => {
         if (player.id === self.id) return;
         this.peers.set(player.id, { player, view: null, known: new Set(), done: false });
