@@ -1,5 +1,5 @@
 import { Avatar, RemotePlayer, Site, SiteKind } from '../types.ts';
-import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, teamColor } from '../data/story.ts';
+import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, LOOK_FACING, teamColor } from '../data/story.ts';
 
 const INK = '#231a12';
 const PAPER = '#f6efdc';
@@ -412,8 +412,8 @@ export class Renderer {
     ctx.save();
     ctx.translate(x, y - bob);
     ctx.rotate(a.moving ? Math.sin(step) * 0.05 : 0);
-    // 원본 그림은 왼쪽을 보고 있다. 가는 방향을 보도록 뒤집는다
-    ctx.scale(-a.facing, 1);
+    // 걷는 쪽을 보도록, 그림이 원래 향한 쪽과 다르면 뒤집는다
+    ctx.scale(a.facing === (LOOK_FACING[a.look] ?? 1) ? 1 : -1, 1);
     if (ok(img)) ctx.drawImage(img, -w / 2, -h + 2 * z, w, h);
     ctx.restore();
 

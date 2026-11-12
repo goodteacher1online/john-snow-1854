@@ -78,7 +78,7 @@ await Promise.all(bots.map(async (bot, i) => {
     else await wander(bot).catch(() => {});
   }
 }));
-await sleep(3000);          // 마지막 기록이 퍼질 시간
+await sleep(9000);          // 마지막 기록이 영역 방과 반 전체 방을 거쳐 퍼질 시간
 
 // 결과: 각 창이 본 것
 const rows = await Promise.all(bots.map(async bot => {
@@ -86,7 +86,7 @@ const rows = await Promise.all(bots.map(async bot => {
     // 3초 동안 화면이 몇 번 그려지는지 (끊김 확인). 가려진 창은 그리기를 쉬므로, 상태는 그린 뒤에 읽는다
     const fps = await new Promise(res => { let n = 0; const t = performance.now(); const f = () => { n++; performance.now() - t < 3000 ? requestAnimationFrame(f) : res(n / 3); }; requestAnimationFrame(f); });
     const st = window.__game.state();
-    return { others: st.others.length, mine: st.records.length, peers: window.__game.peerRecords(), fps: Math.round(fps) };
+    return { recs: st.records, cls: window.__game.classRecordCount(), others: st.others.length, mine: st.records.length, peers: window.__game.peerRecords(), fps: Math.round(fps) };
   });
   return { name: bot.name, team: bot.team, visited: bot.visited.length, ...s };
 }));
@@ -97,9 +97,13 @@ const expectTotal = rows.reduce((n, r) => n + r.mine, 0);
 const missingPeers = rows.filter(r => r.others !== mates(r).length - 1);
 const missingRecords = rows.filter(r => r.peers !== mates(r).reduce((n, o) => n + o.mine, 0) - r.mine);
 const fpsList = rows.map(r => r.fps).sort((a, b) => a - b);
+// 반 전체: 다른 영역 기록까지 합친 수가 모두에게 같은가
+const classUnion = new Set(rows.flatMap(r => r.recs)).size;
+const classMiss = rows.filter(r => r.cls !== classUnion);
 console.log(`\n인원 ${N}명 (${WHOLE ? '모두 한 영역' : '영역 5개'}) · 조사 ${SECONDS}초 · 전체 기록 ${expectTotal}건`);
 console.log(`서로 모두 보임: ${N - missingPeers.length}/${N}` + (missingPeers.length ? `  (안 맞는 창: ${missingPeers.map(r => `${r.name}=${r.others}`).join(', ')})` : ''));
 console.log(`친구 기록이 빠짐없이 전해짐: ${N - missingRecords.length}/${N}` + (missingRecords.length ? `  (안 맞는 창: ${missingRecords.slice(0, 8).map(r => `${r.name} ${r.peers}/${mates(r).reduce((n, o) => n + o.mine, 0) - r.mine}`).join(', ')})` : ''));
+console.log(`반 전체 기록(다른 영역 포함)이 다 보임: ${N - classMiss.length}/${N}  (반 전체 ${classUnion}곳` + (classMiss.length ? `, 안 맞는 창: ${classMiss.slice(0, 8).map(r => `${r.name} ${r.cls}`).join(', ')})` : ')'));
 console.log(`화면 갱신(초당): 최저 ${fpsList[0]} · 중간 ${fpsList[Math.floor(N / 2)]} · 최고 ${fpsList[N - 1]}  (창 ${N}개를 한 PC에서 돌린 값)`);
 console.log(errors.length ? `오류 ${errors.length}건:\n` + [...new Set(errors)].slice(0, 12).join('\n') : '콘솔 오류 없음');
 await bots[0].page.keyboard.press('b');

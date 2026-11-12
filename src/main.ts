@@ -147,6 +147,11 @@ function renderLedger() {
   // 내 기록에 더해, 같은 방 친구들이 조사한 다른 곳도 함께 싣는다 (누가 조사했는지 이름을 단다)
   const byFriend = new Map<string, string>();
   for (const o of others) for (const id of o.records) if (!has(id) && !byFriend.has(id)) byFriend.set(id, o.name);
+  // 다른 영역에서 조사한 곳 (영역 대표들이 반 전체 방에서 주고받은 기록)
+  for (const [team, ids] of Object.entries(mp.classAreas)) {
+    if (team === save.team) continue;
+    for (const id of ids) if (!has(id) && !byFriend.has(id)) byFriend.set(id, `${areaName(team)} 영역`);
+  }
   const recs = [...recordedSites(), ...[...byFriend.keys()].map(id => SITE_BY_ID[id]).filter(Boolean)]
     .sort((a, b) => b.deaths / b.people - a.deaths / a.people);
   const last = save.records[save.records.length - 1];
@@ -753,7 +758,8 @@ async function start() {
   // 방 번호가 없으면 혼자 조사한다 (연결하지 않는다). 영역마다 따로 방을 쓴다
   // '3반'처럼 한글이 섞여도 되도록, 연결 서비스에는 글자마다 숫자로 바꾼 이름을 넘긴다
   const roomCode = `${Array.from(save.room, c => c.codePointAt(0)!.toString(36)).join('')}A${save.team.slice(-1)}`;
-  if (save.room) void mp.connect(roomCode, me).then(() => mp.sendProgress(save.records, save.stage));
+  const roomBase = Array.from(save.room, c => c.codePointAt(0)!.toString(36)).join('');
+  if (save.room) void mp.connect(roomCode, me, `${roomBase}H`, save.team).then(() => mp.sendProgress(save.records, save.stage));
 }
 
 // ---------------------------------------------------------------------------
@@ -790,7 +796,7 @@ function frame(now: number) {
         $('legend').classList.toggle('hidden', !far);
         if (far) $('legend').innerHTML = legendText();
       }
-      const friendCount = new Set(others.flatMap(o => o.records).filter(id => !has(id))).size;
+      const friendCount = new Set([...others.flatMap(o => o.records), ...Object.values(mp.classAreas).flat()].filter(id => !has(id))).size;
       if (ledgerKey !== `${save.records.length}|${friendCount}`) renderLedger();
       if (others.length >= AREA_CAP && !crowdWarned) {
         crowdWarned = true;
@@ -803,7 +809,7 @@ function frame(now: number) {
   renderer.draw({
     me, others,
     records: new Set(save.records),
-    classRecords: new Set(others.flatMap(o => o.records)),
+    classRecords: new Set([...others.flatMap(o => o.records), ...Object.values(mp.classAreas).flat()]),
     targets: new Set(started ? quest.targets : []),
     nearId, path,
     guide: started && !scene.isOpen ? guide : null,
@@ -833,6 +839,7 @@ if (import.meta.env.DEV) {
       pump: () => [BROAD_PUMP.x, BROAD_PUMP.y],
       nav,
       peerRecords: () => others.reduce((n, o) => n + o.records.length, 0),
+      classRecordCount: () => new Set(Object.values(mp.classAreas).flat()).size,
     },
   });
 }

@@ -726,6 +726,8 @@ export const AREAS: { id: string; name: string; color: string; start: [number, n
 
 /** 고를 수 있는 조사관 열둘. 그림은 portraits/inv_<id>.webp(상반신)와 characters/inv_<id>.webp(전신) */
 export const LOOKS = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6'];
+/** 전신 그림이 원래 향한 쪽 (1: 오른쪽, -1: 왼쪽). 대부분 오른쪽을 보고 걷는 옆모습이다 */
+export const LOOK_FACING: Record<string, 1 | -1> = { f5: -1, m3: -1 };
 export const teamColor = (id: string) => AREAS.find(t => t.id === id)?.color ?? '#2f6fb3';
 export const areaName = (id: string) => AREAS.find(t => t.id === id)?.name ?? '';
 

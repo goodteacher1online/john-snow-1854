@@ -8,6 +8,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets'
+    assetsDir: 'assets',
+    // 반 전체 연락 창(hub.html)도 함께 내보낸다
+    rollupOptions: { input: { main: 'index.html', hub: 'hub.html' } }
   }
 });

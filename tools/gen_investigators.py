@@ -44,7 +44,7 @@ INVESTIGATORS = {
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 1006),
     'm1': ('calm 30 year old man, short dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
     'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 1012),
-    'm3': ('steady 42 year old man, bald, short dark beard', 'grey frock coat, red cravat', 1113, 1013),
+    'm3': ('steady 42 year old man, bald, short dark beard', 'grey frock coat, red cravat', 3413, 3113),
     'm4': ('eager 19 year old man, curly black hair', 'brown corduroy jacket, blue scarf', 1114, 1014),
     'm5': ('dignified 58 year old man, white moustache, black top hat', 'black overcoat, grey waistcoat', 1115, 1015),
     'm6': ('thoughtful 30 year old Black man, short black hair, trimmed beard', 'dark green frock coat, cream waistcoat, white cravat', 1116, 1016),
