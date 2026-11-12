@@ -40,7 +40,7 @@ PEOPLE = {
     'foreman':   ('38 year old factory foreman, brown moustache, flat cap, grey waistcoat, white shirt, worried look', 93),
     'jack':      ('20 year old street porter, freckled face, sandy hair, cloth cap, red neckerchief, worn brown jacket, sad eyes', 104),
     'ellen':     ('35 year old grieving mother, red tired eyes, black bonnet tied under chin, black shawl, dark dress', 118),
-    'abe':       ('72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old blue greatcoat, knitted scarf', 126),
+    'abe':       ('72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old blue greatcoat, knitted scarf', 803),
     'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
     'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
     'player_female_bust': ('calm determined 27 year old woman investigator, brown hair in a low bun, plain navy high-neck dress, small white collar', 611),

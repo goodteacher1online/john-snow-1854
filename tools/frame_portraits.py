@@ -58,6 +58,29 @@ def frame(name: str) -> str:
     if gap > 0:
         edge = out.crop((0, OUT_H - gap - 3, OUT_W, OUT_H - gap))
         out.alpha_composite(edge.resize((OUT_W, gap + 1), Image.BILINEAR), (0, OUT_H - gap - 1))
+    # 어깨 끝이 판 옆 테두리에 조금 못 미치면(원본 그림 밖으로 나갔던 몸) 세로로 잘려 보이므로,
+    # 아래에서부터 곧게 선 가장자리 구간만 골라 옷을 테두리까지 늘인다. 비스듬한 어깨선은 건드리지 않는다
+    a = np.array(out)
+    body = a[..., 3] > 128
+    for side in (0, 1):
+        edge = None
+        for y in range(OUT_H - 1, int(OUT_H * 0.5), -1):
+            xs = np.nonzero(body[y])[0]
+            if not len(xs):
+                break
+            x = xs[0] if side == 0 else xs[-1]
+            gap = x if side == 0 else OUT_W - 1 - x
+            if edge is None:
+                if not 0 < gap <= 48:
+                    break
+                edge = x
+            elif abs(x - edge) > 1:
+                break
+            if side == 0:
+                a[y, :x] = a[y, x + 1]
+            else:
+                a[y, x + 1:] = a[y, x - 1]
+    out = Image.fromarray(a)
     out.save(OUT / f'{name}.webp', quality=88, method=6)
     return f'{name}: 얼굴 폭 {fw:.0f} -> {FACE_W}, 배율 {s:.2f}' + (f'  (아래 {gap}px 메움)' if gap > 0 else '')
 
