@@ -26,6 +26,10 @@ export interface Site {
   deaths: number;
   /** 지도에 그리는 막대 수가 deaths 와 다를 때 (공장 직공처럼 자기 집에서 숨진 경우) */
   mapDeaths?: number;
+  /** 영역이 맡아 조사하는 집(숙제)인가. false 면 자유 조사 집 */
+  assigned?: boolean;
+  /** 자유 조사 집: 스노우 지도의 막대 자리(월드 좌표). 기록하면 이 자리에 막대를 그린다 */
+  points?: [number, number][];
   smell: Smell;
   smellNote: string;
   drankBroad: boolean;

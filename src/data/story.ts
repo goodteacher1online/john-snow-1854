@@ -476,7 +476,7 @@ for (const s of buildDistricts({ w, placeName: (x, y) => placeName(x, y, 1e5), p
   SITE_BY_ID[s.id] = s;
 }
 /** 영역 id → 그 영역이 맡은 집들 */
-export const districtOf = (area: string) => SITES.filter(s => s.area === area);
+export const districtOf = (area: string) => SITES.filter(s => s.area === area && s.assigned !== false);
 
 // ---------------------------------------------------------------------------
 // 진행 단계

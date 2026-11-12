@@ -122,6 +122,7 @@ export class Renderer {
       if (Math.hypot(wx - s.door[0], wy - s.door[1]) < 16) return s;
     }
     for (const s of SITES) {
+      if (s.points) continue;
       const [iw, ih] = this.iconSize(s.kind);
       if (Math.abs(wx - s.icon[0]) < iw / 2 + 4 && wy < s.icon[1] + 4 && wy > s.icon[1] - ih - 4) return s;
     }
@@ -273,7 +274,9 @@ export class Renderer {
     if (x < -40 || y < -40 || x > this.vw + 40 || y > this.vh + 40) return;
     const done = f.records.has(s.id);
     const target = f.targets.has(s.id);
-    const r = Math.max(5, 5.5 * this.zoom);
+    const free = !!s.points && !target && f.nearId !== s.id;
+    if (free && this.zoom < 1.1 && !done) return;            // 전체 지도에서는 자유 조사 집의 빈 문을 감춘다
+    const r = free ? Math.max(3.5, 3.6 * this.zoom) : Math.max(5, 5.5 * this.zoom);
     if (target) {
       const pulse = (f.time * 0.9) % 1;
       ctx.strokeStyle = RED;
@@ -314,6 +317,7 @@ export class Renderer {
   }
 
   private drawSite(s: Site, f: Frame) {
+    if (s.points) { this.drawFreeSite(s, f); return; }
     const ctx = this.ctx, z = this.zoom;
     const [iw, ih] = this.iconSize(s.kind);
     const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
@@ -342,6 +346,34 @@ export class Renderer {
     ctx.globalAlpha = mine ? 1 : 0.6;
     if (z < DOT_ZOOM) this.drawDeathDot(s, x, y);
     else this.drawDeathBars(s, x - w / 2, y);
+    ctx.restore();
+  }
+
+  /** 자유 조사 집: 기록하면 스노우의 지도와 같은 자리에 막대를 쌓는다 */
+  private drawFreeSite(s: Site, f: Frame) {
+    const mine = f.records.has(s.id);
+    if (!mine && !f.classRecords.has(s.id)) return;
+    const ctx = this.ctx, z = this.zoom;
+    const pts = s.points!;
+    const [dx, dy] = pts.length > 1
+      ? (() => { const a = pts[0], b = pts[pts.length - 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; })()
+      : (() => { const l = Math.hypot(pts[0][0] - s.door[0], pts[0][1] - s.door[1]) || 1; return [(pts[0][0] - s.door[0]) / l, (pts[0][1] - s.door[1]) / l]; })();
+    const half = Math.max(4.5 * z, 5.5), thick = Math.max(1.8 * z, 2.6);
+    const px = -dy * half, py = dx * half;
+    ctx.save();
+    ctx.globalAlpha = mine ? 1 : 0.6;
+    ctx.beginPath();
+    for (const [wx, wy] of pts) {
+      const [x, y] = this.toScreen(wx, wy);
+      ctx.moveTo(x - px, y - py);
+      ctx.lineTo(x + px, y + py);
+    }
+    ctx.strokeStyle = 'rgba(246, 239, 220, 0.95)';
+    ctx.lineWidth = thick + 2.5;
+    ctx.stroke();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = thick;
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -472,7 +504,8 @@ export class Renderer {
     for (const s of SITES) {
       const near = f.nearId === s.id, target = f.targets.has(s.id);
       if (!near && !target) continue;
-      const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
+      const at = s.points ? s.door : s.icon;
+      const [x, y] = this.toScreen(at[0], at[1]);
       this.label(s.name, x, y + 10, near ? 21 : 19, target ? RED : INK, near ? 5 : 4, true);
     }
     for (const p of PUMPS) {

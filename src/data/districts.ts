@@ -10,7 +10,7 @@ import { Site, Smell, WaterKind, Proof, PortraitId } from '../types.ts';
  * 주민은 본 것만 말한다. 그 물이 원인이라는 해석은 하지 않는다.
  */
 
-interface Gen { id: string; area: string; icon: number[]; door: number[]; bars: boolean; deaths: number; nearestPump: string }
+interface Gen { id: string; area: string; icon: number[]; door: number[]; bars: boolean; deaths: number; nearestPump: string; assigned?: boolean; points?: number[][] }
 interface Person { id: string; name: string; role: string; home: string }
 
 export interface DistrictCtx {
@@ -69,6 +69,10 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
       kind = 'broad'; short = '브로드 가 펌프'; note = '리틀 말버러 가 펌프 물이 고약해 브로드 가까지 감';
       why = '리틀 말버러 가 펌프 물에서 냄새가 나서';
       waterLine = '가까운 건 리틀 말버러 가 펌프인데 물에서 고약한 냄새가 나요. 그래서 다들 브로드 가까지 길으러 가요.';
+    } else if (deaths > 0 && g.assigned === false) {
+      kind = 'broad'; short = '동네 펌프, 가끔 브로드 가 펌프'; note = `${ctx.pumpName(g.nearestPump)}, 가끔 브로드 가 펌프`;
+      why = '브로드 가를 지날 때면';
+      waterLine = `${ctx.pumpName(g.nearestPump)} 물을 주로 써요. 그래도 브로드 가를 지날 때면 그 펌프에서 물을 받아 마시곤 했어요.`;
     } else if (deaths > 0) {
       const r = FAR_REASON[farIndex++ % FAR_REASON.length];
       kind = 'broad'; short = '브로드 가 펌프'; note = `브로드 가 펌프, ${r.short}`; why = r.why; waterLine = r.line;
@@ -110,6 +114,7 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
     const role = p.role, nm = p.name;
     const site: Site = {
       id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimonies, area: g.area,
+      assigned: g.assigned !== false, points: g.points?.map(ctx.w),
       fact: '사망자 수는 스노우 지도의 그 자리 막대 수(공개 디지털화 자료). 주민·마신 물·대사는 꾸밈.',
       npc: { name: nm, role, portrait: `r_${g.id}` as PortraitId },
       people: peopleCount, deaths, smell, smellNote,
