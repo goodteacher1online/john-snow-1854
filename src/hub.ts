@@ -6,7 +6,7 @@
  * 대표는 자기 영역의 기록을 올리고, 모든 영역의 기록을 모아 부모 창(게임)에 돌려준다.
  *
  *   부모 → 이 창: { type: 'area', records: string[] }
- *   이 창 → 부모: { type: 'class', areas: Record<영역, string[]> }
+ *   이 창 → 부모: { type: 'ready' } (반 전체 방에 들어감), { type: 'class', areas: Record<영역, string[]> }
  */
 import { insertCoin, onPlayerJoin, myPlayer, PlayerState } from 'playroomkit';
 
@@ -51,6 +51,8 @@ async function main() {
   });
   ready = true;
   flush();
+  // 부모가 이 창을 만든 직후에 보낸 기록은 페이지가 아직 안 떠서 사라졌을 수 있다. 준비됐다고 알려 다시 받는다
+  parent.postMessage({ type: 'ready' }, location.origin);
   setInterval(report, 1500);
 }
 

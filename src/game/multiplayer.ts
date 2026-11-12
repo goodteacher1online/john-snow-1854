@@ -23,6 +23,7 @@ export class Multiplayer {
   /** 반 전체 연락 창 (이 기기가 영역 대표일 때만) */
   private hub: HTMLIFrameElement | null = null;
   private hubSent = '';
+  private hubSentAt = 0;
   /** 다른 영역까지 합친 반 전체 기록: 영역 id → 기록한 곳들 */
   public classAreas: Record<string, string[]> = {};
 
@@ -42,8 +43,14 @@ export class Multiplayer {
       this.connected = true;
       if (classRoom) {
         window.addEventListener('message', e => {
-          if (e.origin !== location.origin || e.source !== this.hub?.contentWindow || e.data?.type !== 'class') return;
-          setState('class', e.data.areas, true);           // 영역 안 모두에게 나눠 준다
+          if (e.origin !== location.origin || e.source !== this.hub?.contentWindow) return;
+          if (e.data?.type === 'ready') { this.hubSent = ''; this.tendHub(classRoom, area); return; }   // 다시 보낸다
+          if (e.data?.type !== 'class') return;
+          // 한 번 모인 기록은 지우지 않는다: 기록한 학생이나 다른 영역 대표가 나가도 남는다
+          const old = (getState('class') as Record<string, string[]> | undefined) ?? {};
+          const merged: Record<string, string[]> = { ...old };
+          for (const [t, ids] of Object.entries(e.data.areas as Record<string, string[]>)) merged[t] = [...new Set([...(old[t] ?? []), ...ids])];
+          setState('class', merged, true);                 // 영역 안 모두에게 나눠 준다
         });
         setInterval(() => this.tendHub(classRoom, area), 2000);
       }
@@ -91,14 +98,18 @@ export class Multiplayer {
       this.hub = null;
     }
     if (!this.hub?.contentWindow) return;
-    const union = new Set(this.myRecords);
+    // 내 기록, 지금 영역에 있는 친구들의 기록, 그리고 이미 나간 친구가 남긴 이 영역의 기록까지
+    const kept = (getState('class') as Record<string, string[]> | undefined)?.[area] ?? [];
+    const union = new Set([...this.myRecords, ...kept]);
     for (const p of this.peers.values()) {
       const prog = p.player.getState('prog') as Progress | undefined;
       prog?.records.forEach(r => union.add(r));
     }
     const key = [...union].sort().join(',');
-    if (key === this.hubSent) return;
+    // 바뀌었을 때, 그리고 혹시 잃어버렸을 때를 대비해 10초마다 한 번은 다시 보낸다
+    if (key === this.hubSent && performance.now() - this.hubSentAt < 10000) return;
     this.hubSent = key;
+    this.hubSentAt = performance.now();
     this.hub.contentWindow.postMessage({ type: 'area', records: [...union] }, location.origin);
   }
 
