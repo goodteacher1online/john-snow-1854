@@ -56,10 +56,9 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
 
     // 냄새: 악취 진원지 가까이는 심하고, 그 밖은 고르게 나눈다. 사망자가 없는 집 가운데 첫 집은 냄새가 심한 곳으로
     const near = ctx.miasma.find(m => Math.hypot(m.x - icon[0], m.y - icon[1]) < 280);
-    const zeroIndex = deaths === 0 ? [...zeroNearBroad.values()].length : -1;
     let smell: Smell = near ? 'high' : pick<Smell>(['mid', 'low', 'high', 'mid'], i);
     let smellNote = near ? `${near.name} 냄새` : smell === 'high' ? '하수구 악취' : smell === 'mid' ? '하수구 냄새 조금' : '냄새가 덜함';
-    if (deaths === 0 && i % 8 === 5) { smell = 'high'; smellNote = '뒷마당 오물통이 넘침'; }
+    if (deaths === 0 && i % 8 === 5) { smell = 'high'; smellNote = '뒷마당 오물통 냄새'; }
 
     // 마시는 물
     let kind: WaterKind, short: string, note: string, waterLine: string, why = '';
@@ -87,7 +86,6 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
       kind = 'pump'; short = ctx.pumpName(g.nearestPump); note = `${short}, 가까움`;
       waterLine = `${short} 물을 써요. 가까우니까요.`;
     }
-    void zeroIndex;
 
     // 위원회에서 쓸 수 있는 기록
     const proves: Proof[] = [];
