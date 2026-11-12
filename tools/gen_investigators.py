@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 import numpy as np
 from PIL import Image
-from frame_portraits import frame
+from frame_portraits import frame, generate_clean, chosen_seed
 
 sys.stdout.reconfigure(encoding='utf-8')
 ROOT = Path(__file__).resolve().parent.parent
@@ -72,10 +72,10 @@ def main(args):
         name = f'inv_{iid}'
         gen = lambda s: torch.Generator('cuda').manual_seed(s)
         if not body_only:
-            img = pipe(f'{BUST} {who}, {outfit}, {STYLE}, small head, chest visible', negative_prompt=NEG_BUST, width=768, height=704,
-                       num_inference_steps=28, guidance_scale=6.5, generator=gen(int(override) if override else bust_seed)).images[0]
-            img.save(RAW_BUST / f'{name}.png')
-            remove(img, session=session, post_process_mask=True).save(RAW_BUST / 'cut' / f'{name}.png')
+            seed = int(override) if override else chosen_seed(name, bust_seed)
+            bad = generate_clean(pipe, session, name, f'{BUST} {who}, {outfit}, {STYLE}, small head, chest visible', NEG_BUST, seed)
+            if bad:
+                print(f'  [{name}] 여러 번 뽑아도 {bad} 잘림')
             print('  상반신', frame(name))
         if bust_only:
             continue

@@ -6,6 +6,7 @@
 
   python tools/frame_portraits.py            # 전부
   python tools/frame_portraits.py sarah ned  # 일부
+  python tools/frame_portraits.py --audit     # 머리나 어깨가 그림 밖으로 잘린 원본 찾기
 
 입력: tools/source/portraits_gen/<이름>.png (배경 포함, 얼굴 찾기용)
       tools/source/portraits_gen/cut/<이름>.png (배경을 지운 것)
@@ -40,6 +41,83 @@ def find_face(raw: Image.Image):
     return x + w / 2, y + h / 2, w
 
 
+MARGIN_TOP = 14       # 머리(모자) 위로 남길 여백
+MARGIN_SIDE = 10      # 어깨 옆으로 남길 여백 (판 아래쪽 22%는 잘려도 자연스럽다)
+
+
+def fit_scale(cut: Image.Image, cx: float, cy: float, s: float) -> float:
+    """얼굴 크기를 맞추는 배율 s 를, 머리 위와 어깨 옆이 판 안에 들어올 때까지 줄인다"""
+    a = np.array(cut)[..., 3] > 128
+    ys, _ = np.nonzero(a)
+    if not len(ys):
+        return s
+    top = ys.min()
+    for _ in range(4):
+        # 머리 위
+        if (cy - top) * s > OUT_H * FACE_Y - MARGIN_TOP:
+            s = (OUT_H * FACE_Y - MARGIN_TOP) / (cy - top)
+        # 판 위쪽 78% 높이 안에 들어오는 원본 줄들의 좌우 폭
+        bottom = int(min(a.shape[0], cy + (OUT_H * 0.78 - OUT_H * FACE_Y) / s))
+        rows = a[top:bottom]
+        cols = np.nonzero(rows.any(axis=0))[0]
+        if not len(cols):
+            break
+        half = max(cx - cols.min(), cols.max() + 1 - cx)
+        if half * s > OUT_W / 2 - MARGIN_SIDE:
+            s = (OUT_W / 2 - MARGIN_SIDE) / half
+        else:
+            break
+    return s
+
+
+def edge_cut(cut: Image.Image) -> str:
+    """배경을 지운 그림에서 인물이 위나 양옆 테두리에 닿았으면(그림 밖으로 잘렸으면) 어디인지 돌려준다"""
+    a = np.array(cut)[..., 3] > 128
+    h = a.shape[0]
+    where = []
+    if a[:2].sum() > 2:
+        where.append('위')
+    if a[: int(h * 0.82), :2].sum() > 2:
+        where.append('왼쪽')
+    if a[: int(h * 0.82), -2:].sum() > 2:
+        where.append('오른쪽')
+    return ' '.join(where)
+
+
+SEEDS = RAW / 'seeds.json'      # 잘리지 않은 그림을 얻은 시드 (원래 시드보다 우선)
+
+
+def chosen_seed(name: str, seed: int) -> int:
+    import json
+    try:
+        return json.loads(SEEDS.read_text(encoding='utf-8')).get(name, seed)
+    except FileNotFoundError:
+        return seed
+
+
+def generate_clean(pipe, session, name: str, prompt: str, neg: str, seed: int, tries: int = 8):
+    """흉상 하나를 만든다. 머리나 어깨가 그림 밖으로 잘리면 시드를 바꿔 다시 뽑는다.
+    받아들인 시드는 seeds.json 에 적어 다음에도 같은 그림이 나오게 한다"""
+    import json, torch
+    from rembg import remove
+    for i in range(tries):
+        s = seed + i * 7919
+        img = pipe(prompt, negative_prompt=neg, width=768, height=768, num_inference_steps=28, guidance_scale=6.5,
+                   generator=torch.Generator('cuda').manual_seed(s)).images[0]
+        cut = remove(img, session=session, post_process_mask=True)
+        bad = edge_cut(cut)
+        if not bad:
+            break
+        print(f'    {name} 시드 {s}: {bad} 잘림, 다시 뽑는다')
+    img.save(RAW / f'{name}.png')
+    (RAW / 'cut').mkdir(exist_ok=True)
+    cut.save(RAW / 'cut' / f'{name}.png')
+    seeds = json.loads(SEEDS.read_text(encoding='utf-8')) if SEEDS.exists() else {}
+    seeds[name] = s
+    SEEDS.write_text(json.dumps(seeds, ensure_ascii=False, indent=1), encoding='utf-8')
+    return bad
+
+
 def frame(name: str) -> str:
     raw = Image.open(RAW / f'{name}.png')
     cut = Image.open(CUT / f'{name}.png').convert('RGBA')
@@ -48,7 +126,7 @@ def frame(name: str) -> str:
     if f is None:
         return f'{name}: 얼굴을 못 찾아 그대로 둠'
     cx, cy, fw = (v * k for v in f)
-    s = FACE_W / fw
+    s = fit_scale(cut, cx, cy, FACE_W / fw)
     big = cut.resize((round(cut.width * s), round(cut.height * s)), Image.LANCZOS)
     out = Image.new('RGBA', (OUT_W, OUT_H))
     ox, oy = round(OUT_W / 2 - cx * s), round(OUT_H * FACE_Y - cy * s)
@@ -96,7 +174,22 @@ def sheet(names):
     print('모아 보기:', RAW / '_framed.png')
 
 
+def audit() -> list[str]:
+    """그림 밖으로 잘린 원본을 찾는다"""
+    bad = []
+    for p in sorted(CUT.glob('*.png')):
+        where = edge_cut(Image.open(p).convert('RGBA'))
+        if where:
+            bad.append(p.stem)
+            print(f'  {p.stem}: {where} 잘림')
+    print(f'잘린 원본 {len(bad)}개' + (': ' + ' '.join(bad) if bad else ''))
+    return bad
+
+
 if __name__ == '__main__':
+    if '--audit' in sys.argv:
+        audit()
+        sys.exit()
     names = sys.argv[1:] or sorted(p.stem for p in CUT.glob('*.png'))
     for n in names:
         print(' ', frame(n))

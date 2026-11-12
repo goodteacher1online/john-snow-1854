@@ -11,7 +11,7 @@
 import sys
 from pathlib import Path
 from PIL import Image
-from frame_portraits import frame
+from frame_portraits import frame, generate_clean, chosen_seed
 
 sys.stdout.reconfigure(encoding='utf-8')
 ROOT = Path(__file__).resolve().parent.parent
@@ -22,7 +22,7 @@ import os
 MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
 # CLIP 은 77 토큰까지만 읽으므로 구도를 맨 앞에, 설명은 짧게 쓴다
-FRAME = 'symmetrical front-facing bust portrait, head straight, eyes looking at camera, both shoulders fully visible, upper chest,'
+FRAME = 'symmetrical front-facing bust portrait, small head with empty space above, eyes looking at camera, both shoulders fully visible, upper chest,'
 STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
 NEG = ('two people, crowd, duplicate, second person, looking away, looking down, head turned, three-quarter view, tilted head, monochrome, grayscale, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
        'vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, jewelry, smiling')
@@ -69,13 +69,10 @@ def generate(names):
     for name in names:
         name, _, override = name.partition(':')
         desc, seed = PEOPLE[name]
-        seed = int(override) if override else seed
-        img = pipe(f'{FRAME} {desc}, {STYLE}', negative_prompt=NEG, width=768, height=704, num_inference_steps=28,
-                   guidance_scale=6.5, generator=torch.Generator('cuda').manual_seed(seed)).images[0]
-        img.save(RAW / f'{name}.png')
-        cut = remove(img, session=session, post_process_mask=True)
-        (RAW / 'cut').mkdir(exist_ok=True)
-        cut.save(RAW / 'cut' / f'{name}.png')
+        seed = int(override) if override else chosen_seed(name, seed)
+        bad = generate_clean(pipe, session, name, f'{FRAME} {desc}, {STYLE}', NEG, seed)
+        if bad:
+            print(f'  [{name}] 여러 번 뽑아도 {bad} 잘림. 설명을 바꿔 보시오')
         print('  ', frame(name))                      # 얼굴 크기와 위치를 다른 인물과 맞춘다
         print('  생성', name)
 
