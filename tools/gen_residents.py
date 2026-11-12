@@ -23,7 +23,7 @@ MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 STRENGTH = 0.58          # 기본 인물에서 얼마나 바꿀지 (높을수록 다른 사람)
 
 STYLE = 'symmetrical front-facing bust portrait, eyes looking at camera, 1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
-NEG = ('looking away, head turned, profile, two people, monochrome, hands, cropped head, text, watermark, frame, border, '
+NEG = ('bare shoulders, sleeveless, off-shoulder, low neckline, looking away, head turned, profile, two people, monochrome, hands, cropped head, text, watermark, frame, border, '
        'modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, smiling')
 
 # 기본 인물로 쓸 흉상 (면담 상대 16명과 처음 40명의 주민). 조사관(inv_*)은 플레이어 얼굴이라 쓰지 않는다
