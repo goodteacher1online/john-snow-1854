@@ -1,5 +1,6 @@
 import geo from './geo.gen.json';
 import { Site, Pump, Proof, Smell, WaterKind } from '../types.ts';
+import { buildDistricts } from './districts.ts';
 
 /** 원본 지도 픽셀 → 월드 좌표 */
 export const WORLD_SCALE = 2;
@@ -413,7 +414,7 @@ const WATER: Record<string, [WaterKind, string]> = {
   marlborough: ['pump', '리틀 말버러 가 펌프'], pulteney: ['pump', '브라이들 골목 펌프'], rupert: ['pump', '루퍼트 가 펌프'],
 };
 export const WATER_GROUPS: [WaterKind, string][] = [
-  ['broad', '브로드 가 펌프 물'], ['pump', '다른 거리의 펌프 물'], ['well', '건물 안 우물물'], ['none', '펌프 물을 마시지 않음'],
+  ['broad', '브로드 가 펌프 물'], ['pump', '다른 거리의 펌프 물'], ['pipe', '수도 회사 물'], ['well', '건물 안 우물물'], ['none', '펌프 물을 마시지 않음'],
 ];
 
 const G = geo.sites as Record<string, { door: number[]; icon: number[]; nearestPump: string }>;
@@ -455,15 +456,27 @@ const PLACE_POINTS: [string, number, number][] = [
   ['실버 가', 690, 690], ['골든 스퀘어', 655, 790], ['리젠트 가', 410, 700], ['리젠트 가', 330, 450],
   ['옥스퍼드 가', 600, 160], ['옥스퍼드 가', 900, 110], ['뉴 가', 810, 580], ['브루어 가', 780, 850],
   ['소호 스퀘어', 1130, 235], ['딘 가', 1190, 650],
+  // 스노우 지도에 적힌 거리 이름 자리 (영역 조사 집의 이름에도 쓴다)
+  ['에드워드 가', 885, 457], ['포틀랜드 가', 830, 340], ['노엘 가', 820, 292], ['워더 가', 925, 350],
+  ['칼라일 가', 980, 300], ['아처 가', 955, 810], ['크로스 가', 440, 605], ['킹 가', 395, 590], ['워윅 가', 560, 850],
 ];
-export function placeName(x: number, y: number): string {
-  let best = '소호', bd = 90 * 90;
+export function placeName(x: number, y: number, within = 90): string {
+  let best = '소호', bd = within * within;
   for (const [name, px, py] of PLACE_POINTS) {
     const d = (px * WORLD_SCALE - x) ** 2 + (py * WORLD_SCALE - y) ** 2;
     if (d < bd) { bd = d; best = name; }
   }
   return best;
 }
+
+// 영역마다 맡아 조사하는 집 40곳 (이야기 14곳 뒤에 붙인다)
+export const STORY_COUNT = SITES.length;
+for (const s of buildDistricts({ w, placeName: (x, y) => placeName(x, y, 1e5), pumpName: id => PUMP_NAMES[id], miasma: MIASMA })) {
+  SITES.push(s);
+  SITE_BY_ID[s.id] = s;
+}
+/** 영역 id → 그 영역이 맡은 집들 */
+export const districtOf = (area: string) => SITES.filter(s => s.area === area);
 
 // ---------------------------------------------------------------------------
 // 진행 단계
@@ -478,15 +491,27 @@ export const DATES = [
 
 export interface QuestView { title: string; items: { label: string; done: boolean }[]; targets: string[] }
 
-export function questView(stage: number, has: (id: string) => boolean): QuestView {
+/** 이야기 단계의 할 일에, 내 영역의 구역 조사를 덧붙인다 */
+export function questView(stage: number, has: (id: string) => boolean, area = 'team1'): QuestView {
+  const v = storyQuest(stage, has, area);
+  const mine = districtOf(area);
+  const n = mine.filter(s => has(s.id)).length;
+  v.items.push({ label: `${areaName(area)} 구역 조사 ${n} / ${mine.length}곳`, done: n === mine.length });
+  // 이야기 쪽에 갈 곳이 없을 때는 내 구역의 남은 집으로 안내한다
+  if (!v.targets.length && stage !== STAGE.REASON && stage !== STAGE.HEARING) v.targets = mine.filter(s => !has(s.id)).map(s => s.id);
+  return v;
+}
+
+function storyQuest(stage: number, has: (id: string) => boolean, area: string): QuestView {
   const left = (ids: string[]) => ids.filter(id => !has(id));
   switch (stage) {
     case STAGE.FIRST: {
       const n = SITES.filter(s => s.deaths > 0 && has(s.id)).length;
       return {
         title: '사망자가 나온 집을 조사하라',
-        items: [{ label: `브로드 가 주변 ${Math.min(n, FIRST_NEED)} / ${FIRST_NEED}곳`, done: n >= FIRST_NEED }],
-        targets: left(['lewis', 'lodging', 'cambridge', 'coffee']),
+        items: [{ label: `사망자가 나온 집 ${Math.min(n, FIRST_NEED)} / ${FIRST_NEED}곳`, done: n >= FIRST_NEED }],
+        // 브로드 가의 이야기 집, 그리고 내 구역에서 사망자가 나온 집 어디든
+        targets: left(['lewis', 'lodging', 'cambridge', 'coffee', ...districtOf(area).filter(s => s.deaths > 0).map(s => s.id)]),
       };
     }
     case STAGE.TEST_AIR:
@@ -514,8 +539,8 @@ export function questView(stage: number, has: (id: string) => boolean): QuestVie
     case STAGE.HANDLE:
       return { title: '브로드 가 펌프의 손잡이를 떼어 내라', items: [{ label: '펌프로 가기', done: false }], targets: ['pump'] };
     default: {
-      const n = SITES.filter(s => has(s.id)).length;
-      return { title: '조사 완료', items: [{ label: `기록 ${n} / ${SITES.length}곳`, done: n === SITES.length }], targets: [] };
+      const n = SITES.slice(0, STORY_COUNT).filter(s => has(s.id)).length;
+      return { title: '조사 완료', items: [{ label: `이야기 속 집 ${n} / ${STORY_COUNT}곳`, done: n === STORY_COUNT }], targets: [] };
     }
   }
 }

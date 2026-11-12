@@ -20,6 +20,9 @@ export interface Frame {
   guide: [number, number][] | null;
   guideName: string;
   handleRemoved: boolean;
+  /** 내 영역이 맡은 집과 그 영역의 색 */
+  district: Set<string>;
+  districtColor: string;
   showFog: boolean;
   showCatchment: boolean;
   board: boolean;
@@ -276,6 +279,17 @@ export class Renderer {
       ctx.arc(x, y, r + pulse * 24, 0, Math.PI * 2);
       ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+    // 내 구역에서 아직 조사하지 않은 집: 영역 색 점선 고리
+    if (!done && !target && f.district.has(s.id)) {
+      ctx.save();
+      ctx.strokeStyle = f.districtColor;
+      ctx.lineWidth = 3;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(x, y, r + 7, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
     }
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);

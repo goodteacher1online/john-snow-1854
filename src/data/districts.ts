@@ -29,14 +29,14 @@ function josa(word: string, a: string, b: string) {
 }
 const pick = <T,>(arr: T[], i: number) => arr[i % arr.length];
 
-const GREET = ['조사관이시라고요? 들어오세요.', '무슨 일로 오셨소?', '교구에서 나오셨다고요. 물어보세요.', '바쁘지만 잠깐이면 괜찮아요.'];
+const GREET = ['조사관이시라고요? 들어오세요.', '무슨 일로 오셨어요?', '교구에서 나오셨다고요. 물어보세요.', '바쁘지만 잠깐이면 괜찮아요.'];
 const SICK = ['하루 사이에 쌀뜨물 같은 설사를 하더니 손쓸 틈도 없었어요.', '9월 첫 주말이었어요. 의사를 부르러 간 사이에 숨을 거뒀지요.', '아침까지 멀쩡하던 사람이 저녁에 식어 버렸어요.'];
 const WELL = ['이웃 동네 소식을 들으면 무섭기만 해요.', '문을 닫아걸고 지냈지요.', '왜 우리만 무사한지 모르겠어요.'];
 const BYE = ['궁금한 게 더 있으면 언제든 오세요.', '원인을 꼭 찾아 주세요.', '몸조심하세요, 조사관님.', '다른 집들도 무사하면 좋겠어요.'];
 
 /** 사망자가 났지만 다른 펌프가 더 가까운 집이 브로드 가 물을 마신 사정 */
 const FAR_REASON: { short: string; line: string; why: string }[] = [
-  { short: '일터에서 길어 옴', why: '일터가 브로드 가라', line: '우리 거리 펌프가 더 가깝긴 해요. 그런데 남편 일터가 브로드 가라 일 끝나고 오는 길에 그 펌프 물을 통에 받아 와요.' },
+  { short: '일터에서 길어 옴', why: '식구가 브로드 가에서 일해', line: '우리 거리 펌프가 더 가깝긴 해요. 그런데 식구 하나가 브로드 가에서 일해서, 일 끝나고 오는 길에 그 펌프 물을 통에 받아 와요.' },
   { short: '아이들이 학교 오가며 마심', why: '아이들이 브로드 가 근처 학교에 다녀', line: '집에선 동네 펌프 물을 써요. 그런데 아이들이 브로드 가 근처 학교에 다니면서 거기 펌프 물을 마셨대요.' },
   { short: '물맛이 좋다고 일부러 길어 옴', why: '물맛이 좋다고 일부러', line: '조금 멀어도 브로드 가 물이 차고 맛있다고 일부러 길어 와요.' },
 ];
@@ -89,24 +89,27 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
 
     // 위원회에서 쓸 수 있는 기록
     const proves: Proof[] = [];
-    let clue: string | undefined, testimony: string | undefined;
+    let clue: string | undefined;
+    const testimonies: Partial<Record<Proof, string>> = {};
     if (deaths === 0 && smell === 'high') {
       proves.push('smell');
       clue = `냄새가 고약한데 ${peopleCount}명 모두 무사`;
-      testimony = `${name}입니다. 냄새가 고약하지만 ${peopleCount}명 모두 살아 있습니다. 이 집은 ${short} 물을 마십니다.`;
-    } else if (deaths > 0 && g.nearestPump !== 'broad') {
+      testimonies.smell = `${name}입니다. 냄새가 고약하지만 ${peopleCount}명 모두 살아 있습니다. 이 집은 ${short} 물을 마십니다.`;
+    }
+    if (deaths > 0 && g.nearestPump !== 'broad') {
       proves.push('far');
       clue = `다른 펌프가 더 가까운데 ${deaths}명 사망`;
-      testimony = `${name}입니다. 다른 펌프가 더 가깝지만 ${why} 브로드 가 펌프 물을 마셨고 ${deaths}명이 죽었습니다.`;
-    } else if (deaths === 0 && g.nearestPump === 'broad' && kind !== 'broad') {
+      testimonies.far = `${name}입니다. 다른 펌프가 더 가깝지만 ${why} 브로드 가 펌프 물을 마셨고 ${deaths}명이 죽었습니다.`;
+    }
+    if (deaths === 0 && g.nearestPump === 'broad' && kind !== 'broad') {
       proves.push('near');
       clue = '브로드 가 펌프가 가까운데 모두 무사';
-      testimony = `${name}입니다. 브로드 가 펌프가 가깝지만 ${short}을 마셔 ${peopleCount}명 모두 무사합니다.`;
+      testimonies.near = `${name}입니다. 브로드 가 펌프가 가깝지만 ${short}을 마셔 ${peopleCount}명 모두 무사합니다.`;
     }
 
     const role = p.role, nm = p.name;
     const site: Site = {
-      id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimony, area: g.area,
+      id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimonies, area: g.area,
       fact: `사망자 수는 스노우의 지도에서 막대를 세어 옮겼다(원본 해상도가 낮아 대략 센 값). 주민과 마신 물, 대사는 꾸몄다.`,
       npc: { name: nm, role, portrait: `r_${g.id}` as PortraitId },
       people: peopleCount, deaths, smell, smellNote,

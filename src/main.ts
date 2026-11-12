@@ -2,7 +2,7 @@
 import './style.css';
 import { Avatar, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, districtOf, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
@@ -60,6 +60,8 @@ const mp = new Multiplayer();
 const navReady = nav.load('./assets/walk_mask.png');
 
 const has = (id: string) => save.records.includes(id);
+/** 내가 맡은 영역 (혼자일 때는 브로드 가) */
+const myArea = () => (save.room ? save.team : 'team1');
 const recordedSites = () => save.records.map(id => SITE_BY_ID[id]).filter(Boolean);
 
 let started = false;
@@ -121,7 +123,7 @@ const closeModal = (id: string) => $(id).classList.remove('open');
 // 화면 위 정보
 // ---------------------------------------------------------------------------
 function updateHud(bump = false) {
-  const quest = questView(save.stage, has);
+  const quest = questView(save.stage, has, myArea());
   $('hud-date').textContent = DATES[save.stage];
   $('quest-title').textContent = quest.title;
   $('quest-items').innerHTML = quest.items.map(i => `<li class="${i.done ? 'done' : ''}">${esc(i.label)}</li>`).join('');
@@ -346,7 +348,7 @@ async function hearing() {
           used.add(s.id);
           sound.playClueRecorded();
           addXp(XP.rebut);
-          await scene.say(['나: ' + s.testimony, round.ok]);
+          await scene.say(['나: ' + (s.testimonies?.[round.need] ?? s.testimony), round.ok]);
           break;
         }
         save.misses++;
@@ -567,7 +569,7 @@ function legendText() {
 function updateGuide() {
   if (!nav.ready) return;
   let best: [number, number] | null = null, bd = Infinity, name = '';
-  for (const id of questView(save.stage, has).targets) {
+  for (const id of questView(save.stage, has, myArea()).targets) {
     const pos: [number, number] = id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : SITE_BY_ID[id].door;
     const d = Math.hypot(pos[0] - me.x, pos[1] - me.y);
     if (d < bd) { bd = d; best = pos; name = id === 'pump' ? BROAD_PUMP.name : SITE_BY_ID[id].name; }
@@ -595,6 +597,13 @@ function renderBoard() {
     <p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>
     ${full ? '<p class="room over">이 영역에 사람이 너무 많다. 연결이 끊길 수 있다.</p>' : ''}
     <ul>${all.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>
+    <h4>반 전체 구역 조사</h4>
+    <ul>${AREAS.map(ar => {
+      const ids = districtOf(ar.id).map(s => s.id);
+      const got = new Set([...(mp.classAreas[ar.id] ?? []), ...(ar.id === save.team ? [...union] : [])]);
+      const n = ids.filter(id => got.has(id)).length;
+      return `<li style="--c:${ar.color}"><span><i class="swatch"></i>${esc(ar.name)}</span><span>${n} / ${ids.length}곳</span></li>`;
+    }).join('')}</ul>
     <p class="room"><button class="btn small" data-move>다른 영역으로 옮기기</button></p>`;
 }
 
@@ -748,7 +757,7 @@ async function start() {
   persist();
   // 쪽지가 뜰 참이면 쪽지를 닫은 뒤에 알린다 (쪽지가 알림을 가린다)
   if (area && fresh) {
-    const say = () => toast(`${area.name}에서 출발한다`, `같은 방 번호에서 ${area.name} 영역을 고른 친구들과 한 지도`);
+    const say = () => toast(`${area.name}에서 출발한다`, `${area.name} 영역이 맡은 집 8곳에 점선 고리가 있다. 다른 영역의 기록도 저절로 모인다`, true);
     if (save.noteSeen < save.stage) afterNote = say; else setTimeout(say, 600);
   }
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);
@@ -805,7 +814,7 @@ function frame(now: number) {
       updateGuide();
     }
   }
-  const quest = questView(save.stage, has);
+  const quest = questView(save.stage, has, myArea());
   renderer.draw({
     me, others,
     records: new Set(save.records),
@@ -815,6 +824,8 @@ function frame(now: number) {
     guide: started && !scene.isOpen ? guide : null,
     guideName,
     handleRemoved: save.stage >= STAGE.DONE,
+    district: new Set(districtOf(myArea()).map(s => s.id)),
+    districtColor: teamColor(myArea()),
     showFog: save.stage < STAGE.PREDICT,
     showCatchment: overview && save.stage >= STAGE.PREDICT,
     board,

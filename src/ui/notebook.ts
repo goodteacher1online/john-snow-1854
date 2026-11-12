@@ -56,7 +56,7 @@ export class Notebook {
 
   private renderRecords() {
     const recs = this.host.records();
-    const blanks = SITES.length - recs.length;
+    const blanks = Math.min(SITES.length - recs.length, 3);
     this.body.innerHTML = `
       <h3>조사 기록 ${recs.length} / ${SITES.length}곳</h3>
       <p class="sub">${recs.length ? '집집마다 같은 세 가지를 물어 적었다.' : '아직 기록이 없다. 문을 두드려 세 가지를 물어라.'}</p>

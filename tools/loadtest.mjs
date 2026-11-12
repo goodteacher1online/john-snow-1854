@@ -71,8 +71,14 @@ console.log(`입장 완료 ${((Date.now() - t0) / 1000).toFixed(1)}초`);
 
 // 모두가 동시에 걷고 조사한다
 const until = Date.now() + SECONDS * 1000;
+// 기본: 영역마다 자기 구역 집만 조사한다. 다른 영역의 기록은 반 전체 방을 거쳐야만 보인다
+const ALL = process.env.ALL === '1';
+const districts = await bots[0].page.evaluate(async () => {
+  const m = await import('/src/data/story.ts');
+  return Object.fromEntries(m.AREAS.map(a => [a.id, m.districtOf(a.id).map(s => s.id)]));
+});
 await Promise.all(bots.map(async (bot, i) => {
-  const order = [...SITES].sort(() => Math.random() - 0.5);
+  const order = (ALL ? [...SITES] : [...districts[TEAMS[WHOLE ? 0 : i % 5]]]).sort(() => Math.random() - 0.5);
   while (Date.now() < until) {
     if (order.length && Math.random() < 0.6) await investigate(bot, order.pop()).catch(e => errors.push(`[${bot.name}] 조작 실패: ${e.message.slice(0, 120)}`));
     else await wander(bot).catch(() => {});

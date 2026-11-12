@@ -3,13 +3,14 @@ export type QuestionId = 'toll' | 'air' | 'water';
 /** tools/gen_portraits.py 가 만든 흉상 파일 이름 */
 export type PortraitId =
   | 'sarah' | 'ned' | 'maryann' | 'keeper' | 'sam' | 'huggins' | 'master' | 'scholar' | 'foreman'
-  | 'jack' | 'ellen' | 'abe' | 'harriet' | 'hugh' | 'chairman' | 'physician';
+  | 'jack' | 'ellen' | 'abe' | 'harriet' | 'hugh' | 'chairman' | 'physician'
+  | `r_d${string}`;          // 영역 조사 집 40곳의 주민
 export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
 /** 조사관 모습: f1~f6, m1~m6 (tools/gen_investigators.py) */
 export type Look = string;
 
 /** 위원회에서 이 기록이 반박할 수 있는 주장 */
-export type WaterKind = 'broad' | 'pump' | 'well' | 'none';
+export type WaterKind = 'broad' | 'pump' | 'pipe' | 'well' | 'none';
 export type Proof = 'smell' | 'near' | 'far';
 
 export interface Site {
@@ -31,13 +32,17 @@ export interface Site {
   waterKind: WaterKind;
   waterShort: string;
   /** record: 스노우 보고서에 실린 사례 / composite: 당시 기록을 바탕으로 꾸민 가구 */
-  basis: 'record' | 'composite';
+  basis: 'record' | 'composite' | 'map';
+  /** 영역 조사 집이면 그 영역 id */
+  area?: string;
   proves: Proof[];
   clue?: string;
   /** 기록에 남은 사례에서 무엇이 원전 그대로이고 무엇을 꾸몄는지 */
   fact?: string;
   /** 위원회에서 이 기록을 내놓으며 하는 말 */
   testimony?: string;
+  /** 한 집이 여러 반박에 쓰일 때, 반박마다 다른 말 */
+  testimonies?: Partial<Record<Proof, string>>;
   intro: string[];
   toll: string[];
   air: string[];
