@@ -24,6 +24,14 @@ AREAS = {   # story.ts 의 AREAS.start 와 같다
 }
 PER_AREA_DEATH, PER_AREA_CLEAR = 5, 3
 SPACING = 46            # 집끼리, 그리고 이야기 14곳과 떨어질 거리(원본 픽셀)
+# 집이 아닌 곳: 골든 스퀘어 광장(정원) 안
+NOT_HOUSES = [(615, 780, 705, 875)]
+
+
+def is_house_spot(x, y, pumps):
+    if any(x0 <= x <= x1 and y0 <= y <= y1 for x0, y0, x1, y1 in NOT_HOUSES):
+        return False
+    return all((x - px) ** 2 + (y - py) ** 2 > 42 ** 2 for px, py in pumps)    # 펌프 점과 PUMP 글자를 막대로 잘못 잡지 않게
 
 
 def load():
@@ -80,12 +88,13 @@ def pick():
     g, walk = load()
     stacks, bars = bar_stacks(g, walk)
     taken = existing_points()
+    pumps = list(json.loads((DATA / 'geo.json').read_text(encoding='utf-8'))['pumps'].values())
     chosen = []
     for area, (ax, ay) in AREAS.items():
         mine = sorted([s for s in stacks if nearest_area(s[0], s[1]) == area], key=lambda s: (s[0] - ax) ** 2 + (s[1] - ay) ** 2)
         n = 0
         for x, y, a in mine:
-            if n >= PER_AREA_DEATH or not far_from((x, y), taken):
+            if n >= PER_AREA_DEATH or not far_from((x, y), taken) or not is_house_spot(x, y, pumps):
                 continue
             door = snap_street(walk, x, y)
             if door is None or not far_from(door, taken, 30):
@@ -101,7 +110,7 @@ def pick():
         n = 0
         for i in order[::7]:
             x, y = int(xs[i]), int(ys[i])
-            if n >= PER_AREA_CLEAR or nearest_area(x, y) != area or not far_from((x, y), taken, SPACING + 10):
+            if n >= PER_AREA_CLEAR or nearest_area(x, y) != area or not far_from((x, y), taken, SPACING + 10) or not is_house_spot(x, y, pumps):
                 continue
             door = snap_street(walk, x, y)
             if door is None or not far_from(door, taken, 30):

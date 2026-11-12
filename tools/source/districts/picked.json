@@ -1,0 +1,522 @@
+[
+ {
+  "area": "team1",
+  "icon": [
+   718,
+   468
+  ],
+  "door": [
+   723,
+   466
+  ],
+  "bars": true,
+  "id": "d01"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   645,
+   506
+  ],
+  "door": [
+   649,
+   503
+  ],
+  "bars": true,
+  "id": "d02"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   722,
+   657
+  ],
+  "door": [
+   726,
+   656
+  ],
+  "bars": true,
+  "id": "d03"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   674,
+   655
+  ],
+  "door": [
+   690,
+   655
+  ],
+  "bars": true,
+  "id": "d04"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   775,
+   655
+  ],
+  "door": [
+   781,
+   652
+  ],
+  "bars": true,
+  "id": "d05"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   804,
+   704
+  ],
+  "door": [
+   812,
+   703
+  ],
+  "bars": false,
+  "id": "d06"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   922,
+   640
+  ],
+  "door": [
+   926,
+   646
+  ],
+  "bars": false,
+  "id": "d07"
+ },
+ {
+  "area": "team1",
+  "icon": [
+   969,
+   813
+  ],
+  "door": [
+   973,
+   818
+  ],
+  "bars": false,
+  "id": "d08"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   696,
+   366
+  ],
+  "door": [
+   691,
+   369
+  ],
+  "bars": true,
+  "id": "d09"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   705,
+   317
+  ],
+  "door": [
+   704,
+   311
+  ],
+  "bars": true,
+  "id": "d10"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   754,
+   349
+  ],
+  "door": [
+   757,
+   353
+  ],
+  "bars": true,
+  "id": "d11"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   617,
+   318
+  ],
+  "door": [
+   620,
+   323
+  ],
+  "bars": true,
+  "id": "d12"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   747,
+   225
+  ],
+  "door": [
+   744,
+   226
+  ],
+  "bars": true,
+  "id": "d13"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   657,
+   268
+  ],
+  "door": [
+   652,
+   271
+  ],
+  "bars": false,
+  "id": "d14"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   761,
+   290
+  ],
+  "door": [
+   767,
+   288
+  ],
+  "bars": false,
+  "id": "d15"
+ },
+ {
+  "area": "team2",
+  "icon": [
+   584,
+   367
+  ],
+  "door": [
+   581,
+   360
+  ],
+  "bars": false,
+  "id": "d16"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   845,
+   422
+  ],
+  "door": [
+   841,
+   425
+  ],
+  "bars": true,
+  "id": "d17"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   888,
+   440
+  ],
+  "door": [
+   890,
+   445
+  ],
+  "bars": true,
+  "id": "d18"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   891,
+   374
+  ],
+  "door": [
+   895,
+   373
+  ],
+  "bars": true,
+  "id": "d19"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   816,
+   366
+  ],
+  "door": [
+   812,
+   367
+  ],
+  "bars": true,
+  "id": "d20"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   930,
+   421
+  ],
+  "door": [
+   925,
+   421
+  ],
+  "bars": true,
+  "id": "d21"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   863,
+   321
+  ],
+  "door": [
+   868,
+   318
+  ],
+  "bars": false,
+  "id": "d22"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   924,
+   305
+  ],
+  "door": [
+   922,
+   299
+  ],
+  "bars": false,
+  "id": "d23"
+ },
+ {
+  "area": "team3",
+  "icon": [
+   980,
+   304
+  ],
+  "door": [
+   982,
+   309
+  ],
+  "bars": false,
+  "id": "d24"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   481,
+   622
+  ],
+  "door": [
+   474,
+   612
+  ],
+  "bars": true,
+  "id": "d25"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   529,
+   625
+  ],
+  "door": [
+   533,
+   624
+  ],
+  "bars": true,
+  "id": "d26"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   562,
+   552
+  ],
+  "door": [
+   560,
+   550
+  ],
+  "bars": true,
+  "id": "d27"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   429,
+   601
+  ],
+  "door": [
+   414,
+   589
+  ],
+  "bars": true,
+  "id": "d28"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   599,
+   582
+  ],
+  "door": [
+   604,
+   579
+  ],
+  "bars": true,
+  "id": "d29"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   487,
+   678
+  ],
+  "door": [
+   483,
+   681
+  ],
+  "bars": false,
+  "id": "d30"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   393,
+   651
+  ],
+  "door": [
+   386,
+   654
+  ],
+  "bars": false,
+  "id": "d31"
+ },
+ {
+  "area": "team4",
+  "icon": [
+   419,
+   702
+  ],
+  "door": [
+   415,
+   706
+  ],
+  "bars": false,
+  "id": "d32"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   607,
+   781
+  ],
+  "door": [
+   611,
+   785
+  ],
+  "bars": true,
+  "id": "d33"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   639,
+   709
+  ],
+  "door": [
+   642,
+   707
+  ],
+  "bars": true,
+  "id": "d34"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   546,
+   716
+  ],
+  "door": [
+   565,
+   736
+  ],
+  "bars": true,
+  "id": "d35"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   590,
+   690
+  ],
+  "door": [
+   584,
+   692
+  ],
+  "bars": true,
+  "id": "d36"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   651,
+   909
+  ],
+  "door": [
+   665,
+   900
+  ],
+  "bars": true,
+  "id": "d37"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   668,
+   775
+  ],
+  "door": [
+   666,
+   768
+  ],
+  "bars": false,
+  "id": "d38"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   549,
+   823
+  ],
+  "door": [
+   543,
+   826
+  ],
+  "bars": false,
+  "id": "d39"
+ },
+ {
+  "area": "team5",
+  "icon": [
+   593,
+   900
+  ],
+  "door": [
+   588,
+   904
+  ],
+  "bars": false,
+  "id": "d40"
+ }
+]
