@@ -65,10 +65,12 @@ src/game/multiplayer.ts 학급 연결 (Playroom Kit)
 src/ui/                면담 장면, 수첩
 tools/build_assets.py  고지도에서 게임 지도·보행 마스크·도보권역을 만든다
 tools/build_buildings.py 주택 그림의 벽돌·창·지붕으로 양조장·공장·구빈원을 같은 화풍으로 합성한다
-tools/build_districts.py 스노우 지도에서 영역마다 집 8곳을 고르고 도보권역으로 가까운 펌프를 구한다
+tools/build_snow_data.py 공개 사망자 자료(578명)를 이 지도 좌표로 옮기고 집(주소)별로 묶는다
+tools/build_districts.py 스노우 지도에서 영역마다 집 8곳과 사망자 7명 이상인 큰 집을 고르고, 사망자 수를 공개 자료에서 가져온다
 tools/gen_investigators.py 조사관 12명의 상반신과 전신
 tools/frame_portraits.py 흉상들의 얼굴 크기와 위치를 하나로 맞춘다
-tools/gen_portraits.py   면담 상대 16명과 조사관 2명의 흉상을 로컬 GPU(Stable Diffusion, DreamShaper 8)로 생성한다
+tools/gen_portraits.py   면담 상대의 흉상을 로컬 GPU(Stable Diffusion, DreamShaper 8)로 생성한다. 머리나 어깨가 잘리면 시드를 바꿔 다시 뽑는다
+tools/gen_buildings.py   지도 위 건물과 펌프 그림을 같은 방식으로 생성한다
 tools/playtest.mjs     한 판을 처음부터 끝까지 자동으로 돌려 보는 점검
 tools/loadtest.mjs     브라우저 창 N개를 같은 방에 넣어 동시 접속을 재현하는 점검
 tools/source/          원본 고지도와 고해상도 그림
@@ -81,6 +83,10 @@ tools/source/          원본 고지도와 고해상도 그림
 장소나 좌표를 바꾼 뒤에는 `python tools/build_assets.py` 를 다시 돌린다 (numpy, opencv-python, scipy, pillow 필요).
 
 ## 사실과 꾸밈, 출처
+
+- 사망자 자료: W. Tobler (1994), *Snow's Cholera Map*. 1992년 NCGIA의 R. Dodson이 스노우의 지도를 디지털화한 것으로, R 패키지 HistData 의 `Snow.deaths`(578명), `Snow.pumps`(13곳)로 공개되어 있다. 원본 CSV는 `tools/source/snow_data/`에 두었다. 13개 펌프 위치로 이 게임의 지도에 맞추면 평균 4px(지도 1280px 기준) 어긋난다.
+- 이 자료를 같은 주소끼리 묶으면 305곳이다. 게임의 영역 조사 집과 이야기 집의 사망자 수(지도에 쌓이는 막대 수)는 그 집 자리의 자료 값과 같다. 다만 뇌관 공장의 직공 18명은 자기 집에서 숨져, 공장 자리에는 막대를 그리지 않는다.
+- 이 자료로 세면 578명 가운데 389명(67%)이 걸어서 브로드 가 펌프가 가장 가까운 길(지도 전체 길의 7%)에 살았다. 가설을 세운 뒤 전체 지도에서 `D` 키로 578명 전부를 겹쳐 볼 수 있다.
 
 - 숫자와 사례의 원전: John Snow, *On the Mode of Communication of Cholera*, 2판(1855). 구빈원, 양조장, 뇌관 공장, 햄스테드의 부인, 커피 가게, 굴드의 일화는 이 보고서 그대로다.
 - 40번지 루이스 가족과 정화조: Henry Whitehead의 1855년 교구 조사위원회 보고.

@@ -479,3 +479,12 @@ body.in-scene #hint-click { display: none; }
 @media (max-width: 820px) { .choice-row.looks { grid-template-columns: repeat(4, 1fr); } }
 
 #board .swatch { display: inline-block; width: 9px; height: 9px; margin-right: 7px; border-radius: 50%; background: var(--c); }
+
+#legend button {
+  pointer-events: auto; margin-left: 6px; padding: 3px 12px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5); background: transparent; color: var(--on-ink); font-size: 15px;
+}
+#legend button:hover, #legend button.on { background: var(--on-ink); color: var(--ink); }
+#legend kbd { font-size: 11px; min-width: 20px; height: 20px; opacity: 0.6; }
+/* 왼쪽 아래 정보창과 겹치지 않게, 넓은 화면에서도 가운데 폭을 줄여 두 줄로 */
+@media (min-width: 821px) { #legend { max-width: calc(100vw - 680px); white-space: normal; text-align: center; border-radius: 16px; } }

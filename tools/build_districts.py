@@ -2,7 +2,7 @@
 """영역마다 맡아 조사할 집 8곳을 스노우의 지도에서 고른다.
 
   python tools/build_districts.py pick     # 후보를 골라 확대 그림을 만든다 (막대는 사람이 눈으로 센다)
-  python tools/build_districts.py build    # 눈으로 센 값(src/data/districts.counts.json)을 합쳐 districts.gen.json 을 만든다
+  python tools/build_districts.py build    # 공개 자료(snow_deaths.gen.json)의 사망자 수를 합쳐 districts.gen.json 을 만든다
 
 영역마다 막대(사망자)가 있는 집 5곳과 막대가 없는 집 3곳을 고르고, 사망자가 7명 넘는 큰 집은 빠짐없이 더한다.
 사망자 수는 공개 자료(tools/build_snow_data.py 가 만든 snow_deaths.gen.json)에서 그 자리의 값을 쓴다.
@@ -174,7 +174,7 @@ def add_big(picked, walk, houses):
         dists = [np.hypot(*(np.array(snap_street(walk, int(x), int(y)) or (9e9, 9e9)) - (x, y))) for x, y in pts]
         inner = pts[int(np.argmax(dists))]
         x, y = int(round(inner[0])), int(round(inner[1]))
-        if not far_from((x, y), taken, 16):
+        if not far_from((x, y), taken, 12):
             continue                         # 이미 게임에 있는 집이다
         door = snap_street(walk, x, y)
         if door is None:

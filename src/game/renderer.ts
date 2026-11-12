@@ -1,5 +1,6 @@
 import { Avatar, RemotePlayer, Site, SiteKind } from '../types.ts';
-import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, LOOK_FACING, teamColor } from '../data/story.ts';
+import { SITES, PUMPS, MIASMA, WORLD_W, WORLD_H, WORLD_SCALE, LOOK_FACING, teamColor } from '../data/story.ts';
+import snowDeaths from '../data/snow_deaths.gen.json';
 
 const INK = '#231a12';
 const PAPER = '#f6efdc';
@@ -25,6 +26,8 @@ export interface Frame {
   districtColor: string;
   showFog: boolean;
   showCatchment: boolean;
+  /** 스노우가 기록한 사망자 578명 전부 (공개 디지털화 자료) */
+  showReal: boolean;
   board: boolean;
   time: number;
 }
@@ -163,6 +166,7 @@ export class Renderer {
     sprites.push({ y: f.me.y, draw: () => this.drawAvatar(f.me, true, f.time, 0) });
     sprites.sort((a, b) => a.y - b.y);
     for (const s of sprites) s.draw();
+    if (f.showReal) this.drawRealDeaths();
 
     this.queueLabels(f);
     this.flushLabels();
@@ -338,6 +342,33 @@ export class Renderer {
     ctx.globalAlpha = mine ? 1 : 0.6;
     if (z < DOT_ZOOM) this.drawDeathDot(s, x, y);
     else this.drawDeathBars(s, x - w / 2, y);
+    ctx.restore();
+  }
+
+  /** 스노우의 지도처럼: 집 앞 길에서 블록 안쪽으로, 사망자 한 명에 막대 하나씩 쌓는다 */
+  private drawRealDeaths() {
+    const ctx = this.ctx, z = this.zoom;
+    const half = Math.max(4.5 * z, 5.5), thick = Math.max(1.8 * z, 2.6);
+    ctx.save();
+    ctx.lineCap = 'butt';
+    for (const h of snowDeaths.houses) {
+      const [dx, dy] = h.dir;
+      const px = -dy * half, py = dx * half;          // 쌓는 방향에 수직
+      ctx.beginPath();
+      for (const [mx, my] of h.points) {
+        const [x, y] = this.toScreen(mx * WORLD_SCALE, my * WORLD_SCALE);
+        if (x < -20 || y < -20 || x > this.vw + 20 || y > this.vh + 20) continue;
+        ctx.moveTo(x - px, y - py);
+        ctx.lineTo(x + px, y + py);
+      }
+      // 종이색 테두리를 둘러 지도 선과 건물 그림 위에서도 막대가 읽히게 한다
+      ctx.strokeStyle = 'rgba(246, 239, 220, 0.95)';
+      ctx.lineWidth = thick + 2.5;
+      ctx.stroke();
+      ctx.strokeStyle = h.broad ? '#5a0d10' : '#140e09';
+      ctx.lineWidth = thick;
+      ctx.stroke();
+    }
     ctx.restore();
   }
 

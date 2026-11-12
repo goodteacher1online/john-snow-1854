@@ -6,6 +6,7 @@ import {
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
+import snowDeaths from './data/snow_deaths.gen.json';
 import { Nav } from './game/nav.ts';
 import { Multiplayer } from './game/multiplayer.ts';
 import { sound } from './game/audio.ts';
@@ -75,6 +76,7 @@ let nearId: string | null = null;
 let guide: [number, number][] | null = null;   // 지금 할 일까지 길을 따라가는 안내선
 let guideName = '';
 let crowdWarned = false;
+let showReal = false;      // 전체 지도에 스노우가 기록한 사망자 전부를 겹쳐 본다
 let noteAt = 0;
 let afterNote: (() => void) | null = null;   // 쪽지를 닫은 뒤에 할 일            // 이 시각 이후, 화면이 한가해지면 새 쪽지를 띄운다
 let sceneSeenAt = 0;       // 장면이 마지막으로 열려 있던 시각 (닫자마자 또 문을 두드리지 않게)
@@ -562,8 +564,21 @@ function setOverview(on: boolean, withBoard = false) {
 
 function legendText() {
   const deaths = '검은 원 속 숫자가 사망자 수 · 가까이 보면 막대 하나가 한 사람';
-  return save.stage >= STAGE.PREDICT ? `<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · ${deaths}` : deaths;
+  if (save.stage < STAGE.PREDICT) return deaths;
+  const { total, insideBroad, streetShare } = snowDeaths;
+  const toggle = `<button id="btn-real" class="${showReal ? 'on' : ''}">${showReal ? '내 기록만 보기' : `스노우의 기록 ${total}명 모두 보기`}</button> <kbd>D</kbd>`;
+  if (!showReal) return `<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · ${deaths} · ${toggle}`;
+  return `스노우가 기록한 사망자 <b>${total}명</b> 가운데 <b>${insideBroad}명(${Math.round(insideBroad / total * 100)}%)</b>이 붉은 길에 살았다. `
+    + `붉은 길은 이 지도의 길 가운데 ${Math.round(streetShare * 100)}%뿐이다 · ${toggle}`;
 }
+
+function toggleReal() {
+  if (save.stage < STAGE.PREDICT) return;
+  showReal = !showReal;
+  if (showReal && !overview) setOverview(true);
+  $('legend').innerHTML = legendText();
+}
+
 
 /** 지금 할 일 가운데 가장 가까운 곳까지 길을 따라가는 안내선을 다시 잡는다 */
 function updateGuide() {
@@ -623,6 +638,7 @@ window.addEventListener('keydown', e => {
   if (k === 'n' && (!modalOpen() || notebook.isOpen)) { notebook.isOpen ? notebook.close() : notebook.open(); return; }
   if (modalOpen() || cinematic) return;
   if (k === 'm') { setOverview(!overview || board); return; }
+  if (k === 'd') { toggleReal(); return; }
   if (k === 'b') { setOverview(!board, true); return; }
   if (k === 'e' || k === ' ' || k === 'enter') { e.preventDefault(); interact(); return; }
   keys.add(k);
@@ -642,6 +658,7 @@ canvas.addEventListener('wheel', e => {
 
 $('prompt').addEventListener('click', interact);
 $('btn-notebook').addEventListener('click', () => notebook.open());
+$('legend').addEventListener('click', e => { if ((e.target as HTMLElement).closest('#btn-real')) toggleReal(); });
 $('ledger-open').addEventListener('click', () => { if (!scene.isOpen) notebook.open('compare'); });
 $('btn-map').addEventListener('click', () => setOverview(!overview || board));
 $('btn-board').addEventListener('click', () => setOverview(!board, true));
@@ -828,6 +845,7 @@ function frame(now: number) {
     districtColor: teamColor(myArea()),
     showFog: save.stage < STAGE.PREDICT,
     showCatchment: overview && save.stage >= STAGE.PREDICT,
+    showReal: overview && showReal,
     board,
     time: now / 1000,
   });

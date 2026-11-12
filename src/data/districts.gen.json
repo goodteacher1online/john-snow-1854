@@ -722,6 +722,22 @@
  {
   "area": "team1",
   "icon": [
+   723,
+   584
+  ],
+  "door": [
+   738,
+   577
+  ],
+  "bars": true,
+  "id": "d46",
+  "deaths": 7,
+  "nearestPump": "broad",
+  "walkToBroad": 36
+ },
+ {
+  "area": "team1",
+  "icon": [
    854,
    660
   ],
@@ -730,7 +746,7 @@
    642
   ],
   "bars": true,
-  "id": "d46",
+  "id": "d47",
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 215

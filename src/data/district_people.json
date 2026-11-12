@@ -368,6 +368,14 @@
    "home": "다락방 셋집",
    "desc": "careworn 37 year old seamstress woman, light brown hair under a white cap, faded blue dress, pins on collar",
    "seed": 7046
+  },
+  {
+   "id": "d47",
+   "name": "에드워드 홀",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "serious 33 year old printer man, ink stained fingers hidden, short fair hair, grey waistcoat, black sleeve covers",
+   "seed": 7047
   }
  ]
 }
