@@ -62,6 +62,10 @@ def main(args):
 
     people = json.loads((ROOT / 'src' / 'data' / 'district_people.json').read_text(encoding='utf-8'))['people']
     by_id = {p['id']: p for p in people}
+    # 조사관(inv_<id>)도 같은 방식으로 다시 그릴 수 있다
+    import gen_investigators
+    for iid, (who, outfit, seed, _) in gen_investigators.INVESTIGATORS.items():
+        by_id[f'inv_{iid}'] = {'id': f'inv_{iid}', 'desc': f'{who}, {outfit}', 'seed': seed, 'name': f'inv_{iid}'}
     pool = bases()
     print(f'기본 인물 {len(pool)}명:', ', '.join(n for n, *_ in pool))
     specs = [a for a in args if not a.startswith('--')] or [p['id'] for p in people if not (OUT / f"r_{p['id']}.webp").exists()]
@@ -78,12 +82,12 @@ def main(args):
     for k, spec in enumerate(specs):
         pid, _, override = spec.partition(':')
         p = by_id[pid]
-        name = f'r_{pid}'
+        name = pid if pid.startswith('inv_') else f'r_{pid}'
         female = p.get('female', person_meta(p['desc'])[0])
         age = p.get('age', person_meta(p['desc'])[1])
         # 성별과 나이대가 같은 기본 인물을 돌아가며 쓴다 (같은 얼굴이 몰리지 않게)
         same = [b for b in pool if b[1] == female and b[2] == bracket(age)] or [b for b in pool if b[1] == female]
-        base = same[int(pid[1:]) % len(same)][0]
+        base = same[sum(map(ord, pid)) % len(same)][0]
         init = Image.open(RAW / f'{base}.png').convert('RGB').resize((768, 768))
         seed = int(override) if override else seeds.get(name, p['seed'])
         for i in range(6):
