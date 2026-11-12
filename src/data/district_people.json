@@ -6,8 +6,8 @@
       "name": "토머스 웰스",
       "role": "시계 수리공",
       "home": "시계방",
-      "desc": "thin 48 year old watch mender, magnifying loupe on forehead, grey waistcoat, sleeve garters",
-      "seed": 5001
+      "desc": "one single 48 year old man alone, watch mender, brown hair, grey waistcoat, sleeve garters",
+      "seed": 7001
     },
     {
       "id": "d02",
@@ -103,7 +103,7 @@
       "role": "인쇄공",
       "home": "인쇄소 2층",
       "desc": "lean 30 year old printer, ink stains on shirt, rolled sleeves, black waistcoat, moustache",
-      "seed": 5013
+      "seed": 6013
     },
     {
       "id": "d14",
@@ -199,15 +199,15 @@
       "role": "성냥 파는 어머니",
       "home": "셋집",
       "desc": "gaunt 36 year old poor mother, hollow cheeks, ragged grey shawl over head, worn dress",
-      "seed": 5025
+      "seed": 6025
     },
     {
       "id": "d26",
       "name": "윌 스미스",
       "role": "대장장이 견습",
       "home": "셋집",
-      "desc": "young 18 year old apprentice smith, soot on face, leather apron, curly brown hair",
-      "seed": 5026
+      "desc": "young 18 year old man, apprentice blacksmith, short curly brown hair, soot on cheeks, leather apron",
+      "seed": 7226
     },
     {
       "id": "d27",
@@ -302,8 +302,8 @@
       "name": "에드먼드 프라이",
       "role": "의사 조수",
       "home": "진료소",
-      "desc": "earnest 29 year old doctor's assistant, sandy hair, spectacles, dark coat, white shirt",
-      "seed": 5038
+      "desc": "29 year old man, doctor's assistant, short sandy hair, clean shaven, spectacles, dark coat, white shirt",
+      "seed": 7238
     },
     {
       "id": "d39",
