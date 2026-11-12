@@ -186,12 +186,54 @@ def add_big(picked, walk, houses):
     return picked
 
 
+def add_rest(picked, walk, houses):
+    """아직 게임에 없는 자료의 집을 모두 '자유 조사 집'으로 더한다.
+    건물 그림 없이 문 표시만 두고, 기록하면 자료의 막대 자리에 막대를 그린다(points)"""
+    geo = json.loads((DATA / 'geo.gen.json').read_text(encoding='utf-8'))
+    icons = [np.array(c['icon'], float) for c in picked] + [np.array(s['icon'], float) for s in geo['sites'].values()]
+    n = len(picked)
+    added = 0
+    # 게임의 집(이야기·맡은 집)마다 그 자리에서 가장 가까운 막대 묶음 하나만 '이미 들어간 집'이다
+    used = set()
+    for k, ic in enumerate(icons):
+        r = 30 if k == len(picked) + list(geo['sites']).index('workhouse') else 22   # 구빈원 막대는 건물 안쪽에 그려져 있다
+        d = [np.min(np.hypot(pts[:, 0] - ic[0], pts[:, 1] - ic[1])) for pts, _ in houses]
+        j = int(np.argmin(d))
+        if d[j] < r:
+            used.add(j)
+    for j, (pts, deaths) in enumerate(houses):
+        if j in used:
+            continue
+        # 문: 막대 묶음에서 길에 가장 가까운 점 앞의 길
+        best = None
+        for x, y in pts:
+            door = snap_street(walk, int(round(x)), int(round(y)), r=24) or snap_street(walk, int(round(x)), int(round(y)), r=60)
+            if door is not None:
+                d = np.hypot(door[0] - x, door[1] - y)
+                if best is None or d < best[0]:
+                    best = (d, door, (x, y))
+        if best is None:
+            print('  문을 못 찾음', pts.mean(0))
+            continue
+        _, door, (x, y) = best
+        n += 1
+        added += 1
+        picked.append({'area': nearest_area(x, y), 'icon': [int(round(x)), int(round(y))], 'door': list(door), 'bars': True,
+                       'id': f'd{n:03d}' if n > 99 else f'd{n:02d}', 'assigned': False,
+                       'points': [[round(float(a), 1), round(float(b), 1)] for a, b in pts]})
+    print(f'  자유 조사 집 {added}곳을 더함')
+    return picked
+
+
 def build():
     """공개 자료의 사망자 수를 합치고, 걸어서 가장 가까운 펌프를 구한다"""
     g, walk = load()
     picked = json.loads((OUT_PICK / 'picked.json').read_text(encoding='utf-8'))
     houses = real_houses()
     picked = add_big([c for c in picked if int(c['id'][1:]) <= 40], walk, houses)
+    for c in picked:
+        c['assigned'] = True          # 영역이 맡아 조사하는 집 (숙제)
+    picked = add_rest(picked, walk, houses)
     geo = json.loads((DATA / 'geo.json').read_text(encoding='utf-8'))
     street = walk > 0
     H, W = street.shape
@@ -217,13 +259,73 @@ def build():
                 heapq.heappush(heap, (d + c, nx, ny, i))
     out = []
     for c in picked:
-        deaths = real_count(houses, *c['icon'], r=22 if c['bars'] else 10)
+        deaths = len(c['points']) if 'points' in c else real_count(houses, *c['icon'], r=22 if c['bars'] else 10)
         x, y = c['door']
         near = pump_ids[int(owner[y, x])]
         out.append({**c, 'deaths': deaths, 'nearestPump': near, 'walkToBroad': round(float(best[y, x])) if near == 'broad' else None})
     (DATA / 'districts.gen.json').write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding='utf-8')
     for o in out:
-        print(f"  {o['id']} {o['area']} 사망 {o['deaths']:2d}  가까운 펌프 {o['nearestPump']}")
+        if o.get('assigned'):
+            print(f"  {o['id']} {o['area']} 사망 {o['deaths']:2d}  가까운 펌프 {o['nearestPump']}")
+    total = sum(o['deaths'] for o in out)
+    print(f"  영역 집 {len(out)}곳 (맡은 집 {sum(1 for o in out if o.get('assigned'))}곳), 사망자 {total}명")
+    make_people(out)
+
+
+# 1850년대 소호에 흔했던 직업 (한국어 직업, 집 이름, 옷차림 영어)
+TRADES = [
+    ('재단사', '재단 공방', 'grey waistcoat, tape measure around neck'), ('구두장이', '구둣방', 'leather apron, rolled sleeves'),
+    ('세탁부', '셋방', 'linen apron, sleeves rolled'), ('바느질삯꾼', '다락방 셋집', 'plain dark dress, pins on collar'),
+    ('목수', '목공소 위층', 'canvas smock, flat cap'), ('짐꾼', '셋방', 'worn brown jacket, neckerchief'),
+    ('하녀', '하숙집', 'black dress, white apron and cap'), ('빵집 주인', '빵집', 'white apron, flour on sleeves'),
+    ('가구 칠장이', '칠장이 공방', 'paint stained smock'), ('인쇄공', '인쇄소 위층', 'grey waistcoat, black sleeve covers'),
+    ('시계 수리공', '시계방', 'brown waistcoat, sleeve garters'), ('모자 장식공', '모자 가게 2층', 'plain blue dress, ribbon on collar'),
+    ('채소 장수', '가게 위층', 'shawl, coarse apron'), ('마부', '마구간 위층', 'heavy green coat, bowler hat'),
+    ('석탄 배달꾼', '석탄 가게 위층', 'dark wool coat, leather cap'), ('하숙집 안주인', '하숙집', 'dark plum dress, lace cap'),
+    ('제화공', '제화 공방', 'white shirt, leather apron'), ('대장장이', '대장간', 'leather apron, sooty shirt'),
+    ('우유 배달부', '우유 가게', 'blue smock, cloth cap'), ('술집 일꾼', '선술집 위층', 'striped shirt, waistcoat'),
+]
+GIVEN_M = ['토머스', '윌리엄', '존', '제임스', '조지', '헨리', '찰스', '에드워드', '프레더릭', '새뮤얼', '조지프', '로버트', '아서', '월터', '앨프리드', '리처드', '대니얼', '패트릭']
+GIVEN_F = ['메리', '앤', '엘리자베스', '사라', '제인', '마거릿', '엘런', '해나', '에밀리', '캐서린', '수전', '마사', '브리짓', '루시', '앨리스', '엘리자', '해리엇', '로즈']
+FAMILY = ['스미스', '존스', '브라운', '테일러', '윌리엄스', '데이비스', '에번스', '그린', '우드', '홀', '라이트', '워커', '해리스', '클라크', '루이스', '로빈슨',
+          '모리스', '쿠퍼', '킹', '베이커', '터너', '파커', '오말리', '머피', '켈리', '헌트', '프라이스', '벨', '그레이', '웹', '마틴', '스톤']
+HAIR_F = ['brown hair in a low bun', 'red hair under a linen cap', 'black hair parted in the middle', 'fair hair braided', 'greying hair under a lace cap', 'dark curly hair tied back']
+HAIR_M = ['short brown hair', 'dark hair and sideburns', 'ginger hair and beard', 'balding grey hair', 'black hair and moustache', 'fair hair, clean shaven']
+
+
+def make_people(out):
+    path = DATA / 'district_people.json'
+    data = json.loads(path.read_text(encoding='utf-8'))
+    have = {p['id'] for p in data['people']}
+    rng = np.random.default_rng(1854)
+    added = 0
+    for o in out:
+        if o['id'] in have:
+            continue
+        i = int(o['id'][1:])
+        female = bool(rng.integers(2))
+        trade, home, clothes = TRADES[int(rng.integers(len(TRADES)))]
+        if female and trade in ('대장장이', '마부', '석탄 배달꾼', '짐꾼', '목수'):
+            trade, home, clothes = ('세탁부', '셋방', 'linen apron, sleeves rolled')
+        if not female and trade in ('세탁부', '바느질삯꾼', '하녀', '모자 장식공', '하숙집 안주인'):
+            trade, home, clothes = ('재단사', '재단 공방', 'grey waistcoat, tape measure around neck')
+        age = int(rng.integers(22, 66))
+        name = f"{(GIVEN_F if female else GIVEN_M)[int(rng.integers(18))]} {FAMILY[int(rng.integers(len(FAMILY)))]}"
+        hair = (HAIR_F if female else HAIR_M)[int(rng.integers(6))]
+        desc = f"{age} year old {'woman' if female else 'man'}, {trade_en(trade)}, {hair}, {clothes}"
+        data['people'].append({'id': o['id'], 'name': name, 'role': trade, 'home': home, 'desc': desc, 'seed': 9000 + i,
+                               'female': female, 'age': age})
+        added += 1
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')
+    print(f'  주민 {added}명을 더함 (모두 {len(data["people"])}명)')
+
+
+def trade_en(k):
+    return {'재단사': 'tailor', '구두장이': 'shoemaker', '세탁부': 'washerwoman', '바느질삯꾼': 'seamstress', '목수': 'carpenter',
+            '짐꾼': 'porter', '하녀': 'housemaid', '빵집 주인': 'baker', '가구 칠장이': 'varnisher', '인쇄공': 'printer',
+            '시계 수리공': 'watch mender', '모자 장식공': 'milliner', '채소 장수': 'greengrocer', '마부': 'cab driver',
+            '석탄 배달꾼': 'coal porter', '하숙집 안주인': 'landlady', '제화공': 'bootmaker', '대장장이': 'blacksmith',
+            '우유 배달부': 'milkman', '술집 일꾼': 'tavern worker'}[k]
 
 
 if __name__ == '__main__':

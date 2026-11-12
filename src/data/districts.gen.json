@@ -11,6 +11,7 @@
   ],
   "bars": true,
   "id": "d01",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 101
@@ -27,6 +28,7 @@
   ],
   "bars": true,
   "id": "d02",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 102
@@ -43,6 +45,7 @@
   ],
   "bars": true,
   "id": "d03",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 132
@@ -59,6 +62,7 @@
   ],
   "bars": true,
   "id": "d04",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 158
@@ -75,6 +79,7 @@
   ],
   "bars": true,
   "id": "d05",
+  "assigned": true,
   "deaths": 3,
   "nearestPump": "broad",
   "walkToBroad": 129
@@ -91,6 +96,7 @@
   ],
   "bars": false,
   "id": "d06",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "broad",
   "walkToBroad": 193
@@ -107,6 +113,7 @@
   ],
   "bars": false,
   "id": "d07",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "broad",
   "walkToBroad": 370
@@ -123,6 +130,7 @@
   ],
   "bars": false,
   "id": "d08",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "rupert",
   "walkToBroad": null
@@ -139,6 +147,7 @@
   ],
   "bars": true,
   "id": "d09",
+  "assigned": true,
   "deaths": 3,
   "nearestPump": "broad",
   "walkToBroad": 211
@@ -155,6 +164,7 @@
   ],
   "bars": true,
   "id": "d10",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -171,6 +181,7 @@
   ],
   "bars": true,
   "id": "d11",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 257
@@ -187,6 +198,7 @@
   ],
   "bars": true,
   "id": "d12",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -203,6 +215,7 @@
   ],
   "bars": true,
   "id": "d13",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -219,6 +232,7 @@
   ],
   "bars": false,
   "id": "d14",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -235,6 +249,7 @@
   ],
   "bars": false,
   "id": "d15",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -251,6 +266,7 @@
   ],
   "bars": false,
   "id": "d16",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -267,6 +283,7 @@
   ],
   "bars": true,
   "id": "d17",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 212
@@ -283,6 +300,7 @@
   ],
   "bars": true,
   "id": "d18",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 215
@@ -299,6 +317,7 @@
   ],
   "bars": true,
   "id": "d19",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -315,6 +334,7 @@
   ],
   "bars": true,
   "id": "d20",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 282
@@ -331,6 +351,7 @@
   ],
   "bars": true,
   "id": "d21",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 260
@@ -347,6 +368,7 @@
   ],
   "bars": false,
   "id": "d22",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -363,6 +385,7 @@
   ],
   "bars": false,
   "id": "d23",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "berners",
   "walkToBroad": null
@@ -379,6 +402,7 @@
   ],
   "bars": false,
   "id": "d24",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "newman",
   "walkToBroad": null
@@ -395,6 +419,7 @@
   ],
   "bars": true,
   "id": "d25",
+  "assigned": true,
   "deaths": 8,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -411,6 +436,7 @@
   ],
   "bars": true,
   "id": "d26",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -427,6 +453,7 @@
   ],
   "bars": true,
   "id": "d27",
+  "assigned": true,
   "deaths": 3,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -443,6 +470,7 @@
   ],
   "bars": true,
   "id": "d28",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -459,6 +487,7 @@
   ],
   "bars": true,
   "id": "d29",
+  "assigned": true,
   "deaths": 4,
   "nearestPump": "broad",
   "walkToBroad": 128
@@ -475,6 +504,7 @@
   ],
   "bars": false,
   "id": "d30",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
@@ -491,6 +521,7 @@
   ],
   "bars": false,
   "id": "d31",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
@@ -507,6 +538,7 @@
   ],
   "bars": false,
   "id": "d32",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
@@ -523,6 +555,7 @@
   ],
   "bars": true,
   "id": "d33",
+  "assigned": true,
   "deaths": 2,
   "nearestPump": "bridle",
   "walkToBroad": null
@@ -539,6 +572,7 @@
   ],
   "bars": true,
   "id": "d34",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "bridle",
   "walkToBroad": null
@@ -555,6 +589,7 @@
   ],
   "bars": true,
   "id": "d35",
+  "assigned": true,
   "deaths": 1,
   "nearestPump": "bridle",
   "walkToBroad": null
@@ -571,6 +606,7 @@
   ],
   "bars": true,
   "id": "d36",
+  "assigned": true,
   "deaths": 4,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
@@ -587,6 +623,7 @@
   ],
   "bars": true,
   "id": "d37",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "bridle",
   "walkToBroad": null
@@ -603,6 +640,7 @@
   ],
   "bars": false,
   "id": "d38",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "bridle",
   "walkToBroad": null
@@ -619,6 +657,7 @@
   ],
   "bars": false,
   "id": "d39",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
@@ -635,6 +674,7 @@
   ],
   "bars": false,
   "id": "d40",
+  "assigned": true,
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
@@ -651,6 +691,7 @@
   ],
   "bars": true,
   "id": "d41",
+  "assigned": true,
   "deaths": 18,
   "nearestPump": "broad",
   "walkToBroad": 36
@@ -667,6 +708,7 @@
   ],
   "bars": true,
   "id": "d42",
+  "assigned": true,
   "deaths": 12,
   "nearestPump": "broad",
   "walkToBroad": 396
@@ -683,6 +725,7 @@
   ],
   "bars": true,
   "id": "d43",
+  "assigned": true,
   "deaths": 10,
   "nearestPump": "broad",
   "walkToBroad": 81
@@ -699,6 +742,7 @@
   ],
   "bars": true,
   "id": "d44",
+  "assigned": true,
   "deaths": 8,
   "nearestPump": "broad",
   "walkToBroad": 308
@@ -715,6 +759,7 @@
   ],
   "bars": true,
   "id": "d45",
+  "assigned": true,
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 99
@@ -731,6 +776,7 @@
   ],
   "bars": true,
   "id": "d46",
+  "assigned": true,
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 36
@@ -747,8 +793,6742 @@
   ],
   "bars": true,
   "id": "d47",
+  "assigned": true,
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 215
+ },
+ {
+  "area": "team1",
+  "icon": [
+   763,
+   508
+  ],
+  "door": [
+   764,
+   510
+  ],
+  "bars": true,
+  "id": "d48",
+  "assigned": false,
+  "points": [
+   [
+    776.4,
+    500.8
+   ],
+   [
+    769.7,
+    503.7
+   ],
+   [
+    762.7,
+    507.7
+   ],
+   [
+    761.5,
+    505.2
+   ],
+   [
+    760.4,
+    502.5
+   ],
+   [
+    759.1,
+    500.5
+   ]
+  ],
+  "deaths": 6,
+  "nearestPump": "broad",
+  "walkToBroad": 63
+ },
+ {
+  "area": "team3",
+  "icon": [
+   990,
+   357
+  ],
+  "door": [
+   976,
+   320
+  ],
+  "bars": true,
+  "id": "d49",
+  "assigned": false,
+  "points": [
+   [
+    990.1,
+    356.9
+   ],
+   [
+    1001.0,
+    361.9
+   ],
+   [
+    991.4,
+    359.5
+   ],
+   [
+    992.4,
+    361.7
+   ],
+   [
+    994.3,
+    365.8
+   ],
+   [
+    993.2,
+    364.0
+   ]
+  ],
+  "deaths": 6,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   661,
+   405
+  ],
+  "door": [
+   690,
+   391
+  ],
+  "bars": true,
+  "id": "d50",
+  "assigned": false,
+  "points": [
+   [
+    656.4,
+    406.5
+   ],
+   [
+    654.3,
+    407.1
+   ],
+   [
+    651.9,
+    407.9
+   ],
+   [
+    660.7,
+    405.0
+   ],
+   [
+    658.3,
+    405.9
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 190
+ },
+ {
+  "area": "team1",
+  "icon": [
+   714,
+   557
+  ],
+  "door": [
+   712,
+   553
+  ],
+  "bars": true,
+  "id": "d51",
+  "assigned": false,
+  "points": [
+   [
+    713.8,
+    557.0
+   ],
+   [
+    716.2,
+    562.2
+   ],
+   [
+    708.6,
+    564.9
+   ],
+   [
+    706.2,
+    560.4
+   ],
+   [
+    707.4,
+    562.8
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 7
+ },
+ {
+  "area": "team3",
+  "icon": [
+   842,
+   446
+  ],
+  "door": [
+   844,
+   445
+  ],
+  "bars": true,
+  "id": "d52",
+  "assigned": false,
+  "points": [
+   [
+    841.7,
+    445.5
+   ],
+   [
+    833.0,
+    449.7
+   ],
+   [
+    839.5,
+    446.4
+   ],
+   [
+    835.6,
+    448.6
+   ],
+   [
+    837.5,
+    447.7
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 191
+ },
+ {
+  "area": "team3",
+  "icon": [
+   831,
+   474
+  ],
+  "door": [
+   833,
+   476
+  ],
+  "bars": true,
+  "id": "d53",
+  "assigned": false,
+  "points": [
+   [
+    830.0,
+    472.2
+   ],
+   [
+    829.0,
+    470.3
+   ],
+   [
+    831.3,
+    474.2
+   ],
+   [
+    826.7,
+    465.5
+   ],
+   [
+    828.5,
+    467.8
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 146
+ },
+ {
+  "area": "team1",
+  "icon": [
+   739,
+   558
+  ],
+  "door": [
+   736,
+   559
+  ],
+  "bars": true,
+  "id": "d54",
+  "assigned": false,
+  "points": [
+   [
+    738.7,
+    558.0
+   ],
+   [
+    744.0,
+    548.5
+   ],
+   [
+    738.7,
+    558.0
+   ],
+   [
+    740.9,
+    557.0
+   ],
+   [
+    745.4,
+    550.9
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 22
+ },
+ {
+  "area": "team1",
+  "icon": [
+   792,
+   493
+  ],
+  "door": [
+   794,
+   495
+  ],
+  "bars": true,
+  "id": "d55",
+  "assigned": false,
+  "points": [
+   [
+    790.5,
+    491.0
+   ],
+   [
+    788.5,
+    486.9
+   ],
+   [
+    787.4,
+    484.3
+   ],
+   [
+    792.2,
+    493.0
+   ],
+   [
+    789.6,
+    489.0
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 99
+ },
+ {
+  "area": "team1",
+  "icon": [
+   640,
+   592
+  ],
+  "door": [
+   638,
+   589
+  ],
+  "bars": true,
+  "id": "d56",
+  "assigned": false,
+  "points": [
+   [
+    641.2,
+    594.7
+   ],
+   [
+    640.1,
+    591.9
+   ],
+   [
+    648.1,
+    592.1
+   ],
+   [
+    646.7,
+    588.9
+   ],
+   [
+    643.3,
+    597.6
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 96
+ },
+ {
+  "area": "team3",
+  "icon": [
+   957,
+   466
+  ],
+  "door": [
+   950,
+   468
+  ],
+  "bars": true,
+  "id": "d57",
+  "assigned": false,
+  "points": [
+   [
+    966.0,
+    461.9
+   ],
+   [
+    956.8,
+    465.5
+   ],
+   [
+    963.5,
+    462.9
+   ],
+   [
+    961.2,
+    463.9
+   ],
+   [
+    959.0,
+    464.8
+   ]
+  ],
+  "deaths": 5,
+  "nearestPump": "broad",
+  "walkToBroad": 299
+ },
+ {
+  "area": "team1",
+  "icon": [
+   762,
+   634
+  ],
+  "door": [
+   765,
+   630
+  ],
+  "bars": true,
+  "id": "d58",
+  "assigned": false,
+  "points": [
+   [
+    756.0,
+    637.6
+   ],
+   [
+    759.6,
+    635.1
+   ],
+   [
+    758.1,
+    636.1
+   ],
+   [
+    762.0,
+    633.9
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 101
+ },
+ {
+  "area": "team1",
+  "icon": [
+   717,
+   529
+  ],
+  "door": [
+   718,
+   533
+  ],
+  "bars": true,
+  "id": "d59",
+  "assigned": false,
+  "points": [
+   [
+    716.7,
+    529.3
+   ],
+   [
+    716.2,
+    527.6
+   ],
+   [
+    713.5,
+    522.9
+   ],
+   [
+    714.9,
+    525.5
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 17
+ },
+ {
+  "area": "team4",
+  "icon": [
+   590,
+   524
+  ],
+  "door": [
+   589,
+   525
+  ],
+  "bars": true,
+  "id": "d60",
+  "assigned": false,
+  "points": [
+   [
+    590.4,
+    523.9
+   ],
+   [
+    593.1,
+    522.7
+   ],
+   [
+    595.1,
+    521.9
+   ],
+   [
+    597.8,
+    520.5
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 181
+ },
+ {
+  "area": "team5",
+  "icon": [
+   862,
+   782
+  ],
+  "door": [
+   864,
+   784
+  ],
+  "bars": true,
+  "id": "d61",
+  "assigned": false,
+  "points": [
+   [
+    858.7,
+    777.1
+   ],
+   [
+    860.3,
+    779.3
+   ],
+   [
+    856.9,
+    774.6
+   ],
+   [
+    862.0,
+    781.7
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   969,
+   384
+  ],
+  "door": [
+   920,
+   407
+  ],
+  "bars": true,
+  "id": "d62",
+  "assigned": false,
+  "points": [
+   [
+    971.0,
+    388.5
+   ],
+   [
+    971.8,
+    390.8
+   ],
+   [
+    968.0,
+    381.5
+   ],
+   [
+    968.9,
+    384.0
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 272
+ },
+ {
+  "area": "team3",
+  "icon": [
+   786,
+   457
+  ],
+  "door": [
+   802,
+   491
+  ],
+  "bars": true,
+  "id": "d63",
+  "assigned": false,
+  "points": [
+   [
+    784.1,
+    451.3
+   ],
+   [
+    784.8,
+    453.8
+   ],
+   [
+    786.4,
+    456.6
+   ],
+   [
+    782.8,
+    449.1
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 108
+ },
+ {
+  "area": "team4",
+  "icon": [
+   551,
+   586
+  ],
+  "door": [
+   536,
+   568
+  ],
+  "bars": true,
+  "id": "d64",
+  "assigned": false,
+  "points": [
+   [
+    555.2,
+    583.8
+   ],
+   [
+    549.0,
+    587.5
+   ],
+   [
+    552.9,
+    584.9
+   ],
+   [
+    550.8,
+    586.1
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   784,
+   497
+  ],
+  "door": [
+   786,
+   499
+  ],
+  "bars": true,
+  "id": "d65",
+  "assigned": false,
+  "points": [
+   [
+    784.2,
+    497.3
+   ],
+   [
+    783.2,
+    495.1
+   ],
+   [
+    781.0,
+    490.6
+   ],
+   [
+    781.7,
+    492.7
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 89
+ },
+ {
+  "area": "team5",
+  "icon": [
+   781,
+   764
+  ],
+  "door": [
+   784,
+   760
+  ],
+  "bars": true,
+  "id": "d66",
+  "assigned": false,
+  "points": [
+   [
+    774.0,
+    769.7
+   ],
+   [
+    778.8,
+    766.4
+   ],
+   [
+    776.0,
+    768.3
+   ],
+   [
+    781.2,
+    764.5
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   611,
+   569
+  ],
+  "door": [
+   609,
+   569
+  ],
+  "bars": true,
+  "id": "d67",
+  "assigned": false,
+  "points": [
+   [
+    615.9,
+    567.0
+   ],
+   [
+    613.4,
+    568.1
+   ],
+   [
+    610.9,
+    569.4
+   ],
+   [
+    617.8,
+    566.3
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 129
+ },
+ {
+  "area": "team1",
+  "icon": [
+   686,
+   570
+  ],
+  "door": [
+   684,
+   566
+  ],
+  "bars": true,
+  "id": "d68",
+  "assigned": false,
+  "points": [
+   [
+    690.4,
+    577.4
+   ],
+   [
+    687.7,
+    572.5
+   ],
+   [
+    689.0,
+    574.9
+   ],
+   [
+    686.5,
+    569.8
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 41
+ },
+ {
+  "area": "team1",
+  "icon": [
+   626,
+   599
+  ],
+  "door": [
+   622,
+   599
+  ],
+  "bars": true,
+  "id": "d69",
+  "assigned": false,
+  "points": [
+   [
+    625.9,
+    598.8
+   ],
+   [
+    627.2,
+    601.6
+   ],
+   [
+    629.8,
+    606.6
+   ],
+   [
+    628.3,
+    603.8
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "broad",
+  "walkToBroad": 116
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1009,
+   357
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d70",
+  "assigned": false,
+  "points": [
+   [
+    1009.4,
+    358.5
+   ],
+   [
+    1008.8,
+    356.8
+   ],
+   [
+    1007.6,
+    355.2
+   ],
+   [
+    1006.8,
+    352.6
+   ]
+  ],
+  "deaths": 4,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   508,
+   485
+  ],
+  "door": [
+   506,
+   485
+  ],
+  "bars": true,
+  "id": "d71",
+  "assigned": false,
+  "points": [
+   [
+    513.5,
+    481.0
+   ],
+   [
+    511.1,
+    482.9
+   ],
+   [
+    508.4,
+    485.1
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   877,
+   673
+  ],
+  "door": [
+   902,
+   660
+  ],
+  "bars": true,
+  "id": "d72",
+  "assigned": false,
+  "points": [
+   [
+    874.1,
+    669.1
+   ],
+   [
+    877.1,
+    673.2
+   ],
+   [
+    875.7,
+    671.4
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 400
+ },
+ {
+  "area": "team4",
+  "icon": [
+   596,
+   536
+  ],
+  "door": [
+   594,
+   536
+  ],
+  "bars": true,
+  "id": "d73",
+  "assigned": false,
+  "points": [
+   [
+    598.2,
+    535.2
+   ],
+   [
+    595.8,
+    536.2
+   ],
+   [
+    600.3,
+    534.3
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 168
+ },
+ {
+  "area": "team1",
+  "icon": [
+   866,
+   635
+  ],
+  "door": [
+   844,
+   638
+  ],
+  "bars": true,
+  "id": "d74",
+  "assigned": false,
+  "points": [
+   [
+    868.5,
+    639.0
+   ],
+   [
+    867.9,
+    637.3
+   ],
+   [
+    866.2,
+    635.2
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 211
+ },
+ {
+  "area": "team3",
+  "icon": [
+   823,
+   478
+  ],
+  "door": [
+   825,
+   480
+  ],
+  "bars": true,
+  "id": "d75",
+  "assigned": false,
+  "points": [
+   [
+    820.4,
+    473.8
+   ],
+   [
+    821.9,
+    476.1
+   ],
+   [
+    823.1,
+    478.3
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 136
+ },
+ {
+  "area": "team2",
+  "icon": [
+   694,
+   404
+  ],
+  "door": [
+   698,
+   403
+  ],
+  "bars": true,
+  "id": "d76",
+  "assigned": false,
+  "points": [
+   [
+    694.5,
+    403.5
+   ],
+   [
+    692.4,
+    404.0
+   ],
+   [
+    689.7,
+    404.2
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 174
+ },
+ {
+  "area": "team1",
+  "icon": [
+   756,
+   596
+  ],
+  "door": [
+   754,
+   597
+  ],
+  "bars": true,
+  "id": "d77",
+  "assigned": false,
+  "points": [
+   [
+    756.3,
+    595.6
+   ],
+   [
+    761.5,
+    593.1
+   ],
+   [
+    759.1,
+    594.5
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 63
+ },
+ {
+  "area": "team2",
+  "icon": [
+   717,
+   422
+  ],
+  "door": [
+   713,
+   423
+  ],
+  "bars": true,
+  "id": "d78",
+  "assigned": false,
+  "points": [
+   [
+    719.6,
+    421.4
+   ],
+   [
+    722.2,
+    419.5
+   ],
+   [
+    716.8,
+    422.4
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 148
+ },
+ {
+  "area": "team4",
+  "icon": [
+   541,
+   572
+  ],
+  "door": [
+   536,
+   568
+  ],
+  "bars": true,
+  "id": "d79",
+  "assigned": false,
+  "points": [
+   [
+    541.3,
+    571.6
+   ],
+   [
+    544.1,
+    570.2
+   ],
+   [
+    546.1,
+    569.5
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   381,
+   882
+  ],
+  "door": [
+   406,
+   871
+  ],
+  "bars": true,
+  "id": "d80",
+  "assigned": false,
+  "points": [
+   [
+    380.9,
+    882.1
+   ],
+   [
+    383.1,
+    887.1
+   ],
+   [
+    381.9,
+    884.8
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "warwick",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   887,
+   535
+  ],
+  "door": [
+   889,
+   534
+  ],
+  "bars": true,
+  "id": "d81",
+  "assigned": false,
+  "points": [
+   [
+    882.5,
+    538.2
+   ],
+   [
+    887.0,
+    535.3
+   ],
+   [
+    884.7,
+    536.6
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 228
+ },
+ {
+  "area": "team1",
+  "icon": [
+   799,
+   567
+  ],
+  "door": [
+   803,
+   565
+  ],
+  "bars": true,
+  "id": "d82",
+  "assigned": false,
+  "points": [
+   [
+    797.1,
+    568.1
+   ],
+   [
+    799.3,
+    567.1
+   ],
+   [
+    795.2,
+    569.0
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 121
+ },
+ {
+  "area": "team3",
+  "icon": [
+   815,
+   482
+  ],
+  "door": [
+   816,
+   484
+  ],
+  "bars": true,
+  "id": "d83",
+  "assigned": false,
+  "points": [
+   [
+    812.9,
+    477.8
+   ],
+   [
+    814.8,
+    482.2
+   ],
+   [
+    813.6,
+    480.4
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 125
+ },
+ {
+  "area": "team5",
+  "icon": [
+   625,
+   688
+  ],
+  "door": [
+   632,
+   689
+  ],
+  "bars": true,
+  "id": "d84",
+  "assigned": false,
+  "points": [
+   [
+    623.9,
+    685.2
+   ],
+   [
+    622.7,
+    683.5
+   ],
+   [
+    625.2,
+    687.7
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   778,
+   531
+  ],
+  "door": [
+   776,
+   528
+  ],
+  "bars": true,
+  "id": "d85",
+  "assigned": false,
+  "points": [
+   [
+    778.1,
+    531.3
+   ],
+   [
+    779.0,
+    533.5
+   ],
+   [
+    780.4,
+    535.6
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 67
+ },
+ {
+  "area": "team3",
+  "icon": [
+   834,
+   428
+  ],
+  "door": [
+   835,
+   427
+  ],
+  "bars": true,
+  "id": "d86",
+  "assigned": false,
+  "points": [
+   [
+    833.6,
+    428.5
+   ],
+   [
+    831.4,
+    429.6
+   ],
+   [
+    828.9,
+    430.9
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 213
+ },
+ {
+  "area": "team2",
+  "icon": [
+   599,
+   327
+  ],
+  "door": [
+   601,
+   331
+  ],
+  "bars": true,
+  "id": "d87",
+  "assigned": false,
+  "points": [
+   [
+    597.0,
+    321.4
+   ],
+   [
+    598.7,
+    327.1
+   ],
+   [
+    597.7,
+    323.6
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   675,
+   363
+  ],
+  "door": [
+   679,
+   362
+  ],
+  "bars": true,
+  "id": "d88",
+  "assigned": false,
+  "points": [
+   [
+    670.7,
+    363.8
+   ],
+   [
+    673.2,
+    363.0
+   ],
+   [
+    675.2,
+    362.9
+   ]
+  ],
+  "deaths": 3,
+  "nearestPump": "broad",
+  "walkToBroad": 223
+ },
+ {
+  "area": "team3",
+  "icon": [
+   914,
+   556
+  ],
+  "door": [
+   908,
+   556
+  ],
+  "bars": true,
+  "id": "d89",
+  "assigned": false,
+  "points": [
+   [
+    916.0,
+    555.1
+   ],
+   [
+    913.6,
+    556.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 258
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1029,
+   358
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d90",
+  "assigned": false,
+  "points": [
+   [
+    1030.4,
+    360.2
+   ],
+   [
+    1029.1,
+    358.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   583,
+   550
+  ],
+  "door": [
+   587,
+   547
+  ],
+  "bars": true,
+  "id": "d91",
+  "assigned": false,
+  "points": [
+   [
+    582.6,
+    550.4
+   ],
+   [
+    580.4,
+    551.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 160
+ },
+ {
+  "area": "team1",
+  "icon": [
+   780,
+   661
+  ],
+  "door": [
+   785,
+   658
+  ],
+  "bars": true,
+  "id": "d92",
+  "assigned": false,
+  "points": [
+   [
+    778.5,
+    661.9
+   ],
+   [
+    780.5,
+    660.6
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 137
+ },
+ {
+  "area": "team3",
+  "icon": [
+   965,
+   521
+  ],
+  "door": [
+   966,
+   521
+  ],
+  "bars": true,
+  "id": "d93",
+  "assigned": false,
+  "points": [
+   [
+    964.8,
+    520.9
+   ],
+   [
+    962.7,
+    521.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 358
+ },
+ {
+  "area": "team2",
+  "icon": [
+   759,
+   387
+  ],
+  "door": [
+   748,
+   365
+  ],
+  "bars": true,
+  "id": "d94",
+  "assigned": false,
+  "points": [
+   [
+    759.4,
+    387.0
+   ],
+   [
+    760.7,
+    389.4
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 243
+ },
+ {
+  "area": "team1",
+  "icon": [
+   886,
+   680
+  ],
+  "door": [
+   902,
+   660
+  ],
+  "bars": true,
+  "id": "d95",
+  "assigned": false,
+  "points": [
+   [
+    888.4,
+    682.2
+   ],
+   [
+    886.2,
+    679.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 400
+ },
+ {
+  "area": "team1",
+  "icon": [
+   689,
+   543
+  ],
+  "door": [
+   690,
+   547
+  ],
+  "bars": true,
+  "id": "d96",
+  "assigned": false,
+  "points": [
+   [
+    687.7,
+    541.7
+   ],
+   [
+    688.8,
+    543.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 29
+ },
+ {
+  "area": "team1",
+  "icon": [
+   633,
+   622
+  ],
+  "door": [
+   632,
+   622
+  ],
+  "bars": true,
+  "id": "d97",
+  "assigned": false,
+  "points": [
+   [
+    633.3,
+    621.5
+   ],
+   [
+    636.6,
+    620.1
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 141
+ },
+ {
+  "area": "team1",
+  "icon": [
+   836,
+   638
+  ],
+  "door": [
+   839,
+   637
+  ],
+  "bars": true,
+  "id": "d98",
+  "assigned": false,
+  "points": [
+   [
+    833.3,
+    639.4
+   ],
+   [
+    835.9,
+    638.5
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 208
+ },
+ {
+  "area": "team3",
+  "icon": [
+   933,
+   159
+  ],
+  "door": [
+   925,
+   160
+  ],
+  "bars": true,
+  "id": "d99",
+  "assigned": false,
+  "points": [
+   [
+    932.7,
+    158.9
+   ],
+   [
+    935.5,
+    157.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   797,
+   441
+  ],
+  "door": [
+   828,
+   419
+  ],
+  "bars": true,
+  "id": "d100",
+  "assigned": false,
+  "points": [
+   [
+    796.8,
+    441.2
+   ],
+   [
+    798.6,
+    443.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 224
+ },
+ {
+  "area": "team3",
+  "icon": [
+   959,
+   505
+  ],
+  "door": [
+   959,
+   504
+  ],
+  "bars": true,
+  "id": "d101",
+  "assigned": false,
+  "points": [
+   [
+    958.9,
+    505.1
+   ],
+   [
+    956.3,
+    505.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 338
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1042,
+   579
+  ],
+  "door": [
+   1006,
+   595
+  ],
+  "bars": true,
+  "id": "d102",
+  "assigned": false,
+  "points": [
+   [
+    1043.7,
+    581.6
+   ],
+   [
+    1042.2,
+    579.0
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   926,
+   698
+  ],
+  "door": [
+   909,
+   666
+  ],
+  "bars": true,
+  "id": "d103",
+  "assigned": false,
+  "points": [
+   [
+    926.5,
+    697.5
+   ],
+   [
+    923.9,
+    699.4
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 396
+ },
+ {
+  "area": "team1",
+  "icon": [
+   664,
+   662
+  ],
+  "door": [
+   660,
+   666
+  ],
+  "bars": true,
+  "id": "d104",
+  "assigned": false,
+  "points": [
+   [
+    662.8,
+    660.3
+   ],
+   [
+    664.3,
+    662.5
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 197
+ },
+ {
+  "area": "team3",
+  "icon": [
+   960,
+   388
+  ],
+  "door": [
+   920,
+   407
+  ],
+  "bars": true,
+  "id": "d105",
+  "assigned": false,
+  "points": [
+   [
+    960.1,
+    387.7
+   ],
+   [
+    962.4,
+    392.1
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 272
+ },
+ {
+  "area": "team4",
+  "icon": [
+   564,
+   500
+  ],
+  "door": [
+   570,
+   498
+  ],
+  "bars": true,
+  "id": "d106",
+  "assigned": false,
+  "points": [
+   [
+    562.5,
+    500.3
+   ],
+   [
+    564.2,
+    499.7
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   570,
+   547
+  ],
+  "door": [
+   569,
+   544
+  ],
+  "bars": true,
+  "id": "d107",
+  "assigned": false,
+  "points": [
+   [
+    570.5,
+    546.7
+   ],
+   [
+    571.3,
+    548.7
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 183
+ },
+ {
+  "area": "team3",
+  "icon": [
+   933,
+   425
+  ],
+  "door": [
+   927,
+   427
+  ],
+  "bars": true,
+  "id": "d108",
+  "assigned": false,
+  "points": [
+   [
+    933.2,
+    425.0
+   ],
+   [
+    936.0,
+    423.5
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 260
+ },
+ {
+  "area": "team4",
+  "icon": [
+   560,
+   599
+  ],
+  "door": [
+   537,
+   618
+  ],
+  "bars": true,
+  "id": "d109",
+  "assigned": false,
+  "points": [
+   [
+    562.8,
+    597.7
+   ],
+   [
+    560.3,
+    599.0
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   845,
+   526
+  ],
+  "door": [
+   826,
+   502
+  ],
+  "bars": true,
+  "id": "d110",
+  "assigned": false,
+  "points": [
+   [
+    846.1,
+    528.0
+   ],
+   [
+    844.8,
+    525.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 128
+ },
+ {
+  "area": "team4",
+  "icon": [
+   556,
+   541
+  ],
+  "door": [
+   560,
+   544
+  ],
+  "bars": true,
+  "id": "d111",
+  "assigned": false,
+  "points": [
+   [
+    554.7,
+    538.7
+   ],
+   [
+    555.6,
+    541.0
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   902,
+   535
+  ],
+  "door": [
+   898,
+   538
+  ],
+  "bars": true,
+  "id": "d112",
+  "assigned": false,
+  "points": [
+   [
+    904.8,
+    533.0
+   ],
+   [
+    901.7,
+    534.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 236
+ },
+ {
+  "area": "team1",
+  "icon": [
+   681,
+   682
+  ],
+  "door": [
+   662,
+   672
+  ],
+  "bars": true,
+  "id": "d113",
+  "assigned": false,
+  "points": [
+   [
+    683.3,
+    680.8
+   ],
+   [
+    681.4,
+    681.7
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 204
+ },
+ {
+  "area": "team1",
+  "icon": [
+   633,
+   572
+  ],
+  "door": [
+   635,
+   575
+  ],
+  "bars": true,
+  "id": "d114",
+  "assigned": false,
+  "points": [
+   [
+    632.9,
+    572.5
+   ],
+   [
+    631.4,
+    569.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 93
+ },
+ {
+  "area": "team3",
+  "icon": [
+   802,
+   422
+  ],
+  "door": [
+   825,
+   406
+  ],
+  "bars": true,
+  "id": "d115",
+  "assigned": false,
+  "points": [
+   [
+    802.5,
+    425.3
+   ],
+   [
+    801.6,
+    422.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 238
+ },
+ {
+  "area": "team5",
+  "icon": [
+   791,
+   750
+  ],
+  "door": [
+   789,
+   751
+  ],
+  "bars": true,
+  "id": "d116",
+  "assigned": false,
+  "points": [
+   [
+    791.3,
+    750.5
+   ],
+   [
+    793.6,
+    748.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   604,
+   592
+  ],
+  "door": [
+   609,
+   589
+  ],
+  "bars": true,
+  "id": "d117",
+  "assigned": false,
+  "points": [
+   [
+    604.0,
+    592.3
+   ],
+   [
+    601.6,
+    592.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 125
+ },
+ {
+  "area": "team1",
+  "icon": [
+   804,
+   675
+  ],
+  "door": [
+   801,
+   677
+  ],
+  "bars": true,
+  "id": "d118",
+  "assigned": false,
+  "points": [
+   [
+    803.8,
+    675.1
+   ],
+   [
+    806.0,
+    674.0
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 163
+ },
+ {
+  "area": "team1",
+  "icon": [
+   761,
+   540
+  ],
+  "door": [
+   760,
+   536
+  ],
+  "bars": true,
+  "id": "d119",
+  "assigned": false,
+  "points": [
+   [
+    762.2,
+    542.8
+   ],
+   [
+    760.7,
+    540.4
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 48
+ },
+ {
+  "area": "team1",
+  "icon": [
+   642,
+   484
+  ],
+  "door": [
+   644,
+   487
+  ],
+  "bars": true,
+  "id": "d120",
+  "assigned": false,
+  "points": [
+   [
+    640.7,
+    481.8
+   ],
+   [
+    641.7,
+    483.6
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 120
+ },
+ {
+  "area": "team4",
+  "icon": [
+   600,
+   544
+  ],
+  "door": [
+   598,
+   545
+  ],
+  "bars": true,
+  "id": "d121",
+  "assigned": false,
+  "points": [
+   [
+    599.7,
+    544.4
+   ],
+   [
+    602.4,
+    543.6
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 158
+ },
+ {
+  "area": "team4",
+  "icon": [
+   489,
+   539
+  ],
+  "door": [
+   488,
+   540
+  ],
+  "bars": true,
+  "id": "d122",
+  "assigned": false,
+  "points": [
+   [
+    488.8,
+    539.1
+   ],
+   [
+    491.2,
+    537.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   938,
+   602
+  ],
+  "door": [
+   934,
+   606
+  ],
+  "bars": true,
+  "id": "d123",
+  "assigned": false,
+  "points": [
+   [
+    938.5,
+    601.5
+   ],
+   [
+    941.2,
+    600.1
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 319
+ },
+ {
+  "area": "team1",
+  "icon": [
+   807,
+   582
+  ],
+  "door": [
+   810,
+   580
+  ],
+  "bars": true,
+  "id": "d124",
+  "assigned": false,
+  "points": [
+   [
+    806.7,
+    582.0
+   ],
+   [
+    804.1,
+    583.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 139
+ },
+ {
+  "area": "team4",
+  "icon": [
+   515,
+   534
+  ],
+  "door": [
+   525,
+   526
+  ],
+  "bars": true,
+  "id": "d125",
+  "assigned": false,
+  "points": [
+   [
+    515.2,
+    533.5
+   ],
+   [
+    516.9,
+    535.4
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   462,
+   623
+  ],
+  "door": [
+   461,
+   622
+  ],
+  "bars": true,
+  "id": "d126",
+  "assigned": false,
+  "points": [
+   [
+    461.8,
+    622.8
+   ],
+   [
+    463.6,
+    625.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   816,
+   393
+  ],
+  "door": [
+   818,
+   393
+  ],
+  "bars": true,
+  "id": "d127",
+  "assigned": false,
+  "points": [
+   [
+    815.9,
+    393.3
+   ],
+   [
+    813.8,
+    394.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 254
+ },
+ {
+  "area": "team2",
+  "icon": [
+   742,
+   356
+  ],
+  "door": [
+   744,
+   359
+  ],
+  "bars": true,
+  "id": "d128",
+  "assigned": false,
+  "points": [
+   [
+    741.0,
+    354.1
+   ],
+   [
+    742.1,
+    356.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 241
+ },
+ {
+  "area": "team3",
+  "icon": [
+   873,
+   510
+  ],
+  "door": [
+   875,
+   509
+  ],
+  "bars": true,
+  "id": "d129",
+  "assigned": false,
+  "points": [
+   [
+    870.8,
+    511.1
+   ],
+   [
+    872.7,
+    509.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 197
+ },
+ {
+  "area": "team1",
+  "icon": [
+   729,
+   626
+  ],
+  "door": [
+   730,
+   629
+  ],
+  "bars": true,
+  "id": "d130",
+  "assigned": false,
+  "points": [
+   [
+    728.7,
+    623.5
+   ],
+   [
+    729.1,
+    625.5
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 107
+ },
+ {
+  "area": "team3",
+  "icon": [
+   825,
+   332
+  ],
+  "door": [
+   822,
+   328
+  ],
+  "bars": true,
+  "id": "d131",
+  "assigned": false,
+  "points": [
+   [
+    825.3,
+    331.7
+   ],
+   [
+    827.0,
+    334.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   488,
+   603
+  ],
+  "door": [
+   487,
+   602
+  ],
+  "bars": true,
+  "id": "d132",
+  "assigned": false,
+  "points": [
+   [
+    488.1,
+    602.6
+   ],
+   [
+    489.7,
+    604.6
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   644,
+   643
+  ],
+  "door": [
+   643,
+   644
+  ],
+  "bars": true,
+  "id": "d133",
+  "assigned": false,
+  "points": [
+   [
+    646.6,
+    641.3
+   ],
+   [
+    644.1,
+    642.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 168
+ },
+ {
+  "area": "team4",
+  "icon": [
+   425,
+   517
+  ],
+  "door": [
+   437,
+   506
+  ],
+  "bars": true,
+  "id": "d134",
+  "assigned": false,
+  "points": [
+   [
+    424.7,
+    517.1
+   ],
+   [
+    426.3,
+    519.3
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   859,
+   450
+  ],
+  "door": [
+   855,
+   452
+  ],
+  "bars": true,
+  "id": "d135",
+  "assigned": false,
+  "points": [
+   [
+    859.4,
+    450.1
+   ],
+   [
+    861.9,
+    448.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 183
+ },
+ {
+  "area": "team3",
+  "icon": [
+   925,
+   577
+  ],
+  "door": [
+   920,
+   580
+  ],
+  "bars": true,
+  "id": "d136",
+  "assigned": false,
+  "points": [
+   [
+    925.0,
+    576.6
+   ],
+   [
+    927.6,
+    574.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 287
+ },
+ {
+  "area": "team1",
+  "icon": [
+   769,
+   536
+  ],
+  "door": [
+   768,
+   532
+  ],
+  "bars": true,
+  "id": "d137",
+  "assigned": false,
+  "points": [
+   [
+    768.7,
+    536.1
+   ],
+   [
+    770.3,
+    538.9
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 57
+ },
+ {
+  "area": "team3",
+  "icon": [
+   856,
+   529
+  ],
+  "door": [
+   876,
+   514
+  ],
+  "bars": true,
+  "id": "d138",
+  "assigned": false,
+  "points": [
+   [
+    855.7,
+    528.6
+   ],
+   [
+    856.9,
+    531.1
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 203
+ },
+ {
+  "area": "team2",
+  "icon": [
+   681,
+   333
+  ],
+  "door": [
+   677,
+   334
+  ],
+  "bars": true,
+  "id": "d139",
+  "assigned": false,
+  "points": [
+   [
+    681.1,
+    333.3
+   ],
+   [
+    683.5,
+    332.1
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 252
+ },
+ {
+  "area": "team3",
+  "icon": [
+   952,
+   367
+  ],
+  "door": [
+   908,
+   383
+  ],
+  "bars": true,
+  "id": "d140",
+  "assigned": false,
+  "points": [
+   [
+    953.1,
+    369.5
+   ],
+   [
+    951.5,
+    366.8
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 299
+ },
+ {
+  "area": "team1",
+  "icon": [
+   747,
+   608
+  ],
+  "door": [
+   751,
+   605
+  ],
+  "bars": true,
+  "id": "d141",
+  "assigned": false,
+  "points": [
+   [
+    747.0,
+    608.0
+   ],
+   [
+    743.6,
+    609.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "broad",
+  "walkToBroad": 70
+ },
+ {
+  "area": "team4",
+  "icon": [
+   575,
+   490
+  ],
+  "door": [
+   573,
+   490
+  ],
+  "bars": true,
+  "id": "d142",
+  "assigned": false,
+  "points": [
+   [
+    575.4,
+    490.0
+   ],
+   [
+    577.4,
+    489.2
+   ]
+  ],
+  "deaths": 2,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   602,
+   703
+  ],
+  "door": [
+   593,
+   704
+  ],
+  "bars": true,
+  "id": "d143",
+  "assigned": false,
+  "points": [
+   [
+    602.4,
+    703.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   566,
+   534
+  ],
+  "door": [
+   569,
+   539
+  ],
+  "bars": true,
+  "id": "d144",
+  "assigned": false,
+  "points": [
+   [
+    566.2,
+    534.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 182
+ },
+ {
+  "area": "team1",
+  "icon": [
+   774,
+   627
+  ],
+  "door": [
+   771,
+   629
+  ],
+  "bars": true,
+  "id": "d145",
+  "assigned": false,
+  "points": [
+   [
+    774.3,
+    627.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 102
+ },
+ {
+  "area": "team5",
+  "icon": [
+   583,
+   689
+  ],
+  "door": [
+   582,
+   689
+  ],
+  "bars": true,
+  "id": "d146",
+  "assigned": false,
+  "points": [
+   [
+    583.2,
+    689.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   661,
+   542
+  ],
+  "door": [
+   666,
+   540
+  ],
+  "bars": true,
+  "id": "d147",
+  "assigned": false,
+  "points": [
+   [
+    660.9,
+    541.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 58
+ },
+ {
+  "area": "team1",
+  "icon": [
+   686,
+   649
+  ],
+  "door": [
+   690,
+   652
+  ],
+  "bars": true,
+  "id": "d148",
+  "assigned": false,
+  "points": [
+   [
+    685.8,
+    649.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 157
+ },
+ {
+  "area": "team3",
+  "icon": [
+   794,
+   429
+  ],
+  "door": [
+   828,
+   419
+  ],
+  "bars": true,
+  "id": "d149",
+  "assigned": false,
+  "points": [
+   [
+    793.6,
+    428.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 224
+ },
+ {
+  "area": "team3",
+  "icon": [
+   825,
+   380
+  ],
+  "door": [
+   820,
+   383
+  ],
+  "bars": true,
+  "id": "d150",
+  "assigned": false,
+  "points": [
+   [
+    825.1,
+    380.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 263
+ },
+ {
+  "area": "team3",
+  "icon": [
+   964,
+   485
+  ],
+  "door": [
+   957,
+   487
+  ],
+  "bars": true,
+  "id": "d151",
+  "assigned": false,
+  "points": [
+   [
+    963.8,
+    484.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 320
+ },
+ {
+  "area": "team1",
+  "icon": [
+   736,
+   687
+  ],
+  "door": [
+   741,
+   684
+  ],
+  "bars": true,
+  "id": "d152",
+  "assigned": false,
+  "points": [
+   [
+    735.5,
+    687.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 161
+ },
+ {
+  "area": "team1",
+  "icon": [
+   746,
+   667
+  ],
+  "door": [
+   744,
+   667
+  ],
+  "bars": true,
+  "id": "d153",
+  "assigned": false,
+  "points": [
+   [
+    746.4,
+    667.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 146
+ },
+ {
+  "area": "team1",
+  "icon": [
+   803,
+   575
+  ],
+  "door": [
+   807,
+   574
+  ],
+  "bars": true,
+  "id": "d154",
+  "assigned": false,
+  "points": [
+   [
+    802.7,
+    574.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 132
+ },
+ {
+  "area": "team1",
+  "icon": [
+   880,
+   730
+  ],
+  "door": [
+   901,
+   751
+  ],
+  "bars": true,
+  "id": "d155",
+  "assigned": false,
+  "points": [
+   [
+    880.1,
+    730.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   770,
+   441
+  ],
+  "door": [
+   729,
+   462
+  ],
+  "bars": true,
+  "id": "d156",
+  "assigned": false,
+  "points": [
+   [
+    770.0,
+    441.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 102
+ },
+ {
+  "area": "team1",
+  "icon": [
+   860,
+   560
+  ],
+  "door": [
+   891,
+   538
+  ],
+  "bars": true,
+  "id": "d157",
+  "assigned": false,
+  "points": [
+   [
+    860.4,
+    560.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 233
+ },
+ {
+  "area": "team3",
+  "icon": [
+   986,
+   370
+  ],
+  "door": [
+   973,
+   321
+  ],
+  "bars": true,
+  "id": "d158",
+  "assigned": false,
+  "points": [
+   [
+    985.5,
+    369.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   970,
+   505
+  ],
+  "door": [
+   964,
+   507
+  ],
+  "bars": true,
+  "id": "d159",
+  "assigned": false,
+  "points": [
+   [
+    970.3,
+    505.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 343
+ },
+ {
+  "area": "team2",
+  "icon": [
+   666,
+   295
+  ],
+  "door": [
+   662,
+   296
+  ],
+  "bars": true,
+  "id": "d160",
+  "assigned": false,
+  "points": [
+   [
+    666.3,
+    294.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 296
+ },
+ {
+  "area": "team3",
+  "icon": [
+   879,
+   462
+  ],
+  "door": [
+   876,
+   458
+  ],
+  "bars": true,
+  "id": "d161",
+  "assigned": false,
+  "points": [
+   [
+    879.3,
+    462.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 196
+ },
+ {
+  "area": "team4",
+  "icon": [
+   459,
+   610
+  ],
+  "door": [
+   463,
+   615
+  ],
+  "bars": true,
+  "id": "d162",
+  "assigned": false,
+  "points": [
+   [
+    459.4,
+    609.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   1119,
+   901
+  ],
+  "door": [
+   1098,
+   912
+  ],
+  "bars": true,
+  "id": "d163",
+  "assigned": false,
+  "points": [
+   [
+    1119.0,
+    900.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   578,
+   681
+  ],
+  "door": [
+   577,
+   681
+  ],
+  "bars": true,
+  "id": "d164",
+  "assigned": false,
+  "points": [
+   [
+    578.3,
+    680.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   992,
+   375
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d165",
+  "assigned": false,
+  "points": [
+   [
+    991.8,
+    375.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   548,
+   632
+  ],
+  "door": [
+   546,
+   633
+  ],
+  "bars": true,
+  "id": "d166",
+  "assigned": false,
+  "points": [
+   [
+    547.5,
+    632.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   797,
+   758
+  ],
+  "door": [
+   795,
+   760
+  ],
+  "bars": true,
+  "id": "d167",
+  "assigned": false,
+  "points": [
+   [
+    797.0,
+    757.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   975,
+   519
+  ],
+  "door": [
+   969,
+   521
+  ],
+  "bars": true,
+  "id": "d168",
+  "assigned": false,
+  "points": [
+   [
+    975.2,
+    518.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 359
+ },
+ {
+  "area": "team4",
+  "icon": [
+   536,
+   530
+  ],
+  "door": [
+   534,
+   531
+  ],
+  "bars": true,
+  "id": "d169",
+  "assigned": false,
+  "points": [
+   [
+    535.8,
+    529.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1022,
+   581
+  ],
+  "door": [
+   1006,
+   595
+  ],
+  "bars": true,
+  "id": "d170",
+  "assigned": false,
+  "points": [
+   [
+    1022.0,
+    581.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1096,
+   595
+  ],
+  "door": [
+   1131,
+   572
+  ],
+  "bars": true,
+  "id": "d171",
+  "assigned": false,
+  "points": [
+   [
+    1095.9,
+    595.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "dean",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   648,
+   650
+  ],
+  "door": [
+   647,
+   650
+  ],
+  "bars": true,
+  "id": "d172",
+  "assigned": false,
+  "points": [
+   [
+    648.5,
+    649.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 175
+ },
+ {
+  "area": "team3",
+  "icon": [
+   858,
+   490
+  ],
+  "door": [
+   862,
+   486
+  ],
+  "bars": true,
+  "id": "d173",
+  "assigned": false,
+  "points": [
+   [
+    857.8,
+    489.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 171
+ },
+ {
+  "area": "team3",
+  "icon": [
+   918,
+   564
+  ],
+  "door": [
+   913,
+   567
+  ],
+  "bars": true,
+  "id": "d174",
+  "assigned": false,
+  "points": [
+   [
+    917.9,
+    563.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 271
+ },
+ {
+  "area": "team3",
+  "icon": [
+   918,
+   442
+  ],
+  "door": [
+   915,
+   437
+  ],
+  "bars": true,
+  "id": "d175",
+  "assigned": false,
+  "points": [
+   [
+    918.3,
+    442.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 244
+ },
+ {
+  "area": "team3",
+  "icon": [
+   942,
+   437
+  ],
+  "door": [
+   940,
+   442
+  ],
+  "bars": true,
+  "id": "d176",
+  "assigned": false,
+  "points": [
+   [
+    941.5,
+    436.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 273
+ },
+ {
+  "area": "team3",
+  "icon": [
+   900,
+   316
+  ],
+  "door": [
+   898,
+   310
+  ],
+  "bars": true,
+  "id": "d177",
+  "assigned": false,
+  "points": [
+   [
+    899.7,
+    315.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   517,
+   500
+  ],
+  "door": [
+   515,
+   500
+  ],
+  "bars": true,
+  "id": "d178",
+  "assigned": false,
+  "points": [
+   [
+    517.1,
+    500.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   834,
+   739
+  ],
+  "door": [
+   837,
+   736
+  ],
+  "bars": true,
+  "id": "d179",
+  "assigned": false,
+  "points": [
+   [
+    834.0,
+    739.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   896,
+   695
+  ],
+  "door": [
+   909,
+   666
+  ],
+  "bars": true,
+  "id": "d180",
+  "assigned": false,
+  "points": [
+   [
+    896.4,
+    695.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 396
+ },
+ {
+  "area": "team4",
+  "icon": [
+   460,
+   524
+  ],
+  "door": [
+   465,
+   519
+  ],
+  "bars": true,
+  "id": "d181",
+  "assigned": false,
+  "points": [
+   [
+    460.1,
+    524.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   454,
+   430
+  ],
+  "door": [
+   453,
+   430
+  ],
+  "bars": true,
+  "id": "d182",
+  "assigned": false,
+  "points": [
+   [
+    454.1,
+    430.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   391,
+   868
+  ],
+  "door": [
+   406,
+   869
+  ],
+  "bars": true,
+  "id": "d183",
+  "assigned": false,
+  "points": [
+   [
+    390.9,
+    867.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "warwick",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   764,
+   700
+  ],
+  "door": [
+   762,
+   702
+  ],
+  "bars": true,
+  "id": "d184",
+  "assigned": false,
+  "points": [
+   [
+    764.0,
+    700.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   817,
+   610
+  ],
+  "door": [
+   821,
+   607
+  ],
+  "bars": true,
+  "id": "d185",
+  "assigned": false,
+  "points": [
+   [
+    817.4,
+    609.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 171
+ },
+ {
+  "area": "team5",
+  "icon": [
+   620,
+   707
+  ],
+  "door": [
+   634,
+   696
+  ],
+  "bars": true,
+  "id": "d186",
+  "assigned": false,
+  "points": [
+   [
+    620.5,
+    706.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   840,
+   410
+  ],
+  "door": [
+   835,
+   412
+  ],
+  "bars": true,
+  "id": "d187",
+  "assigned": false,
+  "points": [
+   [
+    840.1,
+    410.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 228
+ },
+ {
+  "area": "team1",
+  "icon": [
+   767,
+   641
+  ],
+  "door": [
+   770,
+   637
+  ],
+  "bars": true,
+  "id": "d188",
+  "assigned": false,
+  "points": [
+   [
+    766.9,
+    641.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 110
+ },
+ {
+  "area": "team3",
+  "icon": [
+   911,
+   373
+  ],
+  "door": [
+   905,
+   376
+  ],
+  "bars": true,
+  "id": "d189",
+  "assigned": false,
+  "points": [
+   [
+    911.4,
+    373.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   652,
+   713
+  ],
+  "door": [
+   650,
+   714
+  ],
+  "bars": true,
+  "id": "d190",
+  "assigned": false,
+  "points": [
+   [
+    651.7,
+    713.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   567,
+   605
+  ],
+  "door": [
+   543,
+   628
+  ],
+  "bars": true,
+  "id": "d191",
+  "assigned": false,
+  "points": [
+   [
+    567.0,
+    605.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   470,
+   509
+  ],
+  "door": [
+   468,
+   509
+  ],
+  "bars": true,
+  "id": "d192",
+  "assigned": false,
+  "points": [
+   [
+    470.3,
+    509.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   866,
+   569
+  ],
+  "door": [
+   899,
+   552
+  ],
+  "bars": true,
+  "id": "d193",
+  "assigned": false,
+  "points": [
+   [
+    866.0,
+    569.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 250
+ },
+ {
+  "area": "team5",
+  "icon": [
+   947,
+   980
+  ],
+  "door": [
+   940,
+   947
+  ],
+  "bars": true,
+  "id": "d194",
+  "assigned": false,
+  "points": [
+   [
+    947.4,
+    979.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   653,
+   657
+  ],
+  "door": [
+   651,
+   657
+  ],
+  "bars": true,
+  "id": "d195",
+  "assigned": false,
+  "points": [
+   [
+    653.0,
+    657.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 184
+ },
+ {
+  "area": "team3",
+  "icon": [
+   786,
+   433
+  ],
+  "door": [
+   828,
+   419
+  ],
+  "bars": true,
+  "id": "d196",
+  "assigned": false,
+  "points": [
+   [
+    785.6,
+    432.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 224
+ },
+ {
+  "area": "team3",
+  "icon": [
+   948,
+   476
+  ],
+  "door": [
+   948,
+   475
+  ],
+  "bars": true,
+  "id": "d197",
+  "assigned": false,
+  "points": [
+   [
+    947.8,
+    476.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 305
+ },
+ {
+  "area": "team1",
+  "icon": [
+   827,
+   628
+  ],
+  "door": [
+   831,
+   627
+  ],
+  "bars": true,
+  "id": "d198",
+  "assigned": false,
+  "points": [
+   [
+    827.0,
+    628.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 195
+ },
+ {
+  "area": "team3",
+  "icon": [
+   882,
+   216
+  ],
+  "door": [
+   882,
+   217
+  ],
+  "bars": true,
+  "id": "d199",
+  "assigned": false,
+  "points": [
+   [
+    882.2,
+    215.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   884,
+   626
+  ],
+  "door": [
+   908,
+   653
+  ],
+  "bars": true,
+  "id": "d200",
+  "assigned": false,
+  "points": [
+   [
+    883.5,
+    626.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 391
+ },
+ {
+  "area": "team1",
+  "icon": [
+   711,
+   635
+  ],
+  "door": [
+   712,
+   639
+  ],
+  "bars": true,
+  "id": "d201",
+  "assigned": false,
+  "points": [
+   [
+    711.3,
+    634.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 130
+ },
+ {
+  "area": "team4",
+  "icon": [
+   566,
+   684
+  ],
+  "door": [
+   571,
+   679
+  ],
+  "bars": true,
+  "id": "d202",
+  "assigned": false,
+  "points": [
+   [
+    566.0,
+    684.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   889,
+   508
+  ],
+  "door": [
+   884,
+   511
+  ],
+  "bars": true,
+  "id": "d203",
+  "assigned": false,
+  "points": [
+   [
+    888.6,
+    508.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 203
+ },
+ {
+  "area": "team4",
+  "icon": [
+   462,
+   497
+  ],
+  "door": [
+   461,
+   498
+  ],
+  "bars": true,
+  "id": "d204",
+  "assigned": false,
+  "points": [
+   [
+    462.3,
+    496.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   550,
+   576
+  ],
+  "door": [
+   548,
+   561
+  ],
+  "bars": true,
+  "id": "d205",
+  "assigned": false,
+  "points": [
+   [
+    550.4,
+    576.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   725,
+   743
+  ],
+  "door": [
+   762,
+   724
+  ],
+  "bars": true,
+  "id": "d206",
+  "assigned": false,
+  "points": [
+   [
+    725.4,
+    742.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   440,
+   948
+  ],
+  "door": [
+   438,
+   945
+  ],
+  "bars": true,
+  "id": "d207",
+  "assigned": false,
+  "points": [
+   [
+    439.8,
+    948.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "warwick",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   438,
+   285
+  ],
+  "door": [
+   441,
+   290
+  ],
+  "bars": true,
+  "id": "d208",
+  "assigned": false,
+  "points": [
+   [
+    437.8,
+    284.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "great_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   724,
+   663
+  ],
+  "door": [
+   728,
+   660
+  ],
+  "bars": true,
+  "id": "d209",
+  "assigned": false,
+  "points": [
+   [
+    723.9,
+    662.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 135
+ },
+ {
+  "area": "team3",
+  "icon": [
+   906,
+   544
+  ],
+  "door": [
+   902,
+   545
+  ],
+  "bars": true,
+  "id": "d210",
+  "assigned": false,
+  "points": [
+   [
+    906.4,
+    543.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 244
+ },
+ {
+  "area": "team1",
+  "icon": [
+   713,
+   452
+  ],
+  "door": [
+   717,
+   451
+  ],
+  "bars": true,
+  "id": "d211",
+  "assigned": false,
+  "points": [
+   [
+    713.4,
+    451.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 118
+ },
+ {
+  "area": "team4",
+  "icon": [
+   512,
+   493
+  ],
+  "door": [
+   511,
+   494
+  ],
+  "bars": true,
+  "id": "d212",
+  "assigned": false,
+  "points": [
+   [
+    512.5,
+    492.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   1093,
+   889
+  ],
+  "door": [
+   1089,
+   892
+  ],
+  "bars": true,
+  "id": "d213",
+  "assigned": false,
+  "points": [
+   [
+    1092.9,
+    889.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1038,
+   354
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d214",
+  "assigned": false,
+  "points": [
+   [
+    1037.9,
+    354.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   496,
+   598
+  ],
+  "door": [
+   495,
+   596
+  ],
+  "bars": true,
+  "id": "d215",
+  "assigned": false,
+  "points": [
+   [
+    495.7,
+    597.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   899,
+   475
+  ],
+  "door": [
+   901,
+   473
+  ],
+  "bars": true,
+  "id": "d216",
+  "assigned": false,
+  "points": [
+   [
+    899.3,
+    474.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 235
+ },
+ {
+  "area": "team1",
+  "icon": [
+   740,
+   654
+  ],
+  "door": [
+   738,
+   655
+  ],
+  "bars": true,
+  "id": "d217",
+  "assigned": false,
+  "points": [
+   [
+    740.0,
+    653.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 131
+ },
+ {
+  "area": "team4",
+  "icon": [
+   505,
+   540
+  ],
+  "door": [
+   492,
+   546
+  ],
+  "bars": true,
+  "id": "d218",
+  "assigned": false,
+  "points": [
+   [
+    505.2,
+    540.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   727,
+   524
+  ],
+  "door": [
+   729,
+   528
+  ],
+  "bars": true,
+  "id": "d219",
+  "assigned": false,
+  "points": [
+   [
+    726.9,
+    524.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 27
+ },
+ {
+  "area": "team1",
+  "icon": [
+   972,
+   748
+  ],
+  "door": [
+   1008,
+   748
+  ],
+  "bars": true,
+  "id": "d220",
+  "assigned": false,
+  "points": [
+   [
+    971.9,
+    748.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   829,
+   732
+  ],
+  "door": [
+   832,
+   729
+  ],
+  "bars": true,
+  "id": "d221",
+  "assigned": false,
+  "points": [
+   [
+    828.8,
+    731.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   862,
+   520
+  ],
+  "door": [
+   876,
+   514
+  ],
+  "bars": true,
+  "id": "d222",
+  "assigned": false,
+  "points": [
+   [
+    862.4,
+    519.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 203
+ },
+ {
+  "area": "team1",
+  "icon": [
+   976,
+   755
+  ],
+  "door": [
+   1008,
+   748
+  ],
+  "bars": true,
+  "id": "d223",
+  "assigned": false,
+  "points": [
+   [
+    975.9,
+    755.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   578,
+   699
+  ],
+  "door": [
+   582,
+   694
+  ],
+  "bars": true,
+  "id": "d224",
+  "assigned": false,
+  "points": [
+   [
+    577.6,
+    699.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   878,
+   685
+  ],
+  "door": [
+   902,
+   660
+  ],
+  "bars": true,
+  "id": "d225",
+  "assigned": false,
+  "points": [
+   [
+    877.7,
+    685.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 400
+ },
+ {
+  "area": "team4",
+  "icon": [
+   595,
+   574
+  ],
+  "door": [
+   600,
+   571
+  ],
+  "bars": true,
+  "id": "d226",
+  "assigned": false,
+  "points": [
+   [
+    594.6,
+    574.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 135
+ },
+ {
+  "area": "team1",
+  "icon": [
+   699,
+   642
+  ],
+  "door": [
+   700,
+   646
+  ],
+  "bars": true,
+  "id": "d227",
+  "assigned": false,
+  "points": [
+   [
+    699.3,
+    642.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 145
+ },
+ {
+  "area": "team3",
+  "icon": [
+   912,
+   411
+  ],
+  "door": [
+   914,
+   411
+  ],
+  "bars": true,
+  "id": "d228",
+  "assigned": false,
+  "points": [
+   [
+    912.4,
+    410.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 269
+ },
+ {
+  "area": "team5",
+  "icon": [
+   618,
+   692
+  ],
+  "door": [
+   632,
+   689
+  ],
+  "bars": true,
+  "id": "d229",
+  "assigned": false,
+  "points": [
+   [
+    617.9,
+    692.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   775,
+   721
+  ],
+  "door": [
+   773,
+   723
+  ],
+  "bars": true,
+  "id": "d230",
+  "assigned": false,
+  "points": [
+   [
+    774.9,
+    721.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   740,
+   620
+  ],
+  "door": [
+   741,
+   623
+  ],
+  "bars": true,
+  "id": "d231",
+  "assigned": false,
+  "points": [
+   [
+    739.7,
+    620.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 94
+ },
+ {
+  "area": "team1",
+  "icon": [
+   919,
+   749
+  ],
+  "door": [
+   915,
+   744
+  ],
+  "bars": true,
+  "id": "d232",
+  "assigned": false,
+  "points": [
+   [
+    918.9,
+    748.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   959,
+   717
+  ],
+  "door": [
+   925,
+   738
+  ],
+  "bars": true,
+  "id": "d233",
+  "assigned": false,
+  "points": [
+   [
+    958.6,
+    717.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   927,
+   525
+  ],
+  "door": [
+   903,
+   547
+  ],
+  "bars": true,
+  "id": "d234",
+  "assigned": false,
+  "points": [
+   [
+    926.9,
+    524.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 247
+ },
+ {
+  "area": "team1",
+  "icon": [
+   752,
+   545
+  ],
+  "door": [
+   750,
+   541
+  ],
+  "bars": true,
+  "id": "d235",
+  "assigned": false,
+  "points": [
+   [
+    752.5,
+    544.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 36
+ },
+ {
+  "area": "team3",
+  "icon": [
+   988,
+   383
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d236",
+  "assigned": false,
+  "points": [
+   [
+    988.0,
+    382.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   575,
+   524
+  ],
+  "door": [
+   580,
+   522
+  ],
+  "bars": true,
+  "id": "d237",
+  "assigned": false,
+  "points": [
+   [
+    575.1,
+    524.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 188
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1045,
+   566
+  ],
+  "door": [
+   1006,
+   595
+  ],
+  "bars": true,
+  "id": "d238",
+  "assigned": false,
+  "points": [
+   [
+    1044.9,
+    565.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   647,
+   705
+  ],
+  "door": [
+   645,
+   706
+  ],
+  "bars": true,
+  "id": "d239",
+  "assigned": false,
+  "points": [
+   [
+    646.8,
+    704.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   607,
+   561
+  ],
+  "door": [
+   606,
+   562
+  ],
+  "bars": true,
+  "id": "d240",
+  "assigned": false,
+  "points": [
+   [
+    607.0,
+    560.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 137
+ },
+ {
+  "area": "team1",
+  "icon": [
+   920,
+   734
+  ],
+  "door": [
+   922,
+   736
+  ],
+  "bars": true,
+  "id": "d241",
+  "assigned": false,
+  "points": [
+   [
+    920.5,
+    733.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   924,
+   885
+  ],
+  "door": [
+   939,
+   865
+  ],
+  "bars": true,
+  "id": "d242",
+  "assigned": false,
+  "points": [
+   [
+    923.6,
+    885.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   708,
+   400
+  ],
+  "door": [
+   704,
+   401
+  ],
+  "bars": true,
+  "id": "d243",
+  "assigned": false,
+  "points": [
+   [
+    708.3,
+    399.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 174
+ },
+ {
+  "area": "team1",
+  "icon": [
+   721,
+   630
+  ],
+  "door": [
+   723,
+   633
+  ],
+  "bars": true,
+  "id": "d244",
+  "assigned": false,
+  "points": [
+   [
+    721.1,
+    630.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 116
+ },
+ {
+  "area": "team4",
+  "icon": [
+   561,
+   458
+  ],
+  "door": [
+   559,
+   459
+  ],
+  "bars": true,
+  "id": "d245",
+  "assigned": false,
+  "points": [
+   [
+    561.4,
+    458.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   825,
+   412
+  ],
+  "door": [
+   827,
+   411
+  ],
+  "bars": true,
+  "id": "d246",
+  "assigned": false,
+  "points": [
+   [
+    825.3,
+    412.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 232
+ },
+ {
+  "area": "team1",
+  "icon": [
+   814,
+   602
+  ],
+  "door": [
+   817,
+   599
+  ],
+  "bars": true,
+  "id": "d247",
+  "assigned": false,
+  "points": [
+   [
+    813.5,
+    601.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 161
+ },
+ {
+  "area": "team3",
+  "icon": [
+   931,
+   586
+  ],
+  "door": [
+   925,
+   590
+  ],
+  "bars": true,
+  "id": "d248",
+  "assigned": false,
+  "points": [
+   [
+    930.6,
+    586.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 299
+ },
+ {
+  "area": "team3",
+  "icon": [
+   996,
+   679
+  ],
+  "door": [
+   1007,
+   675
+  ],
+  "bars": true,
+  "id": "d249",
+  "assigned": false,
+  "points": [
+   [
+    996.5,
+    678.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   798,
+   590
+  ],
+  "door": [
+   810,
+   587
+  ],
+  "bars": true,
+  "id": "d250",
+  "assigned": false,
+  "points": [
+   [
+    797.5,
+    590.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 146
+ },
+ {
+  "area": "team1",
+  "icon": [
+   753,
+   586
+  ],
+  "door": [
+   750,
+   588
+  ],
+  "bars": true,
+  "id": "d251",
+  "assigned": false,
+  "points": [
+   [
+    752.7,
+    586.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 52
+ },
+ {
+  "area": "team4",
+  "icon": [
+   554,
+   557
+  ],
+  "door": [
+   552,
+   555
+  ],
+  "bars": true,
+  "id": "d252",
+  "assigned": false,
+  "points": [
+   [
+    554.0,
+    557.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   511,
+   510
+  ],
+  "door": [
+   516,
+   507
+  ],
+  "bars": true,
+  "id": "d253",
+  "assigned": false,
+  "points": [
+   [
+    510.8,
+    509.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   734,
+   464
+  ],
+  "door": [
+   730,
+   464
+  ],
+  "bars": true,
+  "id": "d254",
+  "assigned": false,
+  "points": [
+   [
+    733.9,
+    464.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 100
+ },
+ {
+  "area": "team4",
+  "icon": [
+   447,
+   581
+  ],
+  "door": [
+   414,
+   589
+  ],
+  "bars": true,
+  "id": "d255",
+  "assigned": false,
+  "points": [
+   [
+    446.6,
+    581.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   572,
+   763
+  ],
+  "door": [
+   577,
+   758
+  ],
+  "bars": true,
+  "id": "d256",
+  "assigned": false,
+  "points": [
+   [
+    571.9,
+    762.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   896,
+   675
+  ],
+  "door": [
+   907,
+   664
+  ],
+  "bars": true,
+  "id": "d257",
+  "assigned": false,
+  "points": [
+   [
+    896.3,
+    675.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 396
+ },
+ {
+  "area": "team1",
+  "icon": [
+   796,
+   560
+  ],
+  "door": [
+   800,
+   559
+  ],
+  "bars": true,
+  "id": "d258",
+  "assigned": false,
+  "points": [
+   [
+    795.6,
+    559.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 114
+ },
+ {
+  "area": "team1",
+  "icon": [
+   676,
+   575
+  ],
+  "door": [
+   676,
+   570
+  ],
+  "bars": true,
+  "id": "d259",
+  "assigned": false,
+  "points": [
+   [
+    675.9,
+    574.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 50
+ },
+ {
+  "area": "team1",
+  "icon": [
+   760,
+   692
+  ],
+  "door": [
+   758,
+   694
+  ],
+  "bars": true,
+  "id": "d260",
+  "assigned": false,
+  "points": [
+   [
+    759.8,
+    692.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 178
+ },
+ {
+  "area": "team3",
+  "icon": [
+   829,
+   389
+  ],
+  "door": [
+   825,
+   392
+  ],
+  "bars": true,
+  "id": "d261",
+  "assigned": false,
+  "points": [
+   [
+    829.3,
+    388.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 252
+ },
+ {
+  "area": "team4",
+  "icon": [
+   616,
+   616
+  ],
+  "door": [
+   622,
+   614
+  ],
+  "bars": true,
+  "id": "d262",
+  "assigned": false,
+  "points": [
+   [
+    615.7,
+    616.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 131
+ },
+ {
+  "area": "team4",
+  "icon": [
+   389,
+   553
+  ],
+  "door": [
+   388,
+   554
+  ],
+  "bars": true,
+  "id": "d263",
+  "assigned": false,
+  "points": [
+   [
+    388.7,
+    552.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   707,
+   436
+  ],
+  "door": [
+   711,
+   436
+  ],
+  "bars": true,
+  "id": "d264",
+  "assigned": false,
+  "points": [
+   [
+    707.2,
+    435.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 136
+ },
+ {
+  "area": "team1",
+  "icon": [
+   1030,
+   804
+  ],
+  "door": [
+   1033,
+   803
+  ],
+  "bars": true,
+  "id": "d265",
+  "assigned": false,
+  "points": [
+   [
+    1029.5,
+    803.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team5",
+  "icon": [
+   949,
+   898
+  ],
+  "door": [
+   952,
+   897
+  ],
+  "bars": true,
+  "id": "d266",
+  "assigned": false,
+  "points": [
+   [
+    949.0,
+    897.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   502,
+   496
+  ],
+  "door": [
+   509,
+   492
+  ],
+  "bars": true,
+  "id": "d267",
+  "assigned": false,
+  "points": [
+   [
+    502.2,
+    495.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   982,
+   688
+  ],
+  "door": [
+   1007,
+   675
+  ],
+  "bars": true,
+  "id": "d268",
+  "assigned": false,
+  "points": [
+   [
+    981.9,
+    687.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   861,
+   756
+  ],
+  "door": [
+   858,
+   757
+  ],
+  "bars": true,
+  "id": "d269",
+  "assigned": false,
+  "points": [
+   [
+    861.1,
+    755.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   811,
+   384
+  ],
+  "door": [
+   813,
+   383
+  ],
+  "bars": true,
+  "id": "d270",
+  "assigned": false,
+  "points": [
+   [
+    810.6,
+    383.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 266
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1005,
+   369
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d271",
+  "assigned": false,
+  "points": [
+   [
+    1004.8,
+    368.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   648,
+   513
+  ],
+  "door": [
+   652,
+   510
+  ],
+  "bars": true,
+  "id": "d272",
+  "assigned": false,
+  "points": [
+   [
+    647.8,
+    513.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 93
+ },
+ {
+  "area": "team3",
+  "icon": [
+   958,
+   563
+  ],
+  "door": [
+   990,
+   579
+  ],
+  "bars": true,
+  "id": "d273",
+  "assigned": false,
+  "points": [
+   [
+    958.5,
+    563.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   849,
+   494
+  ],
+  "door": [
+   847,
+   489
+  ],
+  "bars": true,
+  "id": "d274",
+  "assigned": false,
+  "points": [
+   [
+    849.4,
+    494.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 154
+ },
+ {
+  "area": "team1",
+  "icon": [
+   632,
+   645
+  ],
+  "door": [
+   636,
+   641
+  ],
+  "bars": true,
+  "id": "d275",
+  "assigned": false,
+  "points": [
+   [
+    631.6,
+    645.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 162
+ },
+ {
+  "area": "team1",
+  "icon": [
+   903,
+   656
+  ],
+  "door": [
+   905,
+   658
+  ],
+  "bars": true,
+  "id": "d276",
+  "assigned": false,
+  "points": [
+   [
+    903.2,
+    656.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 396
+ },
+ {
+  "area": "team2",
+  "icon": [
+   605,
+   187
+  ],
+  "door": [
+   605,
+   183
+  ],
+  "bars": true,
+  "id": "d277",
+  "assigned": false,
+  "points": [
+   [
+    604.6,
+    186.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   838,
+   724
+  ],
+  "door": [
+   835,
+   726
+  ],
+  "bars": true,
+  "id": "d278",
+  "assigned": false,
+  "points": [
+   [
+    837.9,
+    724.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   748,
+   709
+  ],
+  "door": [
+   752,
+   706
+  ],
+  "bars": true,
+  "id": "d279",
+  "assigned": false,
+  "points": [
+   [
+    747.7,
+    709.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   603,
+   552
+  ],
+  "door": [
+   601,
+   552
+  ],
+  "bars": true,
+  "id": "d280",
+  "assigned": false,
+  "points": [
+   [
+    603.2,
+    552.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 149
+ },
+ {
+  "area": "team1",
+  "icon": [
+   916,
+   787
+  ],
+  "door": [
+   900,
+   802
+  ],
+  "bars": true,
+  "id": "d281",
+  "assigned": false,
+  "points": [
+   [
+    915.9,
+    787.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   990,
+   617
+  ],
+  "door": [
+   987,
+   613
+  ],
+  "bars": true,
+  "id": "d282",
+  "assigned": false,
+  "points": [
+   [
+    990.0,
+    617.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1019,
+   354
+  ],
+  "door": [
+   1039,
+   347
+  ],
+  "bars": true,
+  "id": "d283",
+  "assigned": false,
+  "points": [
+   [
+    1018.7,
+    354.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "newman",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   727,
+   304
+  ],
+  "door": [
+   725,
+   300
+  ],
+  "bars": true,
+  "id": "d284",
+  "assigned": false,
+  "points": [
+   [
+    727.1,
+    303.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   768,
+   618
+  ],
+  "door": [
+   766,
+   620
+  ],
+  "bars": true,
+  "id": "d285",
+  "assigned": false,
+  "points": [
+   [
+    768.3,
+    618.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 91
+ },
+ {
+  "area": "team3",
+  "icon": [
+   954,
+   492
+  ],
+  "door": [
+   954,
+   491
+  ],
+  "bars": true,
+  "id": "d286",
+  "assigned": false,
+  "points": [
+   [
+    953.8,
+    491.7
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 323
+ },
+ {
+  "area": "team1",
+  "icon": [
+   740,
+   695
+  ],
+  "door": [
+   746,
+   694
+  ],
+  "bars": true,
+  "id": "d287",
+  "assigned": false,
+  "points": [
+   [
+    740.1,
+    695.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 173
+ },
+ {
+  "area": "team2",
+  "icon": [
+   783,
+   354
+  ],
+  "door": [
+   780,
+   350
+  ],
+  "bars": true,
+  "id": "d288",
+  "assigned": false,
+  "points": [
+   [
+    782.9,
+    353.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   522,
+   578
+  ],
+  "door": [
+   521,
+   575
+  ],
+  "bars": true,
+  "id": "d289",
+  "assigned": false,
+  "points": [
+   [
+    522.0,
+    577.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   773,
+   359
+  ],
+  "door": [
+   771,
+   354
+  ],
+  "bars": true,
+  "id": "d290",
+  "assigned": false,
+  "points": [
+   [
+    772.8,
+    358.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 270
+ },
+ {
+  "area": "team4",
+  "icon": [
+   560,
+   490
+  ],
+  "door": [
+   566,
+   489
+  ],
+  "bars": true,
+  "id": "d291",
+  "assigned": false,
+  "points": [
+   [
+    559.8,
+    489.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   763,
+   363
+  ],
+  "door": [
+   763,
+   358
+  ],
+  "bars": true,
+  "id": "d292",
+  "assigned": false,
+  "points": [
+   [
+    762.8,
+    363.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 261
+ },
+ {
+  "area": "team1",
+  "icon": [
+   790,
+   675
+  ],
+  "door": [
+   794,
+   672
+  ],
+  "bars": true,
+  "id": "d293",
+  "assigned": false,
+  "points": [
+   [
+    790.3,
+    675.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 155
+ },
+ {
+  "area": "team1",
+  "icon": [
+   881,
+   742
+  ],
+  "door": [
+   893,
+   757
+  ],
+  "bars": true,
+  "id": "d294",
+  "assigned": false,
+  "points": [
+   [
+    880.7,
+    742.5
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "bridle",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   995,
+   692
+  ],
+  "door": [
+   1007,
+   675
+  ],
+  "bars": true,
+  "id": "d295",
+  "assigned": false,
+  "points": [
+   [
+    994.8,
+    692.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "rupert",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   650,
+   479
+  ],
+  "door": [
+   652,
+   483
+  ],
+  "bars": true,
+  "id": "d296",
+  "assigned": false,
+  "points": [
+   [
+    649.7,
+    479.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 120
+ },
+ {
+  "area": "team4",
+  "icon": [
+   482,
+   557
+  ],
+  "door": [
+   486,
+   549
+  ],
+  "bars": true,
+  "id": "d297",
+  "assigned": false,
+  "points": [
+   [
+    482.2,
+    556.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   779,
+   318
+  ],
+  "door": [
+   781,
+   317
+  ],
+  "bars": true,
+  "id": "d298",
+  "assigned": false,
+  "points": [
+   [
+    778.7,
+    318.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   806,
+   279
+  ],
+  "door": [
+   798,
+   263
+  ],
+  "bars": true,
+  "id": "d299",
+  "assigned": false,
+  "points": [
+   [
+    806.5,
+    278.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team4",
+  "icon": [
+   459,
+   591
+  ],
+  "door": [
+   472,
+   608
+  ],
+  "bars": true,
+  "id": "d300",
+  "assigned": false,
+  "points": [
+   [
+    458.6,
+    591.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   947,
+   615
+  ],
+  "door": [
+   941,
+   619
+  ],
+  "bars": true,
+  "id": "d301",
+  "assigned": false,
+  "points": [
+   [
+    946.9,
+    615.0
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 334
+ },
+ {
+  "area": "team1",
+  "icon": [
+   747,
+   630
+  ],
+  "door": [
+   746,
+   626
+  ],
+  "bars": true,
+  "id": "d302",
+  "assigned": false,
+  "points": [
+   [
+    746.9,
+    629.8
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 94
+ },
+ {
+  "area": "team4",
+  "icon": [
+   472,
+   600
+  ],
+  "door": [
+   477,
+   604
+  ],
+  "bars": true,
+  "id": "d303",
+  "assigned": false,
+  "points": [
+   [
+    471.5,
+    600.4
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "little_marlborough",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   857,
+   258
+  ],
+  "door": [
+   851,
+   260
+  ],
+  "bars": true,
+  "id": "d304",
+  "assigned": false,
+  "points": [
+   [
+    856.9,
+    257.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team3",
+  "icon": [
+   842,
+   266
+  ],
+  "door": [
+   843,
+   265
+  ],
+  "bars": true,
+  "id": "d305",
+  "assigned": false,
+  "points": [
+   [
+    841.9,
+    266.1
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "berners",
+  "walkToBroad": null
+ },
+ {
+  "area": "team2",
+  "icon": [
+   751,
+   394
+  ],
+  "door": [
+   737,
+   370
+  ],
+  "bars": true,
+  "id": "d306",
+  "assigned": false,
+  "points": [
+   [
+    751.4,
+    393.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 230
+ },
+ {
+  "area": "team3",
+  "icon": [
+   941,
+   397
+  ],
+  "door": [
+   920,
+   407
+  ],
+  "bars": true,
+  "id": "d307",
+  "assigned": false,
+  "points": [
+   [
+    940.8,
+    396.9
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 272
+ },
+ {
+  "area": "team3",
+  "icon": [
+   1078,
+   564
+  ],
+  "door": [
+   1112,
+   542
+  ],
+  "bars": true,
+  "id": "d308",
+  "assigned": false,
+  "points": [
+   [
+    1078.2,
+    564.3
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "dean",
+  "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   707,
+   534
+  ],
+  "door": [
+   708,
+   538
+  ],
+  "bars": true,
+  "id": "d309",
+  "assigned": false,
+  "points": [
+   [
+    707.3,
+    534.2
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 16
+ },
+ {
+  "area": "team3",
+  "icon": [
+   907,
+   494
+  ],
+  "door": [
+   908,
+   488
+  ],
+  "bars": true,
+  "id": "d310",
+  "assigned": false,
+  "points": [
+   [
+    907.4,
+    493.6
+   ]
+  ],
+  "deaths": 1,
+  "nearestPump": "broad",
+  "walkToBroad": 253
  }
 ]

@@ -376,6 +376,2636 @@
    "home": "인쇄소 위층",
    "desc": "serious 33 year old printer man, ink stained fingers hidden, short fair hair, grey waistcoat, black sleeve covers",
    "seed": 7047
+  },
+  {
+   "id": "d48",
+   "name": "패트릭 스톤",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "56 year old man, milkman, balding grey hair, blue smock, cloth cap",
+   "seed": 9048,
+   "female": false,
+   "age": 56
+  },
+  {
+   "id": "d49",
+   "name": "리처드 파커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "44 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9049,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d50",
+   "name": "해나 그레이",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "49 year old woman, landlady, black hair parted in the middle, dark plum dress, lace cap",
+   "seed": 9050,
+   "female": true,
+   "age": 49
+  },
+  {
+   "id": "d51",
+   "name": "엘리자 데이비스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "41 year old woman, printer, greying hair under a lace cap, grey waistcoat, black sleeve covers",
+   "seed": 9051,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d52",
+   "name": "대니얼 존스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "32 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9052,
+   "female": false,
+   "age": 32
+  },
+  {
+   "id": "d53",
+   "name": "조지프 모리스",
+   "role": "대장장이",
+   "home": "대장간",
+   "desc": "32 year old man, blacksmith, fair hair, clean shaven, leather apron, sooty shirt",
+   "seed": 9053,
+   "female": false,
+   "age": 32
+  },
+  {
+   "id": "d54",
+   "name": "제임스 클라크",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "32 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9054,
+   "female": false,
+   "age": 32
+  },
+  {
+   "id": "d55",
+   "name": "로즈 스미스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "48 year old woman, tailor, fair hair braided, grey waistcoat, tape measure around neck",
+   "seed": 9055,
+   "female": true,
+   "age": 48
+  },
+  {
+   "id": "d56",
+   "name": "에밀리 스미스",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "48 year old woman, tavern worker, red hair under a linen cap, striped shirt, waistcoat",
+   "seed": 9056,
+   "female": true,
+   "age": 48
+  },
+  {
+   "id": "d57",
+   "name": "루시 윌리엄스",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "53 year old woman, seamstress, fair hair braided, plain dark dress, pins on collar",
+   "seed": 9057,
+   "female": true,
+   "age": 53
+  },
+  {
+   "id": "d58",
+   "name": "해리엇 프라이스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "63 year old woman, printer, black hair parted in the middle, grey waistcoat, black sleeve covers",
+   "seed": 9058,
+   "female": true,
+   "age": 63
+  },
+  {
+   "id": "d59",
+   "name": "존 머피",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "63 year old man, baker, black hair and moustache, white apron, flour on sleeves",
+   "seed": 9059,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d60",
+   "name": "마거릿 헌트",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "55 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9060,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d61",
+   "name": "앤 마틴",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "54 year old woman, varnisher, greying hair under a lace cap, paint stained smock",
+   "seed": 9061,
+   "female": true,
+   "age": 54
+  },
+  {
+   "id": "d62",
+   "name": "엘리자 윌리엄스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "34 year old woman, washerwoman, fair hair braided, linen apron, sleeves rolled",
+   "seed": 9062,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d63",
+   "name": "엘리자베스 클라크",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "28 year old woman, bootmaker, greying hair under a lace cap, white shirt, leather apron",
+   "seed": 9063,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d64",
+   "name": "마거릿 웹",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "53 year old woman, seamstress, red hair under a linen cap, plain dark dress, pins on collar",
+   "seed": 9064,
+   "female": true,
+   "age": 53
+  },
+  {
+   "id": "d65",
+   "name": "해나 테일러",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "58 year old woman, landlady, dark curly hair tied back, dark plum dress, lace cap",
+   "seed": 9065,
+   "female": true,
+   "age": 58
+  },
+  {
+   "id": "d66",
+   "name": "토머스 존스",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "26 year old man, bootmaker, balding grey hair, white shirt, leather apron",
+   "seed": 9066,
+   "female": false,
+   "age": 26
+  },
+  {
+   "id": "d67",
+   "name": "대니얼 에번스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "57 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9067,
+   "female": false,
+   "age": 57
+  },
+  {
+   "id": "d68",
+   "name": "앨리스 존스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "58 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9068,
+   "female": true,
+   "age": 58
+  },
+  {
+   "id": "d69",
+   "name": "해리엇 벨",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "27 year old woman, milliner, dark curly hair tied back, plain blue dress, ribbon on collar",
+   "seed": 9069,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d70",
+   "name": "앨리스 브라운",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "41 year old woman, milkman, greying hair under a lace cap, blue smock, cloth cap",
+   "seed": 9070,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d71",
+   "name": "월터 그레이",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "51 year old man, cab driver, dark hair and sideburns, heavy green coat, bowler hat",
+   "seed": 9071,
+   "female": false,
+   "age": 51
+  },
+  {
+   "id": "d72",
+   "name": "월터 로빈슨",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "44 year old man, coal porter, dark hair and sideburns, dark wool coat, leather cap",
+   "seed": 9072,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d73",
+   "name": "앨프리드 그레이",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "49 year old man, greengrocer, balding grey hair, shawl, coarse apron",
+   "seed": 9073,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d74",
+   "name": "프레더릭 루이스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "49 year old man, tailor, black hair and moustache, grey waistcoat, tape measure around neck",
+   "seed": 9074,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d75",
+   "name": "사라 윌리엄스",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "51 year old woman, seamstress, black hair parted in the middle, plain dark dress, pins on collar",
+   "seed": 9075,
+   "female": true,
+   "age": 51
+  },
+  {
+   "id": "d76",
+   "name": "존 오말리",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "60 year old man, cab driver, balding grey hair, heavy green coat, bowler hat",
+   "seed": 9076,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d77",
+   "name": "조지프 마틴",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "54 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9077,
+   "female": false,
+   "age": 54
+  },
+  {
+   "id": "d78",
+   "name": "에밀리 윌리엄스",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "62 year old woman, greengrocer, black hair parted in the middle, shawl, coarse apron",
+   "seed": 9078,
+   "female": true,
+   "age": 62
+  },
+  {
+   "id": "d79",
+   "name": "에드워드 스미스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "25 year old man, milkman, dark hair and sideburns, blue smock, cloth cap",
+   "seed": 9079,
+   "female": false,
+   "age": 25
+  },
+  {
+   "id": "d80",
+   "name": "존 그레이",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "47 year old man, varnisher, fair hair, clean shaven, paint stained smock",
+   "seed": 9080,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d81",
+   "name": "에밀리 킹",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "61 year old woman, washerwoman, black hair parted in the middle, linen apron, sleeves rolled",
+   "seed": 9081,
+   "female": true,
+   "age": 61
+  },
+  {
+   "id": "d82",
+   "name": "아서 홀",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "30 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9082,
+   "female": false,
+   "age": 30
+  },
+  {
+   "id": "d83",
+   "name": "존 오말리",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "40 year old man, coal porter, short brown hair, dark wool coat, leather cap",
+   "seed": 9083,
+   "female": false,
+   "age": 40
+  },
+  {
+   "id": "d84",
+   "name": "앤 클라크",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "53 year old woman, seamstress, black hair parted in the middle, plain dark dress, pins on collar",
+   "seed": 9084,
+   "female": true,
+   "age": 53
+  },
+  {
+   "id": "d85",
+   "name": "제임스 오말리",
+   "role": "짐꾼",
+   "home": "셋방",
+   "desc": "48 year old man, porter, short brown hair, worn brown jacket, neckerchief",
+   "seed": 9085,
+   "female": false,
+   "age": 48
+  },
+  {
+   "id": "d86",
+   "name": "토머스 쿠퍼",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "30 year old man, greengrocer, balding grey hair, shawl, coarse apron",
+   "seed": 9086,
+   "female": false,
+   "age": 30
+  },
+  {
+   "id": "d87",
+   "name": "앨리스 머피",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "31 year old woman, bootmaker, brown hair in a low bun, white shirt, leather apron",
+   "seed": 9087,
+   "female": true,
+   "age": 31
+  },
+  {
+   "id": "d88",
+   "name": "프레더릭 윌리엄스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "43 year old man, milkman, black hair and moustache, blue smock, cloth cap",
+   "seed": 9088,
+   "female": false,
+   "age": 43
+  },
+  {
+   "id": "d89",
+   "name": "수전 우드",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "27 year old woman, tailor, dark curly hair tied back, grey waistcoat, tape measure around neck",
+   "seed": 9089,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d90",
+   "name": "조지 웹",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "29 year old man, milkman, fair hair, clean shaven, blue smock, cloth cap",
+   "seed": 9090,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d91",
+   "name": "로즈 헌트",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "41 year old woman, varnisher, brown hair in a low bun, paint stained smock",
+   "seed": 9091,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d92",
+   "name": "새뮤얼 해리스",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "23 year old man, greengrocer, ginger hair and beard, shawl, coarse apron",
+   "seed": 9092,
+   "female": false,
+   "age": 23
+  },
+  {
+   "id": "d93",
+   "name": "메리 로빈슨",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "62 year old woman, bootmaker, red hair under a linen cap, white shirt, leather apron",
+   "seed": 9093,
+   "female": true,
+   "age": 62
+  },
+  {
+   "id": "d94",
+   "name": "대니얼 마틴",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "50 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9094,
+   "female": false,
+   "age": 50
+  },
+  {
+   "id": "d95",
+   "name": "앤 해리스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "51 year old woman, printer, brown hair in a low bun, grey waistcoat, black sleeve covers",
+   "seed": 9095,
+   "female": true,
+   "age": 51
+  },
+  {
+   "id": "d96",
+   "name": "메리 오말리",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "34 year old woman, watch mender, brown hair in a low bun, brown waistcoat, sleeve garters",
+   "seed": 9096,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d97",
+   "name": "엘리자베스 킹",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "55 year old woman, washerwoman, dark curly hair tied back, linen apron, sleeves rolled",
+   "seed": 9097,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d98",
+   "name": "리처드 웹",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "36 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9098,
+   "female": false,
+   "age": 36
+  },
+  {
+   "id": "d99",
+   "name": "수전 테일러",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "61 year old woman, baker, fair hair braided, white apron, flour on sleeves",
+   "seed": 9099,
+   "female": true,
+   "age": 61
+  },
+  {
+   "id": "d100",
+   "name": "앨프리드 데이비스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "64 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9100,
+   "female": false,
+   "age": 64
+  },
+  {
+   "id": "d101",
+   "name": "프레더릭 그린",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "29 year old man, printer, ginger hair and beard, grey waistcoat, black sleeve covers",
+   "seed": 9101,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d102",
+   "name": "브리짓 프라이스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "36 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9102,
+   "female": true,
+   "age": 36
+  },
+  {
+   "id": "d103",
+   "name": "새뮤얼 우드",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "28 year old man, watch mender, ginger hair and beard, brown waistcoat, sleeve garters",
+   "seed": 9103,
+   "female": false,
+   "age": 28
+  },
+  {
+   "id": "d104",
+   "name": "마거릿 존스",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "34 year old woman, varnisher, fair hair braided, paint stained smock",
+   "seed": 9104,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d105",
+   "name": "로즈 해리스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "38 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9105,
+   "female": true,
+   "age": 38
+  },
+  {
+   "id": "d106",
+   "name": "앨리스 마틴",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "54 year old woman, tavern worker, dark curly hair tied back, striped shirt, waistcoat",
+   "seed": 9106,
+   "female": true,
+   "age": 54
+  },
+  {
+   "id": "d107",
+   "name": "해나 그린",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "49 year old woman, washerwoman, dark curly hair tied back, linen apron, sleeves rolled",
+   "seed": 9107,
+   "female": true,
+   "age": 49
+  },
+  {
+   "id": "d108",
+   "name": "브리짓 로빈슨",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "49 year old woman, tailor, fair hair braided, grey waistcoat, tape measure around neck",
+   "seed": 9108,
+   "female": true,
+   "age": 49
+  },
+  {
+   "id": "d109",
+   "name": "앨리스 파커",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "25 year old woman, varnisher, brown hair in a low bun, paint stained smock",
+   "seed": 9109,
+   "female": true,
+   "age": 25
+  },
+  {
+   "id": "d110",
+   "name": "로즈 루이스",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "33 year old woman, tavern worker, brown hair in a low bun, striped shirt, waistcoat",
+   "seed": 9110,
+   "female": true,
+   "age": 33
+  },
+  {
+   "id": "d111",
+   "name": "루시 해리스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "34 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9111,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d112",
+   "name": "월터 라이트",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "27 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9112,
+   "female": false,
+   "age": 27
+  },
+  {
+   "id": "d113",
+   "name": "제인 파커",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "59 year old woman, watch mender, greying hair under a lace cap, brown waistcoat, sleeve garters",
+   "seed": 9113,
+   "female": true,
+   "age": 59
+  },
+  {
+   "id": "d114",
+   "name": "아서 테일러",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "61 year old man, coal porter, fair hair, clean shaven, dark wool coat, leather cap",
+   "seed": 9114,
+   "female": false,
+   "age": 61
+  },
+  {
+   "id": "d115",
+   "name": "패트릭 우드",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "55 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9115,
+   "female": false,
+   "age": 55
+  },
+  {
+   "id": "d116",
+   "name": "대니얼 워커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "64 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9116,
+   "female": false,
+   "age": 64
+  },
+  {
+   "id": "d117",
+   "name": "존 그린",
+   "role": "대장장이",
+   "home": "대장간",
+   "desc": "29 year old man, blacksmith, black hair and moustache, leather apron, sooty shirt",
+   "seed": 9117,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d118",
+   "name": "로즈 마틴",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "36 year old woman, housemaid, brown hair in a low bun, black dress, white apron and cap",
+   "seed": 9118,
+   "female": true,
+   "age": 36
+  },
+  {
+   "id": "d119",
+   "name": "마사 해리스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "41 year old woman, washerwoman, black hair parted in the middle, linen apron, sleeves rolled",
+   "seed": 9119,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d120",
+   "name": "앤 마틴",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "48 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9120,
+   "female": true,
+   "age": 48
+  },
+  {
+   "id": "d121",
+   "name": "토머스 워커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "28 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9121,
+   "female": false,
+   "age": 28
+  },
+  {
+   "id": "d122",
+   "name": "해나 우드",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "44 year old woman, tavern worker, greying hair under a lace cap, striped shirt, waistcoat",
+   "seed": 9122,
+   "female": true,
+   "age": 44
+  },
+  {
+   "id": "d123",
+   "name": "헨리 파커",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "65 year old man, coal porter, balding grey hair, dark wool coat, leather cap",
+   "seed": 9123,
+   "female": false,
+   "age": 65
+  },
+  {
+   "id": "d124",
+   "name": "리처드 클라크",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "41 year old man, greengrocer, balding grey hair, shawl, coarse apron",
+   "seed": 9124,
+   "female": false,
+   "age": 41
+  },
+  {
+   "id": "d125",
+   "name": "리처드 로빈슨",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "31 year old man, watch mender, short brown hair, brown waistcoat, sleeve garters",
+   "seed": 9125,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d126",
+   "name": "앤 해리스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "39 year old woman, tailor, fair hair braided, grey waistcoat, tape measure around neck",
+   "seed": 9126,
+   "female": true,
+   "age": 39
+  },
+  {
+   "id": "d127",
+   "name": "엘런 헌트",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "33 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9127,
+   "female": true,
+   "age": 33
+  },
+  {
+   "id": "d128",
+   "name": "새뮤얼 그린",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "29 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9128,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d129",
+   "name": "찰스 쿠퍼",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "51 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9129,
+   "female": false,
+   "age": 51
+  },
+  {
+   "id": "d130",
+   "name": "조지 쿠퍼",
+   "role": "목수",
+   "home": "목공소 위층",
+   "desc": "42 year old man, carpenter, black hair and moustache, canvas smock, flat cap",
+   "seed": 9130,
+   "female": false,
+   "age": 42
+  },
+  {
+   "id": "d131",
+   "name": "해나 머피",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "55 year old woman, seamstress, fair hair braided, plain dark dress, pins on collar",
+   "seed": 9131,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d132",
+   "name": "토머스 워커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "65 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9132,
+   "female": false,
+   "age": 65
+  },
+  {
+   "id": "d133",
+   "name": "앨리스 존스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "42 year old woman, washerwoman, black hair parted in the middle, linen apron, sleeves rolled",
+   "seed": 9133,
+   "female": true,
+   "age": 42
+  },
+  {
+   "id": "d134",
+   "name": "로버트 터너",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "47 year old man, shoemaker, short brown hair, leather apron, rolled sleeves",
+   "seed": 9134,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d135",
+   "name": "대니얼 터너",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "30 year old man, bootmaker, fair hair, clean shaven, white shirt, leather apron",
+   "seed": 9135,
+   "female": false,
+   "age": 30
+  },
+  {
+   "id": "d136",
+   "name": "찰스 모리스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "24 year old man, milkman, short brown hair, blue smock, cloth cap",
+   "seed": 9136,
+   "female": false,
+   "age": 24
+  },
+  {
+   "id": "d137",
+   "name": "사라 머피",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "64 year old woman, seamstress, brown hair in a low bun, plain dark dress, pins on collar",
+   "seed": 9137,
+   "female": true,
+   "age": 64
+  },
+  {
+   "id": "d138",
+   "name": "에드워드 터너",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "63 year old man, milkman, dark hair and sideburns, blue smock, cloth cap",
+   "seed": 9138,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d139",
+   "name": "해나 프라이스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "64 year old woman, printer, dark curly hair tied back, grey waistcoat, black sleeve covers",
+   "seed": 9139,
+   "female": true,
+   "age": 64
+  },
+  {
+   "id": "d140",
+   "name": "엘런 에번스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "37 year old woman, shoemaker, greying hair under a lace cap, leather apron, rolled sleeves",
+   "seed": 9140,
+   "female": true,
+   "age": 37
+  },
+  {
+   "id": "d141",
+   "name": "아서 모리스",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "63 year old man, varnisher, fair hair, clean shaven, paint stained smock",
+   "seed": 9141,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d142",
+   "name": "토머스 쿠퍼",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "45 year old man, printer, black hair and moustache, grey waistcoat, black sleeve covers",
+   "seed": 9142,
+   "female": false,
+   "age": 45
+  },
+  {
+   "id": "d143",
+   "name": "수전 에번스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "55 year old woman, shoemaker, brown hair in a low bun, leather apron, rolled sleeves",
+   "seed": 9143,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d144",
+   "name": "프레더릭 라이트",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "41 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9144,
+   "female": false,
+   "age": 41
+  },
+  {
+   "id": "d145",
+   "name": "존 웹",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "47 year old man, printer, fair hair, clean shaven, grey waistcoat, black sleeve covers",
+   "seed": 9145,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d146",
+   "name": "에밀리 그린",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "40 year old woman, printer, brown hair in a low bun, grey waistcoat, black sleeve covers",
+   "seed": 9146,
+   "female": true,
+   "age": 40
+  },
+  {
+   "id": "d147",
+   "name": "새뮤얼 라이트",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "63 year old man, baker, balding grey hair, white apron, flour on sleeves",
+   "seed": 9147,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d148",
+   "name": "마거릿 터너",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "62 year old woman, bootmaker, fair hair braided, white shirt, leather apron",
+   "seed": 9148,
+   "female": true,
+   "age": 62
+  },
+  {
+   "id": "d149",
+   "name": "윌리엄 워커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "24 year old man, tailor, short brown hair, grey waistcoat, tape measure around neck",
+   "seed": 9149,
+   "female": false,
+   "age": 24
+  },
+  {
+   "id": "d150",
+   "name": "브리짓 해리스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "34 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9150,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d151",
+   "name": "제임스 웹",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "61 year old man, milkman, fair hair, clean shaven, blue smock, cloth cap",
+   "seed": 9151,
+   "female": false,
+   "age": 61
+  },
+  {
+   "id": "d152",
+   "name": "리처드 홀",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "48 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9152,
+   "female": false,
+   "age": 48
+  },
+  {
+   "id": "d153",
+   "name": "에드워드 헌트",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "47 year old man, cab driver, black hair and moustache, heavy green coat, bowler hat",
+   "seed": 9153,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d154",
+   "name": "마거릿 존스",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "40 year old woman, varnisher, fair hair braided, paint stained smock",
+   "seed": 9154,
+   "female": true,
+   "age": 40
+  },
+  {
+   "id": "d155",
+   "name": "프레더릭 클라크",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "59 year old man, printer, fair hair, clean shaven, grey waistcoat, black sleeve covers",
+   "seed": 9155,
+   "female": false,
+   "age": 59
+  },
+  {
+   "id": "d156",
+   "name": "앨리스 터너",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "31 year old woman, tailor, black hair parted in the middle, grey waistcoat, tape measure around neck",
+   "seed": 9156,
+   "female": true,
+   "age": 31
+  },
+  {
+   "id": "d157",
+   "name": "캐서린 웹",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "55 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9157,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d158",
+   "name": "새뮤얼 베이커",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "54 year old man, cab driver, balding grey hair, heavy green coat, bowler hat",
+   "seed": 9158,
+   "female": false,
+   "age": 54
+  },
+  {
+   "id": "d159",
+   "name": "패트릭 벨",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "40 year old man, varnisher, ginger hair and beard, paint stained smock",
+   "seed": 9159,
+   "female": false,
+   "age": 40
+  },
+  {
+   "id": "d160",
+   "name": "해리엇 오말리",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "47 year old woman, greengrocer, greying hair under a lace cap, shawl, coarse apron",
+   "seed": 9160,
+   "female": true,
+   "age": 47
+  },
+  {
+   "id": "d161",
+   "name": "수전 스미스",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "30 year old woman, varnisher, dark curly hair tied back, paint stained smock",
+   "seed": 9161,
+   "female": true,
+   "age": 30
+  },
+  {
+   "id": "d162",
+   "name": "새뮤얼 베이커",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "37 year old man, cab driver, ginger hair and beard, heavy green coat, bowler hat",
+   "seed": 9162,
+   "female": false,
+   "age": 37
+  },
+  {
+   "id": "d163",
+   "name": "새뮤얼 킹",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "62 year old man, bootmaker, balding grey hair, white shirt, leather apron",
+   "seed": 9163,
+   "female": false,
+   "age": 62
+  },
+  {
+   "id": "d164",
+   "name": "앨프리드 존스",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "32 year old man, bootmaker, black hair and moustache, white shirt, leather apron",
+   "seed": 9164,
+   "female": false,
+   "age": 32
+  },
+  {
+   "id": "d165",
+   "name": "새뮤얼 오말리",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "60 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9165,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d166",
+   "name": "존 오말리",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "47 year old man, coal porter, black hair and moustache, dark wool coat, leather cap",
+   "seed": 9166,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d167",
+   "name": "앤 테일러",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "52 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9167,
+   "female": true,
+   "age": 52
+  },
+  {
+   "id": "d168",
+   "name": "제임스 웹",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "44 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9168,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d169",
+   "name": "엘리자베스 켈리",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "26 year old woman, washerwoman, red hair under a linen cap, linen apron, sleeves rolled",
+   "seed": 9169,
+   "female": true,
+   "age": 26
+  },
+  {
+   "id": "d170",
+   "name": "브리짓 라이트",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "27 year old woman, milliner, fair hair braided, plain blue dress, ribbon on collar",
+   "seed": 9170,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d171",
+   "name": "엘리자 벨",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "25 year old woman, washerwoman, dark curly hair tied back, linen apron, sleeves rolled",
+   "seed": 9171,
+   "female": true,
+   "age": 25
+  },
+  {
+   "id": "d172",
+   "name": "패트릭 켈리",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "26 year old man, watch mender, black hair and moustache, brown waistcoat, sleeve garters",
+   "seed": 9172,
+   "female": false,
+   "age": 26
+  },
+  {
+   "id": "d173",
+   "name": "프레더릭 쿠퍼",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "50 year old man, tavern worker, short brown hair, striped shirt, waistcoat",
+   "seed": 9173,
+   "female": false,
+   "age": 50
+  },
+  {
+   "id": "d174",
+   "name": "앨프리드 그린",
+   "role": "목수",
+   "home": "목공소 위층",
+   "desc": "49 year old man, carpenter, fair hair, clean shaven, canvas smock, flat cap",
+   "seed": 9174,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d175",
+   "name": "엘리자 머피",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "26 year old woman, printer, black hair parted in the middle, grey waistcoat, black sleeve covers",
+   "seed": 9175,
+   "female": true,
+   "age": 26
+  },
+  {
+   "id": "d176",
+   "name": "조지프 그레이",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "53 year old man, coal porter, fair hair, clean shaven, dark wool coat, leather cap",
+   "seed": 9176,
+   "female": false,
+   "age": 53
+  },
+  {
+   "id": "d177",
+   "name": "브리짓 헌트",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "61 year old woman, bootmaker, black hair parted in the middle, white shirt, leather apron",
+   "seed": 9177,
+   "female": true,
+   "age": 61
+  },
+  {
+   "id": "d178",
+   "name": "에밀리 켈리",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "27 year old woman, washerwoman, fair hair braided, linen apron, sleeves rolled",
+   "seed": 9178,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d179",
+   "name": "대니얼 파커",
+   "role": "짐꾼",
+   "home": "셋방",
+   "desc": "41 year old man, porter, ginger hair and beard, worn brown jacket, neckerchief",
+   "seed": 9179,
+   "female": false,
+   "age": 41
+  },
+  {
+   "id": "d180",
+   "name": "해나 오말리",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "37 year old woman, greengrocer, greying hair under a lace cap, shawl, coarse apron",
+   "seed": 9180,
+   "female": true,
+   "age": 37
+  },
+  {
+   "id": "d181",
+   "name": "앤 에번스",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "27 year old woman, tavern worker, black hair parted in the middle, striped shirt, waistcoat",
+   "seed": 9181,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d182",
+   "name": "에밀리 해리스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "56 year old woman, shoemaker, brown hair in a low bun, leather apron, rolled sleeves",
+   "seed": 9182,
+   "female": true,
+   "age": 56
+  },
+  {
+   "id": "d183",
+   "name": "월터 프라이스",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "26 year old man, baker, fair hair, clean shaven, white apron, flour on sleeves",
+   "seed": 9183,
+   "female": false,
+   "age": 26
+  },
+  {
+   "id": "d184",
+   "name": "엘리자베스 켈리",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "34 year old woman, tailor, red hair under a linen cap, grey waistcoat, tape measure around neck",
+   "seed": 9184,
+   "female": true,
+   "age": 34
+  },
+  {
+   "id": "d185",
+   "name": "월터 쿠퍼",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "49 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9185,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d186",
+   "name": "토머스 에번스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "59 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9186,
+   "female": false,
+   "age": 59
+  },
+  {
+   "id": "d187",
+   "name": "대니얼 우드",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "49 year old man, varnisher, fair hair, clean shaven, paint stained smock",
+   "seed": 9187,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d188",
+   "name": "마사 쿠퍼",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "41 year old woman, shoemaker, greying hair under a lace cap, leather apron, rolled sleeves",
+   "seed": 9188,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d189",
+   "name": "에드워드 테일러",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "60 year old man, watch mender, short brown hair, brown waistcoat, sleeve garters",
+   "seed": 9189,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d190",
+   "name": "엘리자 벨",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "42 year old woman, tailor, greying hair under a lace cap, grey waistcoat, tape measure around neck",
+   "seed": 9190,
+   "female": true,
+   "age": 42
+  },
+  {
+   "id": "d191",
+   "name": "앤 파커",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "48 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9191,
+   "female": true,
+   "age": 48
+  },
+  {
+   "id": "d192",
+   "name": "앨프리드 그레이",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "38 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9192,
+   "female": false,
+   "age": 38
+  },
+  {
+   "id": "d193",
+   "name": "로버트 켈리",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "37 year old man, printer, balding grey hair, grey waistcoat, black sleeve covers",
+   "seed": 9193,
+   "female": false,
+   "age": 37
+  },
+  {
+   "id": "d194",
+   "name": "해나 브라운",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "30 year old woman, varnisher, dark curly hair tied back, paint stained smock",
+   "seed": 9194,
+   "female": true,
+   "age": 30
+  },
+  {
+   "id": "d195",
+   "name": "로즈 헌트",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "41 year old woman, baker, dark curly hair tied back, white apron, flour on sleeves",
+   "seed": 9195,
+   "female": true,
+   "age": 41
+  },
+  {
+   "id": "d196",
+   "name": "찰스 스미스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "46 year old man, tailor, short brown hair, grey waistcoat, tape measure around neck",
+   "seed": 9196,
+   "female": false,
+   "age": 46
+  },
+  {
+   "id": "d197",
+   "name": "패트릭 존스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "47 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9197,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d198",
+   "name": "헨리 벨",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "31 year old man, varnisher, black hair and moustache, paint stained smock",
+   "seed": 9198,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d199",
+   "name": "조지프 에번스",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "22 year old man, coal porter, fair hair, clean shaven, dark wool coat, leather cap",
+   "seed": 9199,
+   "female": false,
+   "age": 22
+  },
+  {
+   "id": "d200",
+   "name": "헨리 베이커",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "54 year old man, tavern worker, black hair and moustache, striped shirt, waistcoat",
+   "seed": 9200,
+   "female": false,
+   "age": 54
+  },
+  {
+   "id": "d201",
+   "name": "존 테일러",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "47 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9201,
+   "female": false,
+   "age": 47
+  },
+  {
+   "id": "d202",
+   "name": "조지 에번스",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "33 year old man, coal porter, ginger hair and beard, dark wool coat, leather cap",
+   "seed": 9202,
+   "female": false,
+   "age": 33
+  },
+  {
+   "id": "d203",
+   "name": "캐서린 테일러",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "64 year old woman, milkman, dark curly hair tied back, blue smock, cloth cap",
+   "seed": 9203,
+   "female": true,
+   "age": 64
+  },
+  {
+   "id": "d204",
+   "name": "헨리 킹",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "41 year old man, bootmaker, fair hair, clean shaven, white shirt, leather apron",
+   "seed": 9204,
+   "female": false,
+   "age": 41
+  },
+  {
+   "id": "d205",
+   "name": "에드워드 프라이스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "43 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9205,
+   "female": false,
+   "age": 43
+  },
+  {
+   "id": "d206",
+   "name": "엘런 파커",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "51 year old woman, varnisher, dark curly hair tied back, paint stained smock",
+   "seed": 9206,
+   "female": true,
+   "age": 51
+  },
+  {
+   "id": "d207",
+   "name": "에드워드 킹",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "36 year old man, tailor, black hair and moustache, grey waistcoat, tape measure around neck",
+   "seed": 9207,
+   "female": false,
+   "age": 36
+  },
+  {
+   "id": "d208",
+   "name": "해나 벨",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "22 year old woman, bootmaker, greying hair under a lace cap, white shirt, leather apron",
+   "seed": 9208,
+   "female": true,
+   "age": 22
+  },
+  {
+   "id": "d209",
+   "name": "사라 윌리엄스",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "59 year old woman, watch mender, brown hair in a low bun, brown waistcoat, sleeve garters",
+   "seed": 9209,
+   "female": true,
+   "age": 59
+  },
+  {
+   "id": "d210",
+   "name": "앨리스 모리스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "47 year old woman, milkman, black hair parted in the middle, blue smock, cloth cap",
+   "seed": 9210,
+   "female": true,
+   "age": 47
+  },
+  {
+   "id": "d211",
+   "name": "찰스 해리스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "42 year old man, milkman, fair hair, clean shaven, blue smock, cloth cap",
+   "seed": 9211,
+   "female": false,
+   "age": 42
+  },
+  {
+   "id": "d212",
+   "name": "수전 마틴",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "49 year old woman, printer, greying hair under a lace cap, grey waistcoat, black sleeve covers",
+   "seed": 9212,
+   "female": true,
+   "age": 49
+  },
+  {
+   "id": "d213",
+   "name": "사라 켈리",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "23 year old woman, milkman, brown hair in a low bun, blue smock, cloth cap",
+   "seed": 9213,
+   "female": true,
+   "age": 23
+  },
+  {
+   "id": "d214",
+   "name": "브리짓 로빈슨",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "57 year old woman, landlady, red hair under a linen cap, dark plum dress, lace cap",
+   "seed": 9214,
+   "female": true,
+   "age": 57
+  },
+  {
+   "id": "d215",
+   "name": "메리 벨",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "23 year old woman, seamstress, dark curly hair tied back, plain dark dress, pins on collar",
+   "seed": 9215,
+   "female": true,
+   "age": 23
+  },
+  {
+   "id": "d216",
+   "name": "헨리 프라이스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "41 year old man, milkman, fair hair, clean shaven, blue smock, cloth cap",
+   "seed": 9216,
+   "female": false,
+   "age": 41
+  },
+  {
+   "id": "d217",
+   "name": "토머스 데이비스",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "29 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9217,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d218",
+   "name": "제임스 베이커",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "60 year old man, coal porter, dark hair and sideburns, dark wool coat, leather cap",
+   "seed": 9218,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d219",
+   "name": "조지 킹",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "61 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9219,
+   "female": false,
+   "age": 61
+  },
+  {
+   "id": "d220",
+   "name": "메리 헌트",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "28 year old woman, tailor, black hair parted in the middle, grey waistcoat, tape measure around neck",
+   "seed": 9220,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d221",
+   "name": "제임스 쿠퍼",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "29 year old man, varnisher, dark hair and sideburns, paint stained smock",
+   "seed": 9221,
+   "female": false,
+   "age": 29
+  },
+  {
+   "id": "d222",
+   "name": "대니얼 스톤",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "58 year old man, tavern worker, short brown hair, striped shirt, waistcoat",
+   "seed": 9222,
+   "female": false,
+   "age": 58
+  },
+  {
+   "id": "d223",
+   "name": "에밀리 웹",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "22 year old woman, milkman, greying hair under a lace cap, blue smock, cloth cap",
+   "seed": 9223,
+   "female": true,
+   "age": 22
+  },
+  {
+   "id": "d224",
+   "name": "제인 쿠퍼",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "53 year old woman, housemaid, black hair parted in the middle, black dress, white apron and cap",
+   "seed": 9224,
+   "female": true,
+   "age": 53
+  },
+  {
+   "id": "d225",
+   "name": "에드워드 데이비스",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "31 year old man, baker, ginger hair and beard, white apron, flour on sleeves",
+   "seed": 9225,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d226",
+   "name": "에밀리 프라이스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "56 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9226,
+   "female": true,
+   "age": 56
+  },
+  {
+   "id": "d227",
+   "name": "엘리자 클라크",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "62 year old woman, housemaid, red hair under a linen cap, black dress, white apron and cap",
+   "seed": 9227,
+   "female": true,
+   "age": 62
+  },
+  {
+   "id": "d228",
+   "name": "메리 루이스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "23 year old woman, printer, dark curly hair tied back, grey waistcoat, black sleeve covers",
+   "seed": 9228,
+   "female": true,
+   "age": 23
+  },
+  {
+   "id": "d229",
+   "name": "로즈 파커",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "28 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9229,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d230",
+   "name": "조지프 파커",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "48 year old man, varnisher, dark hair and sideburns, paint stained smock",
+   "seed": 9230,
+   "female": false,
+   "age": 48
+  },
+  {
+   "id": "d231",
+   "name": "엘런 존스",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "28 year old woman, milliner, black hair parted in the middle, plain blue dress, ribbon on collar",
+   "seed": 9231,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d232",
+   "name": "새뮤얼 브라운",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "23 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9232,
+   "female": false,
+   "age": 23
+  },
+  {
+   "id": "d233",
+   "name": "앨프리드 루이스",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "64 year old man, baker, fair hair, clean shaven, white apron, flour on sleeves",
+   "seed": 9233,
+   "female": false,
+   "age": 64
+  },
+  {
+   "id": "d234",
+   "name": "해리엇 스미스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "43 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9234,
+   "female": true,
+   "age": 43
+  },
+  {
+   "id": "d235",
+   "name": "프레더릭 브라운",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "63 year old man, varnisher, ginger hair and beard, paint stained smock",
+   "seed": 9235,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d236",
+   "name": "로버트 그린",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "64 year old man, printer, balding grey hair, grey waistcoat, black sleeve covers",
+   "seed": 9236,
+   "female": false,
+   "age": 64
+  },
+  {
+   "id": "d237",
+   "name": "앤 루이스",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "37 year old woman, varnisher, dark curly hair tied back, paint stained smock",
+   "seed": 9237,
+   "female": true,
+   "age": 37
+  },
+  {
+   "id": "d238",
+   "name": "엘리자 데이비스",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "47 year old woman, milliner, greying hair under a lace cap, plain blue dress, ribbon on collar",
+   "seed": 9238,
+   "female": true,
+   "age": 47
+  },
+  {
+   "id": "d239",
+   "name": "해나 쿠퍼",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "57 year old woman, landlady, black hair parted in the middle, dark plum dress, lace cap",
+   "seed": 9239,
+   "female": true,
+   "age": 57
+  },
+  {
+   "id": "d240",
+   "name": "제인 에번스",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "25 year old woman, seamstress, red hair under a linen cap, plain dark dress, pins on collar",
+   "seed": 9240,
+   "female": true,
+   "age": 25
+  },
+  {
+   "id": "d241",
+   "name": "엘런 파커",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "65 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9241,
+   "female": true,
+   "age": 65
+  },
+  {
+   "id": "d242",
+   "name": "조지 그레이",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "58 year old man, shoemaker, short brown hair, leather apron, rolled sleeves",
+   "seed": 9242,
+   "female": false,
+   "age": 58
+  },
+  {
+   "id": "d243",
+   "name": "마거릿 라이트",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "56 year old woman, tavern worker, greying hair under a lace cap, striped shirt, waistcoat",
+   "seed": 9243,
+   "female": true,
+   "age": 56
+  },
+  {
+   "id": "d244",
+   "name": "앤 라이트",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "40 year old woman, watch mender, greying hair under a lace cap, brown waistcoat, sleeve garters",
+   "seed": 9244,
+   "female": true,
+   "age": 40
+  },
+  {
+   "id": "d245",
+   "name": "마사 홀",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "65 year old woman, printer, black hair parted in the middle, grey waistcoat, black sleeve covers",
+   "seed": 9245,
+   "female": true,
+   "age": 65
+  },
+  {
+   "id": "d246",
+   "name": "패트릭 홀",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "28 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9246,
+   "female": false,
+   "age": 28
+  },
+  {
+   "id": "d247",
+   "name": "토머스 에번스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "60 year old man, printer, dark hair and sideburns, grey waistcoat, black sleeve covers",
+   "seed": 9247,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d248",
+   "name": "헨리 루이스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "40 year old man, printer, balding grey hair, grey waistcoat, black sleeve covers",
+   "seed": 9248,
+   "female": false,
+   "age": 40
+  },
+  {
+   "id": "d249",
+   "name": "아서 그레이",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "62 year old man, tavern worker, balding grey hair, striped shirt, waistcoat",
+   "seed": 9249,
+   "female": false,
+   "age": 62
+  },
+  {
+   "id": "d250",
+   "name": "제인 킹",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "33 year old woman, watch mender, greying hair under a lace cap, brown waistcoat, sleeve garters",
+   "seed": 9250,
+   "female": true,
+   "age": 33
+  },
+  {
+   "id": "d251",
+   "name": "앤 베이커",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "23 year old woman, washerwoman, brown hair in a low bun, linen apron, sleeves rolled",
+   "seed": 9251,
+   "female": true,
+   "age": 23
+  },
+  {
+   "id": "d252",
+   "name": "대니얼 스톤",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "45 year old man, tailor, dark hair and sideburns, grey waistcoat, tape measure around neck",
+   "seed": 9252,
+   "female": false,
+   "age": 45
+  },
+  {
+   "id": "d253",
+   "name": "존 브라운",
+   "role": "대장장이",
+   "home": "대장간",
+   "desc": "24 year old man, blacksmith, short brown hair, leather apron, sooty shirt",
+   "seed": 9253,
+   "female": false,
+   "age": 24
+  },
+  {
+   "id": "d254",
+   "name": "앨프리드 파커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "31 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9254,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d255",
+   "name": "프레더릭 프라이스",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "51 year old man, printer, fair hair, clean shaven, grey waistcoat, black sleeve covers",
+   "seed": 9255,
+   "female": false,
+   "age": 51
+  },
+  {
+   "id": "d256",
+   "name": "앨프리드 터너",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "64 year old man, tailor, black hair and moustache, grey waistcoat, tape measure around neck",
+   "seed": 9256,
+   "female": false,
+   "age": 64
+  },
+  {
+   "id": "d257",
+   "name": "앨리스 킹",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "31 year old woman, shoemaker, dark curly hair tied back, leather apron, rolled sleeves",
+   "seed": 9257,
+   "female": true,
+   "age": 31
+  },
+  {
+   "id": "d258",
+   "name": "앨프리드 헌트",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "44 year old man, varnisher, black hair and moustache, paint stained smock",
+   "seed": 9258,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d259",
+   "name": "대니얼 머피",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "44 year old man, varnisher, short brown hair, paint stained smock",
+   "seed": 9259,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d260",
+   "name": "엘런 쿠퍼",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "62 year old woman, washerwoman, black hair parted in the middle, linen apron, sleeves rolled",
+   "seed": 9260,
+   "female": true,
+   "age": 62
+  },
+  {
+   "id": "d261",
+   "name": "새뮤얼 터너",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "51 year old man, printer, dark hair and sideburns, grey waistcoat, black sleeve covers",
+   "seed": 9261,
+   "female": false,
+   "age": 51
+  },
+  {
+   "id": "d262",
+   "name": "윌리엄 우드",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "44 year old man, cab driver, dark hair and sideburns, heavy green coat, bowler hat",
+   "seed": 9262,
+   "female": false,
+   "age": 44
+  },
+  {
+   "id": "d263",
+   "name": "헨리 파커",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "60 year old man, cab driver, balding grey hair, heavy green coat, bowler hat",
+   "seed": 9263,
+   "female": false,
+   "age": 60
+  },
+  {
+   "id": "d264",
+   "name": "앨리스 터너",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "44 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9264,
+   "female": true,
+   "age": 44
+  },
+  {
+   "id": "d265",
+   "name": "윌리엄 루이스",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "27 year old man, bootmaker, ginger hair and beard, white shirt, leather apron",
+   "seed": 9265,
+   "female": false,
+   "age": 27
+  },
+  {
+   "id": "d266",
+   "name": "제임스 머피",
+   "role": "목수",
+   "home": "목공소 위층",
+   "desc": "65 year old man, carpenter, fair hair, clean shaven, canvas smock, flat cap",
+   "seed": 9266,
+   "female": false,
+   "age": 65
+  },
+  {
+   "id": "d267",
+   "name": "브리짓 우드",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "31 year old woman, housemaid, brown hair in a low bun, black dress, white apron and cap",
+   "seed": 9267,
+   "female": true,
+   "age": 31
+  },
+  {
+   "id": "d268",
+   "name": "토머스 마틴",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "32 year old man, baker, ginger hair and beard, white apron, flour on sleeves",
+   "seed": 9268,
+   "female": false,
+   "age": 32
+  },
+  {
+   "id": "d269",
+   "name": "수전 워커",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "51 year old woman, housemaid, brown hair in a low bun, black dress, white apron and cap",
+   "seed": 9269,
+   "female": true,
+   "age": 51
+  },
+  {
+   "id": "d270",
+   "name": "루시 마틴",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "51 year old woman, milkman, dark curly hair tied back, blue smock, cloth cap",
+   "seed": 9270,
+   "female": true,
+   "age": 51
+  },
+  {
+   "id": "d271",
+   "name": "루시 라이트",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "57 year old woman, tavern worker, red hair under a linen cap, striped shirt, waistcoat",
+   "seed": 9271,
+   "female": true,
+   "age": 57
+  },
+  {
+   "id": "d272",
+   "name": "캐서린 클라크",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "48 year old woman, shoemaker, fair hair braided, leather apron, rolled sleeves",
+   "seed": 9272,
+   "female": true,
+   "age": 48
+  },
+  {
+   "id": "d273",
+   "name": "새뮤얼 브라운",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "31 year old man, bootmaker, black hair and moustache, white shirt, leather apron",
+   "seed": 9273,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d274",
+   "name": "엘리자베스 쿠퍼",
+   "role": "채소 장수",
+   "home": "가게 위층",
+   "desc": "45 year old woman, greengrocer, red hair under a linen cap, shawl, coarse apron",
+   "seed": 9274,
+   "female": true,
+   "age": 45
+  },
+  {
+   "id": "d275",
+   "name": "에드워드 모리스",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "55 year old man, coal porter, ginger hair and beard, dark wool coat, leather cap",
+   "seed": 9275,
+   "female": false,
+   "age": 55
+  },
+  {
+   "id": "d276",
+   "name": "루시 킹",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "54 year old woman, milkman, greying hair under a lace cap, blue smock, cloth cap",
+   "seed": 9276,
+   "female": true,
+   "age": 54
+  },
+  {
+   "id": "d277",
+   "name": "토머스 데이비스",
+   "role": "마부",
+   "home": "마구간 위층",
+   "desc": "45 year old man, cab driver, dark hair and sideburns, heavy green coat, bowler hat",
+   "seed": 9277,
+   "female": false,
+   "age": 45
+  },
+  {
+   "id": "d278",
+   "name": "조지프 우드",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "52 year old man, tailor, black hair and moustache, grey waistcoat, tape measure around neck",
+   "seed": 9278,
+   "female": false,
+   "age": 52
+  },
+  {
+   "id": "d279",
+   "name": "로즈 클라크",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "54 year old woman, landlady, red hair under a linen cap, dark plum dress, lace cap",
+   "seed": 9279,
+   "female": true,
+   "age": 54
+  },
+  {
+   "id": "d280",
+   "name": "해리엇 스미스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "55 year old woman, shoemaker, fair hair braided, leather apron, rolled sleeves",
+   "seed": 9280,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d281",
+   "name": "조지 윌리엄스",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "23 year old man, watch mender, fair hair, clean shaven, brown waistcoat, sleeve garters",
+   "seed": 9281,
+   "female": false,
+   "age": 23
+  },
+  {
+   "id": "d282",
+   "name": "엘런 그린",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "24 year old woman, baker, red hair under a linen cap, white apron, flour on sleeves",
+   "seed": 9282,
+   "female": true,
+   "age": 24
+  },
+  {
+   "id": "d283",
+   "name": "엘리자베스 웹",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "32 year old woman, washerwoman, red hair under a linen cap, linen apron, sleeves rolled",
+   "seed": 9283,
+   "female": true,
+   "age": 32
+  },
+  {
+   "id": "d284",
+   "name": "해리엇 우드",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "38 year old woman, landlady, fair hair braided, dark plum dress, lace cap",
+   "seed": 9284,
+   "female": true,
+   "age": 38
+  },
+  {
+   "id": "d285",
+   "name": "패트릭 베이커",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "48 year old man, tailor, balding grey hair, grey waistcoat, tape measure around neck",
+   "seed": 9285,
+   "female": false,
+   "age": 48
+  },
+  {
+   "id": "d286",
+   "name": "월터 홀",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "37 year old man, tailor, ginger hair and beard, grey waistcoat, tape measure around neck",
+   "seed": 9286,
+   "female": false,
+   "age": 37
+  },
+  {
+   "id": "d287",
+   "name": "해리엇 킹",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "44 year old woman, tavern worker, red hair under a linen cap, striped shirt, waistcoat",
+   "seed": 9287,
+   "female": true,
+   "age": 44
+  },
+  {
+   "id": "d288",
+   "name": "윌리엄 브라운",
+   "role": "빵집 주인",
+   "home": "빵집",
+   "desc": "56 year old man, baker, fair hair, clean shaven, white apron, flour on sleeves",
+   "seed": 9288,
+   "female": false,
+   "age": 56
+  },
+  {
+   "id": "d289",
+   "name": "대니얼 터너",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "52 year old man, milkman, dark hair and sideburns, blue smock, cloth cap",
+   "seed": 9289,
+   "female": false,
+   "age": 52
+  },
+  {
+   "id": "d290",
+   "name": "아서 킹",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "49 year old man, printer, fair hair, clean shaven, grey waistcoat, black sleeve covers",
+   "seed": 9290,
+   "female": false,
+   "age": 49
+  },
+  {
+   "id": "d291",
+   "name": "루시 에번스",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "28 year old woman, milkman, black hair parted in the middle, blue smock, cloth cap",
+   "seed": 9291,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d292",
+   "name": "엘런 웹",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "58 year old woman, milliner, black hair parted in the middle, plain blue dress, ribbon on collar",
+   "seed": 9292,
+   "female": true,
+   "age": 58
+  },
+  {
+   "id": "d293",
+   "name": "수전 스미스",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "55 year old woman, washerwoman, red hair under a linen cap, linen apron, sleeves rolled",
+   "seed": 9293,
+   "female": true,
+   "age": 55
+  },
+  {
+   "id": "d294",
+   "name": "월터 오말리",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "31 year old man, coal porter, balding grey hair, dark wool coat, leather cap",
+   "seed": 9294,
+   "female": false,
+   "age": 31
+  },
+  {
+   "id": "d295",
+   "name": "엘리자베스 존스",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "28 year old woman, milliner, fair hair braided, plain blue dress, ribbon on collar",
+   "seed": 9295,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d296",
+   "name": "에드워드 프라이스",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "63 year old man, tavern worker, ginger hair and beard, striped shirt, waistcoat",
+   "seed": 9296,
+   "female": false,
+   "age": 63
+  },
+  {
+   "id": "d297",
+   "name": "마사 스미스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "45 year old woman, shoemaker, fair hair braided, leather apron, rolled sleeves",
+   "seed": 9297,
+   "female": true,
+   "age": 45
+  },
+  {
+   "id": "d298",
+   "name": "앤 윌리엄스",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "35 year old woman, shoemaker, dark curly hair tied back, leather apron, rolled sleeves",
+   "seed": 9298,
+   "female": true,
+   "age": 35
+  },
+  {
+   "id": "d299",
+   "name": "제인 홀",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "28 year old woman, tailor, dark curly hair tied back, grey waistcoat, tape measure around neck",
+   "seed": 9299,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d300",
+   "name": "로즈 스톤",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "60 year old woman, landlady, dark curly hair tied back, dark plum dress, lace cap",
+   "seed": 9300,
+   "female": true,
+   "age": 60
+  },
+  {
+   "id": "d301",
+   "name": "엘리자 킹",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "28 year old woman, washerwoman, black hair parted in the middle, linen apron, sleeves rolled",
+   "seed": 9301,
+   "female": true,
+   "age": 28
+  },
+  {
+   "id": "d302",
+   "name": "존 그레이",
+   "role": "우유 배달부",
+   "home": "우유 가게",
+   "desc": "25 year old man, milkman, balding grey hair, blue smock, cloth cap",
+   "seed": 9302,
+   "female": false,
+   "age": 25
+  },
+  {
+   "id": "d303",
+   "name": "로즈 그린",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "27 year old woman, watch mender, greying hair under a lace cap, brown waistcoat, sleeve garters",
+   "seed": 9303,
+   "female": true,
+   "age": 27
+  },
+  {
+   "id": "d304",
+   "name": "로즈 터너",
+   "role": "세탁부",
+   "home": "셋방",
+   "desc": "29 year old woman, washerwoman, greying hair under a lace cap, linen apron, sleeves rolled",
+   "seed": 9304,
+   "female": true,
+   "age": 29
+  },
+  {
+   "id": "d305",
+   "name": "해리엇 클라크",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "47 year old woman, printer, greying hair under a lace cap, grey waistcoat, black sleeve covers",
+   "seed": 9305,
+   "female": true,
+   "age": 47
+  },
+  {
+   "id": "d306",
+   "name": "패트릭 클라크",
+   "role": "인쇄공",
+   "home": "인쇄소 위층",
+   "desc": "65 year old man, printer, dark hair and sideburns, grey waistcoat, black sleeve covers",
+   "seed": 9306,
+   "female": false,
+   "age": 65
+  },
+  {
+   "id": "d307",
+   "name": "프레더릭 에번스",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "58 year old man, bootmaker, short brown hair, white shirt, leather apron",
+   "seed": 9307,
+   "female": false,
+   "age": 58
+  },
+  {
+   "id": "d308",
+   "name": "메리 터너",
+   "role": "하녀",
+   "home": "하숙집",
+   "desc": "32 year old woman, housemaid, black hair parted in the middle, black dress, white apron and cap",
+   "seed": 9308,
+   "female": true,
+   "age": 32
+  },
+  {
+   "id": "d309",
+   "name": "루시 스톤",
+   "role": "술집 일꾼",
+   "home": "선술집 위층",
+   "desc": "63 year old woman, tavern worker, greying hair under a lace cap, striped shirt, waistcoat",
+   "seed": 9309,
+   "female": true,
+   "age": 63
+  },
+  {
+   "id": "d310",
+   "name": "조지 마틴",
+   "role": "재단사",
+   "home": "재단 공방",
+   "desc": "59 year old man, tailor, fair hair, clean shaven, grey waistcoat, tape measure around neck",
+   "seed": 9310,
+   "female": false,
+   "age": 59
   }
  ]
 }
