@@ -4,7 +4,8 @@
   python tools/build_districts.py pick     # 후보를 골라 확대 그림을 만든다 (막대는 사람이 눈으로 센다)
   python tools/build_districts.py build    # 눈으로 센 값(src/data/districts.counts.json)을 합쳐 districts.gen.json 을 만든다
 
-영역마다 막대(사망자)가 있는 집 5곳과 막대가 없는 집 3곳을 고른다.
+영역마다 막대(사망자)가 있는 집 5곳과 막대가 없는 집 3곳을 고르고, 사망자가 7명 넘는 큰 집은 빠짐없이 더한다.
+사망자 수는 공개 자료(tools/build_snow_data.py 가 만든 snow_deaths.gen.json)에서 그 자리의 값을 쓴다.
 문은 가장 가까운 길 위, 건물 그림은 막대가 있던 자리(블록 안쪽)에 둔다.
 걸어서 가장 가까운 펌프는 build_assets.py 의 도보권역 계산과 같은 방식으로 구한다.
 """
@@ -142,11 +143,55 @@ def pick():
     print(f'{len(chosen)}곳을 골랐다. 확대 그림:', OUT_PICK)
 
 
+def real_houses():
+    """공개 자료의 집(주소)별 사망자: [(묶음 점들, 사망자 수)]"""
+    real = json.loads((DATA / 'snow_deaths.gen.json').read_text(encoding='utf-8'))['houses']
+    return [(np.array(h['points']), h['deaths']) for h in real]
+
+
+def real_count(houses, x, y, r=16):
+    """(x, y) 에서 r 픽셀 안에 막대 묶음이 있으면 그 사망자 수, 없으면 0"""
+    best, n = r, 0
+    for pts, deaths in houses:
+        d = np.min(np.hypot(pts[:, 0] - x, pts[:, 1] - y))
+        if d < best:
+            best, n = d, deaths
+    return n
+
+
+# 고른 40곳에 더해, 사망자가 많은데 빠졌던 집들 (공개 자료에서 사망 7명 이상인 묶음)
+BIG_MIN = 7
+
+
+def add_big(picked, walk, houses):
+    geo = json.loads((DATA / 'geo.gen.json').read_text(encoding='utf-8'))
+    taken = [tuple(c['icon']) for c in picked] + [tuple(s['icon']) for s in geo['sites'].values()]
+    n = len(picked)
+    for pts, deaths in sorted(houses, key=lambda h: -h[1]):
+        if deaths < BIG_MIN:
+            break
+        # 막대 묶음의 길 쪽 끝을 문으로, 블록 안쪽 끝을 건물 자리로
+        dists = [np.hypot(*(np.array(snap_street(walk, int(x), int(y)) or (9e9, 9e9)) - (x, y))) for x, y in pts]
+        inner = pts[int(np.argmax(dists))]
+        x, y = int(round(inner[0])), int(round(inner[1]))
+        if not far_from((x, y), taken, 24):
+            continue                         # 이미 게임에 있는 집이다
+        door = snap_street(walk, x, y)
+        if door is None:
+            continue
+        n += 1
+        picked.append({'area': nearest_area(x, y), 'icon': [x, y], 'door': list(door), 'bars': True, 'id': f'd{n:02d}'})
+        taken.append((x, y))
+        print(f'  더함 d{n:02d}: 사망 {deaths}명, 자리 {x},{y}')
+    return picked
+
+
 def build():
-    """눈으로 센 사망자 수를 합치고, 걸어서 가장 가까운 펌프를 구한다"""
+    """공개 자료의 사망자 수를 합치고, 걸어서 가장 가까운 펌프를 구한다"""
     g, walk = load()
     picked = json.loads((OUT_PICK / 'picked.json').read_text(encoding='utf-8'))
-    counts = json.loads((DATA / 'districts.counts.json').read_text(encoding='utf-8'))
+    houses = real_houses()
+    picked = add_big([c for c in picked if int(c['id'][1:]) <= 40], walk, houses)
     geo = json.loads((DATA / 'geo.json').read_text(encoding='utf-8'))
     street = walk > 0
     H, W = street.shape
@@ -172,7 +217,7 @@ def build():
                 heapq.heappush(heap, (d + c, nx, ny, i))
     out = []
     for c in picked:
-        deaths = int(counts.get(c['id'], 0)) if c['bars'] else 0
+        deaths = real_count(houses, *c['icon'], r=22 if c['bars'] else 10)
         x, y = c['door']
         near = pump_ids[int(owner[y, x])]
         out.append({**c, 'deaths': deaths, 'nearestPump': near, 'walkToBroad': round(float(best[y, x])) if near == 'broad' else None})

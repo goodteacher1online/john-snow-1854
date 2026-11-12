@@ -757,7 +757,7 @@ async function start() {
   persist();
   // 쪽지가 뜰 참이면 쪽지를 닫은 뒤에 알린다 (쪽지가 알림을 가린다)
   if (area && fresh) {
-    const say = () => toast(`${area.name}에서 출발한다`, `${area.name} 영역이 맡은 집 8곳에 점선 고리가 있다. 다른 영역의 기록도 저절로 모인다`, true);
+    const say = () => toast(`${area.name}에서 출발한다`, `${area.name} 영역이 맡은 집 ${SITES.filter(s => s.area === area.id).length}곳에 점선 고리가 있다. 다른 영역의 기록도 저절로 모인다`, true);
     if (save.noteSeen < save.stage) afterNote = say; else setTimeout(say, 600);
   }
   mp.onJoin = name => tick(`${name} 조사관이 합류했다`);

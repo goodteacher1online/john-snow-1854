@@ -4,7 +4,7 @@ export type QuestionId = 'toll' | 'air' | 'water';
 export type PortraitId =
   | 'sarah' | 'ned' | 'maryann' | 'keeper' | 'sam' | 'huggins' | 'master' | 'scholar' | 'foreman'
   | 'jack' | 'ellen' | 'abe' | 'harriet' | 'hugh' | 'chairman' | 'physician'
-  | `r_d${string}`;          // 영역 조사 집 40곳의 주민
+  | `r_d${string}`;          // 영역 조사 집(d01~)의 주민
 export type SiteKind = 'house' | 'brewery' | 'factory' | 'workhouse';
 /** 조사관 모습: f1~f6, m1~m6 (tools/gen_investigators.py) */
 export type Look = string;

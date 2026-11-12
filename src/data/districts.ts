@@ -3,8 +3,8 @@ import people from './district_people.json';
 import { Site, Smell, WaterKind, Proof, PortraitId } from '../types.ts';
 
 /**
- * 영역마다 맡아 조사하는 집 8곳 (모두 40곳, tools/build_districts.py 가 스노우의 지도에서 고름).
- * 사망자 수는 스노우 지도의 막대를 센 값이고, 주민·마신 물·대사는 꾸몄다.
+ * 영역마다 맡아 조사하는 집 8곳과, 사망자가 7명 넘는 큰 집 (tools/build_districts.py 가 스노우의 지도에서 고름).
+ * 사망자 수는 공개 자료(Tobler 1994 디지털화, HistData 의 Snow.deaths)에서 그 자리의 값이고, 주민·마신 물·대사는 꾸몄다.
  * 다른 펌프가 더 가까운데 사망자가 난 집은, 스노우가 적은 사정(리틀 말버러 가 펌프 물이 더러워
  * 브로드 가까지 길으러 감, 일터·학교가 브로드 가)대로 브로드 가 물을 마신 것으로 했다.
  * 주민은 본 것만 말한다. 그 물이 원인이라는 해석은 하지 않는다.
@@ -110,7 +110,7 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
     const role = p.role, nm = p.name;
     const site: Site = {
       id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimonies, area: g.area,
-      fact: '사망자 수는 스노우 지도의 막대를 대략 센 값. 주민·마신 물·대사는 꾸밈.',
+      fact: '사망자 수는 스노우 지도의 그 자리 막대 수(공개 디지털화 자료). 주민·마신 물·대사는 꾸밈.',
       npc: { name: nm, role, portrait: `r_${g.id}` as PortraitId },
       people: peopleCount, deaths, smell, smellNote,
       drankBroad: kind === 'broad', waterNote: note, waterKind: kind, waterShort: short,

@@ -27,7 +27,7 @@
   ],
   "bars": true,
   "id": "d02",
-  "deaths": 3,
+  "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 102
  },
@@ -43,7 +43,7 @@
   ],
   "bars": true,
   "id": "d03",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 132
  },
@@ -59,7 +59,7 @@
   ],
   "bars": true,
   "id": "d04",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 158
  },
@@ -75,7 +75,7 @@
   ],
   "bars": true,
   "id": "d05",
-  "deaths": 5,
+  "deaths": 3,
   "nearestPump": "broad",
   "walkToBroad": 129
  },
@@ -139,7 +139,7 @@
   ],
   "bars": true,
   "id": "d09",
-  "deaths": 4,
+  "deaths": 3,
   "nearestPump": "broad",
   "walkToBroad": 211
  },
@@ -155,7 +155,7 @@
   ],
   "bars": true,
   "id": "d10",
-  "deaths": 3,
+  "deaths": 2,
   "nearestPump": "berners",
   "walkToBroad": null
  },
@@ -171,7 +171,7 @@
   ],
   "bars": true,
   "id": "d11",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 257
  },
@@ -267,7 +267,7 @@
   ],
   "bars": true,
   "id": "d17",
-  "deaths": 3,
+  "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 212
  },
@@ -283,7 +283,7 @@
   ],
   "bars": true,
   "id": "d18",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "broad",
   "walkToBroad": 215
  },
@@ -331,7 +331,7 @@
   ],
   "bars": true,
   "id": "d21",
-  "deaths": 4,
+  "deaths": 2,
   "nearestPump": "broad",
   "walkToBroad": 260
  },
@@ -395,7 +395,7 @@
   ],
   "bars": true,
   "id": "d25",
-  "deaths": 10,
+  "deaths": 8,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
  },
@@ -411,7 +411,7 @@
   ],
   "bars": true,
   "id": "d26",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
  },
@@ -443,7 +443,7 @@
   ],
   "bars": true,
   "id": "d28",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
  },
@@ -459,7 +459,7 @@
   ],
   "bars": true,
   "id": "d29",
-  "deaths": 5,
+  "deaths": 4,
   "nearestPump": "broad",
   "walkToBroad": 128
  },
@@ -539,7 +539,7 @@
   ],
   "bars": true,
   "id": "d34",
-  "deaths": 2,
+  "deaths": 1,
   "nearestPump": "bridle",
   "walkToBroad": null
  },
@@ -571,7 +571,7 @@
   ],
   "bars": true,
   "id": "d36",
-  "deaths": 3,
+  "deaths": 4,
   "nearestPump": "little_marlborough",
   "walkToBroad": null
  },
@@ -587,7 +587,7 @@
   ],
   "bars": true,
   "id": "d37",
-  "deaths": 3,
+  "deaths": 0,
   "nearestPump": "bridle",
   "walkToBroad": null
  },
@@ -638,5 +638,69 @@
   "deaths": 0,
   "nearestPump": "warwick",
   "walkToBroad": null
+ },
+ {
+  "area": "team1",
+  "icon": [
+   915,
+   686
+  ],
+  "door": [
+   909,
+   666
+  ],
+  "bars": true,
+  "id": "d41",
+  "deaths": 12,
+  "nearestPump": "broad",
+  "walkToBroad": 396
+ },
+ {
+  "area": "team3",
+  "icon": [
+   950,
+   585
+  ],
+  "door": [
+   929,
+   597
+  ],
+  "bars": true,
+  "id": "d42",
+  "deaths": 8,
+  "nearestPump": "broad",
+  "walkToBroad": 308
+ },
+ {
+  "area": "team3",
+  "icon": [
+   774,
+   456
+  ],
+  "door": [
+   794,
+   495
+  ],
+  "bars": true,
+  "id": "d43",
+  "deaths": 7,
+  "nearestPump": "broad",
+  "walkToBroad": 99
+ },
+ {
+  "area": "team1",
+  "icon": [
+   854,
+   660
+  ],
+  "door": [
+   843,
+   642
+  ],
+  "bars": true,
+  "id": "d44",
+  "deaths": 7,
+  "nearestPump": "broad",
+  "walkToBroad": 215
  }
 ]

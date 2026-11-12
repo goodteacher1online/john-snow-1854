@@ -469,7 +469,7 @@ export function placeName(x: number, y: number, within = 90): string {
   return best;
 }
 
-// 영역마다 맡아 조사하는 집 40곳 (이야기 14곳 뒤에 붙인다)
+// 영역마다 맡아 조사하는 집 (이야기 14곳 뒤에 붙인다)
 export const STORY_COUNT = SITES.length;
 for (const s of buildDistricts({ w, placeName: (x, y) => placeName(x, y, 1e5), pumpName: id => PUMP_NAMES[id], miasma: MIASMA })) {
   SITES.push(s);

@@ -1,325 +1,357 @@
 {
-  "_comment": "영역 조사 집 40곳(d01~d40)의 주민. desc 는 tools/gen_portraits.py 가 얼굴을 그릴 때 쓰는 설명(영어), seed 는 그때의 시드. 모두 지어낸 인물이다.",
-  "people": [
-    {
-      "id": "d01",
-      "name": "토머스 웰스",
-      "role": "시계 수리공",
-      "home": "시계방",
-      "desc": "one single 48 year old man alone, watch mender, brown hair, grey waistcoat, sleeve garters",
-      "seed": 7001
-    },
-    {
-      "id": "d02",
-      "name": "에밀리 그레이",
-      "role": "모자 장식공",
-      "home": "모자 가게 2층",
-      "desc": "pale 26 year old milliner woman, dark hair pinned up, plain blue dress, ribbon pinned to collar",
-      "seed": 5002
-    },
-    {
-      "id": "d03",
-      "name": "조지 파커",
-      "role": "가구 목수",
-      "home": "목공소",
-      "desc": "sturdy 39 year old carpenter, sawdust on shirt, brown leather apron, short brown beard",
-      "seed": 5003
-    },
-    {
-      "id": "d04",
-      "name": "앤 홉스",
-      "role": "하숙집 주인",
-      "home": "하숙집",
-      "desc": "stern 50 year old landlady, grey hair under white cap, black dress, ring of keys on belt",
-      "seed": 5004
-    },
-    {
-      "id": "d05",
-      "name": "윌리엄 크로",
-      "role": "구두장이",
-      "home": "구둣방",
-      "desc": "stooped 61 year old shoemaker, bald with grey fringe, leather apron, spectacles",
-      "seed": 5005
-    },
-    {
-      "id": "d06",
-      "name": "루스 메이",
-      "role": "재봉사",
-      "home": "재봉집",
-      "desc": "neat 33 year old seamstress woman, auburn hair in a bun, pincushion on wrist, grey dress",
-      "seed": 5006
-    },
-    {
-      "id": "d07",
-      "name": "헨리 블랙",
-      "role": "약제사",
-      "home": "약방",
-      "desc": "tidy 45 year old apothecary, clean shaven, black coat, white cravat, thoughtful",
-      "seed": 5007
-    },
-    {
-      "id": "d08",
-      "name": "로즈 피치",
-      "role": "꽃 파는 사람",
-      "home": "꽃 가게",
-      "desc": "cheerful 19 year old flower seller girl, shawl over shoulders, straw hat, rosy cheeks",
-      "seed": 5008
-    },
-    {
-      "id": "d09",
-      "name": "패트릭 오닐",
-      "role": "벽돌공",
-      "home": "셋집",
-      "desc": "broad 35 year old Irish bricklayer, red beard, flat cap, rough brown jacket",
-      "seed": 5009
-    },
-    {
-      "id": "d10",
-      "name": "마거릿 콜",
-      "role": "세탁부",
-      "home": "세탁집",
-      "desc": "tired 44 year old laundress, red chapped hands not visible, sleeves rolled, headscarf, faded print dress",
-      "seed": 5010
-    },
-    {
-      "id": "d11",
-      "name": "샘 리드",
-      "role": "우유 배달꾼",
-      "home": "우유 가게",
-      "desc": "young 22 year old milkman, cloth cap, white smock, friendly freckled face",
-      "seed": 5011
-    },
-    {
-      "id": "d12",
-      "name": "한나 데이비스",
-      "role": "빵집 안주인",
-      "home": "빵집",
-      "desc": "plump 40 year old baker's wife, flour on cheek, white cap, white apron over brown dress",
-      "seed": 5012
-    },
-    {
-      "id": "d13",
-      "name": "아서 핀치",
-      "role": "인쇄공",
-      "home": "인쇄소 2층",
-      "desc": "lean 30 year old printer, ink stains on shirt, rolled sleeves, black waistcoat, moustache",
-      "seed": 6013
-    },
-    {
-      "id": "d14",
-      "name": "에드윈 로",
-      "role": "은퇴한 군인",
-      "home": "다락방",
-      "desc": "upright 68 year old retired soldier, white mutton chop whiskers, old red coat faded, medal",
-      "seed": 5014
-    },
-    {
-      "id": "d15",
-      "name": "클라라 벨",
-      "role": "피아노 교사",
-      "home": "음악 교실",
-      "desc": "elegant 37 year old piano teacher woman, dark hair in a neat bun, green silk dress, cameo",
-      "seed": 5015
-    },
-    {
-      "id": "d16",
-      "name": "벤 하퍼",
-      "role": "마부",
-      "home": "마구간 2층",
-      "desc": "weathered 50 year old coachman, ruddy face, grey stubble, heavy green greatcoat, scarf",
-      "seed": 5016
-    },
-    {
-      "id": "d17",
-      "name": "엘리자 웹",
-      "role": "과일 행상",
-      "home": "셋집",
-      "desc": "lively 28 year old costermonger woman, red neckerchief, straw bonnet, brown shawl",
-      "seed": 5017
-    },
-    {
-      "id": "d18",
-      "name": "존 스톤",
-      "role": "석공",
-      "home": "석공 작업장",
-      "desc": "dusty 46 year old stonemason, grey stone dust in beard, canvas jacket, cap",
-      "seed": 5018
-    },
-    {
-      "id": "d19",
-      "name": "메이블 키",
-      "role": "가정교사",
-      "home": "하숙집",
-      "desc": "serious 31 year old governess, brown hair parted in the middle, high collared grey dress",
-      "seed": 5019
-    },
-    {
-      "id": "d20",
-      "name": "다니엘 오크",
-      "role": "선술집 주인",
-      "home": "선술집",
-      "desc": "jolly 52 year old publican, round face, bushy sideburns, striped waistcoat, apron",
-      "seed": 5020
-    },
-    {
-      "id": "d21",
-      "name": "줄리아 모스",
-      "role": "장갑 만드는 사람",
-      "home": "장갑 공방",
-      "desc": "delicate 24 year old glove maker woman, blonde hair in braids pinned up, lavender dress",
-      "seed": 5021
-    },
-    {
-      "id": "d22",
-      "name": "프레드 콕스",
-      "role": "책방 주인",
-      "home": "헌책방",
-      "desc": "bookish 57 year old bookseller, small round spectacles, grey hair, brown tweed coat",
-      "seed": 5022
-    },
-    {
-      "id": "d23",
-      "name": "제인 우드",
-      "role": "하녀",
-      "home": "저택 부엌",
-      "desc": "young 20 year old housemaid, white frilled cap, black dress, white collar",
-      "seed": 5023
-    },
-    {
-      "id": "d24",
-      "name": "루이 마르탱",
-      "role": "프랑스인 요리사",
-      "home": "식당",
-      "desc": "lively 42 year old French cook, black moustache, white chef jacket, neckerchief",
-      "seed": 5024
-    },
-    {
-      "id": "d25",
-      "name": "메리 플린",
-      "role": "성냥 파는 어머니",
-      "home": "셋집",
-      "desc": "gaunt 36 year old poor mother, hollow cheeks, ragged grey shawl over head, worn dress",
-      "seed": 6025
-    },
-    {
-      "id": "d26",
-      "name": "윌 스미스",
-      "role": "대장장이 견습",
-      "home": "셋집",
-      "desc": "young 18 year old man, apprentice blacksmith, short curly brown hair, soot on cheeks, leather apron",
-      "seed": 7226
-    },
-    {
-      "id": "d27",
-      "name": "사라 레인",
-      "role": "모자 짜는 사람",
-      "home": "셋집",
-      "desc": "careworn 41 year old straw bonnet maker woman, grey streaked hair, brown dress, shawl",
-      "seed": 5027
-    },
-    {
-      "id": "d28",
-      "name": "조셉 그린",
-      "role": "물지게꾼",
-      "home": "셋집",
-      "desc": "lean 34 year old water carrier, yoke marks, rough linen shirt, brown cap, unshaven",
-      "seed": 5028
-    },
-    {
-      "id": "d29",
-      "name": "엘런 브룩",
-      "role": "재단사 아내",
-      "home": "재단 공방",
-      "desc": "anxious 30 year old tailor's wife, dark hair in a low bun, navy dress, tape measure",
-      "seed": 5029
-    },
-    {
-      "id": "d30",
-      "name": "리처드 헤일",
-      "role": "은세공인",
-      "home": "은세공 가게",
-      "desc": "precise 44 year old silversmith, neat grey beard, black coat, magnifier on chain",
-      "seed": 5030
-    },
-    {
-      "id": "d31",
-      "name": "앨리스 노스",
-      "role": "모자 가게 주인",
-      "home": "모자 가게",
-      "desc": "fashionable 39 year old shopkeeper woman, auburn curls, plum dress, small hat with feather",
-      "seed": 5031
-    },
-    {
-      "id": "d32",
-      "name": "찰스 덴트",
-      "role": "변호사 서기",
-      "home": "셋집",
-      "desc": "neat 27 year old law clerk, side parted hair, high collar, black frock coat, cravat",
-      "seed": 5032
-    },
-    {
-      "id": "d33",
-      "name": "케이트 윈",
-      "role": "세탁부",
-      "home": "세탁집",
-      "desc": "strong 38 year old washerwoman, red hair under blue kerchief, rolled sleeves, apron",
-      "seed": 5033
-    },
-    {
-      "id": "d34",
-      "name": "톰 버드",
-      "role": "굴뚝 청소부",
-      "home": "지하 셋방",
-      "desc": "sooty 29 year old chimney sweep, black soot on face, battered top hat, black jacket",
-      "seed": 5034
-    },
-    {
-      "id": "d35",
-      "name": "그레이스 힐",
-      "role": "빵 배달 소녀",
-      "home": "빵집 다락",
-      "desc": "thin 16 year old girl, brown braids, plain grey dress, white apron, shy",
-      "seed": 5035
-    },
-    {
-      "id": "d36",
-      "name": "피터 쇼",
-      "role": "마차 바퀴공",
-      "home": "바퀴 공방",
-      "desc": "burly 48 year old wheelwright, thick grey beard, leather apron, cap",
-      "seed": 5036
-    },
-    {
-      "id": "d37",
-      "name": "베시 랭",
-      "role": "하숙집 하녀",
-      "home": "하숙집",
-      "desc": "young 21 year old maid of all work, mousy hair under cap, faded blue dress, apron",
-      "seed": 5037
-    },
-    {
-      "id": "d38",
-      "name": "에드먼드 프라이",
-      "role": "의사 조수",
-      "home": "진료소",
-      "desc": "29 year old man, doctor's assistant, short sandy hair, clean shaven, spectacles, dark coat, white shirt",
-      "seed": 7238
-    },
-    {
-      "id": "d39",
-      "name": "올리비아 체이스",
-      "role": "부잣집 마님",
-      "home": "저택",
-      "desc": "proud 50 year old wealthy lady, silver streaked hair, dark green silk dress, lace collar",
-      "seed": 5039
-    },
-    {
-      "id": "d40",
-      "name": "노아 길",
-      "role": "가로등 점등부",
-      "home": "셋집",
-      "desc": "lanky 55 year old lamplighter, grey whiskers, brown coat, cap with brass badge",
-      "seed": 5040
-    }
-  ]
+ "_comment": "영역 조사 집 40곳(d01~d40)의 주민. desc 는 tools/gen_portraits.py 가 얼굴을 그릴 때 쓰는 설명(영어), seed 는 그때의 시드. 모두 지어낸 인물이다.",
+ "people": [
+  {
+   "id": "d01",
+   "name": "토머스 웰스",
+   "role": "시계 수리공",
+   "home": "시계방",
+   "desc": "one single 48 year old man alone, watch mender, brown hair, grey waistcoat, sleeve garters",
+   "seed": 7001
+  },
+  {
+   "id": "d02",
+   "name": "에밀리 그레이",
+   "role": "모자 장식공",
+   "home": "모자 가게 2층",
+   "desc": "pale 26 year old milliner woman, dark hair pinned up, plain blue dress, ribbon pinned to collar",
+   "seed": 5002
+  },
+  {
+   "id": "d03",
+   "name": "조지 파커",
+   "role": "가구 목수",
+   "home": "목공소",
+   "desc": "sturdy 39 year old carpenter, sawdust on shirt, brown leather apron, short brown beard",
+   "seed": 5003
+  },
+  {
+   "id": "d04",
+   "name": "앤 홉스",
+   "role": "하숙집 주인",
+   "home": "하숙집",
+   "desc": "stern 50 year old landlady, grey hair under white cap, black dress, ring of keys on belt",
+   "seed": 5004
+  },
+  {
+   "id": "d05",
+   "name": "윌리엄 크로",
+   "role": "구두장이",
+   "home": "구둣방",
+   "desc": "stooped 61 year old shoemaker, bald with grey fringe, leather apron, spectacles",
+   "seed": 5005
+  },
+  {
+   "id": "d06",
+   "name": "루스 메이",
+   "role": "재봉사",
+   "home": "재봉집",
+   "desc": "neat 33 year old seamstress woman, auburn hair in a bun, pincushion on wrist, grey dress",
+   "seed": 5006
+  },
+  {
+   "id": "d07",
+   "name": "헨리 블랙",
+   "role": "약제사",
+   "home": "약방",
+   "desc": "tidy 45 year old apothecary, clean shaven, black coat, white cravat, thoughtful",
+   "seed": 5007
+  },
+  {
+   "id": "d08",
+   "name": "로즈 피치",
+   "role": "꽃 파는 사람",
+   "home": "꽃 가게",
+   "desc": "cheerful 19 year old flower seller girl, shawl over shoulders, straw hat, rosy cheeks",
+   "seed": 5008
+  },
+  {
+   "id": "d09",
+   "name": "패트릭 오닐",
+   "role": "벽돌공",
+   "home": "셋집",
+   "desc": "broad 35 year old Irish bricklayer, red beard, flat cap, rough brown jacket",
+   "seed": 5009
+  },
+  {
+   "id": "d10",
+   "name": "마거릿 콜",
+   "role": "세탁부",
+   "home": "세탁집",
+   "desc": "tired 44 year old laundress, red chapped hands not visible, sleeves rolled, headscarf, faded print dress",
+   "seed": 5010
+  },
+  {
+   "id": "d11",
+   "name": "샘 리드",
+   "role": "우유 배달꾼",
+   "home": "우유 가게",
+   "desc": "young 22 year old milkman, cloth cap, white smock, friendly freckled face",
+   "seed": 5011
+  },
+  {
+   "id": "d12",
+   "name": "한나 데이비스",
+   "role": "빵집 안주인",
+   "home": "빵집",
+   "desc": "plump 40 year old baker's wife, flour on cheek, white cap, white apron over brown dress",
+   "seed": 5012
+  },
+  {
+   "id": "d13",
+   "name": "아서 핀치",
+   "role": "인쇄공",
+   "home": "인쇄소 2층",
+   "desc": "lean 30 year old printer, ink stains on shirt, rolled sleeves, black waistcoat, moustache",
+   "seed": 6013
+  },
+  {
+   "id": "d14",
+   "name": "에드윈 로",
+   "role": "은퇴한 군인",
+   "home": "다락방",
+   "desc": "upright 68 year old retired soldier, white mutton chop whiskers, old red coat faded, medal",
+   "seed": 5014
+  },
+  {
+   "id": "d15",
+   "name": "클라라 벨",
+   "role": "피아노 교사",
+   "home": "음악 교실",
+   "desc": "elegant 37 year old piano teacher woman, dark hair in a neat bun, green silk dress, cameo",
+   "seed": 5015
+  },
+  {
+   "id": "d16",
+   "name": "벤 하퍼",
+   "role": "마부",
+   "home": "마구간 2층",
+   "desc": "weathered 50 year old coachman, ruddy face, grey stubble, heavy green greatcoat, scarf",
+   "seed": 5016
+  },
+  {
+   "id": "d17",
+   "name": "엘리자 웹",
+   "role": "과일 행상",
+   "home": "셋집",
+   "desc": "lively 28 year old costermonger woman, red neckerchief, straw bonnet, brown shawl",
+   "seed": 5017
+  },
+  {
+   "id": "d18",
+   "name": "존 스톤",
+   "role": "석공",
+   "home": "석공 작업장",
+   "desc": "dusty 46 year old stonemason, grey stone dust in beard, canvas jacket, cap",
+   "seed": 5018
+  },
+  {
+   "id": "d19",
+   "name": "메이블 키",
+   "role": "가정교사",
+   "home": "하숙집",
+   "desc": "serious 31 year old governess, brown hair parted in the middle, high collared grey dress",
+   "seed": 5019
+  },
+  {
+   "id": "d20",
+   "name": "다니엘 오크",
+   "role": "선술집 주인",
+   "home": "선술집",
+   "desc": "jolly 52 year old publican, round face, bushy sideburns, striped waistcoat, apron",
+   "seed": 5020
+  },
+  {
+   "id": "d21",
+   "name": "줄리아 모스",
+   "role": "장갑 만드는 사람",
+   "home": "장갑 공방",
+   "desc": "delicate 24 year old glove maker woman, blonde hair in braids pinned up, lavender dress",
+   "seed": 5021
+  },
+  {
+   "id": "d22",
+   "name": "프레드 콕스",
+   "role": "책방 주인",
+   "home": "헌책방",
+   "desc": "bookish 57 year old bookseller, small round spectacles, grey hair, brown tweed coat",
+   "seed": 5022
+  },
+  {
+   "id": "d23",
+   "name": "제인 우드",
+   "role": "하녀",
+   "home": "저택 부엌",
+   "desc": "young 20 year old housemaid, white frilled cap, black dress, white collar",
+   "seed": 5023
+  },
+  {
+   "id": "d24",
+   "name": "루이 마르탱",
+   "role": "프랑스인 요리사",
+   "home": "식당",
+   "desc": "lively 42 year old French cook, black moustache, white chef jacket, neckerchief",
+   "seed": 5024
+  },
+  {
+   "id": "d25",
+   "name": "메리 플린",
+   "role": "성냥 파는 어머니",
+   "home": "셋집",
+   "desc": "gaunt 36 year old poor mother, hollow cheeks, ragged grey shawl over head, worn dress",
+   "seed": 6025
+  },
+  {
+   "id": "d26",
+   "name": "윌 스미스",
+   "role": "대장장이 견습",
+   "home": "셋집",
+   "desc": "young 18 year old man, apprentice blacksmith, short curly brown hair, soot on cheeks, leather apron",
+   "seed": 7226
+  },
+  {
+   "id": "d27",
+   "name": "사라 레인",
+   "role": "모자 짜는 사람",
+   "home": "셋집",
+   "desc": "careworn 41 year old straw bonnet maker woman, grey streaked hair, brown dress, shawl",
+   "seed": 5027
+  },
+  {
+   "id": "d28",
+   "name": "조셉 그린",
+   "role": "물지게꾼",
+   "home": "셋집",
+   "desc": "lean 34 year old water carrier, yoke marks, rough linen shirt, brown cap, unshaven",
+   "seed": 5028
+  },
+  {
+   "id": "d29",
+   "name": "엘런 브룩",
+   "role": "재단사 아내",
+   "home": "재단 공방",
+   "desc": "anxious 30 year old tailor's wife, dark hair in a low bun, navy dress, tape measure",
+   "seed": 5029
+  },
+  {
+   "id": "d30",
+   "name": "리처드 헤일",
+   "role": "은세공인",
+   "home": "은세공 가게",
+   "desc": "precise 44 year old silversmith, neat grey beard, black coat, magnifier on chain",
+   "seed": 5030
+  },
+  {
+   "id": "d31",
+   "name": "앨리스 노스",
+   "role": "모자 가게 주인",
+   "home": "모자 가게",
+   "desc": "fashionable 39 year old shopkeeper woman, auburn curls, plum dress, small hat with feather",
+   "seed": 5031
+  },
+  {
+   "id": "d32",
+   "name": "찰스 덴트",
+   "role": "변호사 서기",
+   "home": "셋집",
+   "desc": "neat 27 year old law clerk, side parted hair, high collar, black frock coat, cravat",
+   "seed": 5032
+  },
+  {
+   "id": "d33",
+   "name": "케이트 윈",
+   "role": "세탁부",
+   "home": "세탁집",
+   "desc": "strong 38 year old washerwoman, red hair under blue kerchief, rolled sleeves, apron",
+   "seed": 5033
+  },
+  {
+   "id": "d34",
+   "name": "톰 버드",
+   "role": "굴뚝 청소부",
+   "home": "지하 셋방",
+   "desc": "sooty 29 year old chimney sweep, black soot on face, battered top hat, black jacket",
+   "seed": 5034
+  },
+  {
+   "id": "d35",
+   "name": "그레이스 힐",
+   "role": "빵 배달 소녀",
+   "home": "빵집 다락",
+   "desc": "thin 16 year old girl, brown braids, plain grey dress, white apron, shy",
+   "seed": 5035
+  },
+  {
+   "id": "d36",
+   "name": "피터 쇼",
+   "role": "마차 바퀴공",
+   "home": "바퀴 공방",
+   "desc": "burly 48 year old wheelwright, thick grey beard, leather apron, cap",
+   "seed": 5036
+  },
+  {
+   "id": "d37",
+   "name": "베시 랭",
+   "role": "하숙집 하녀",
+   "home": "하숙집",
+   "desc": "young 21 year old maid of all work, mousy hair under cap, faded blue dress, apron",
+   "seed": 5037
+  },
+  {
+   "id": "d38",
+   "name": "에드먼드 프라이",
+   "role": "의사 조수",
+   "home": "진료소",
+   "desc": "29 year old man, doctor's assistant, short sandy hair, clean shaven, spectacles, dark coat, white shirt",
+   "seed": 7238
+  },
+  {
+   "id": "d39",
+   "name": "올리비아 체이스",
+   "role": "부잣집 마님",
+   "home": "저택",
+   "desc": "proud 50 year old wealthy lady, silver streaked hair, dark green silk dress, lace collar",
+   "seed": 5039
+  },
+  {
+   "id": "d40",
+   "name": "노아 길",
+   "role": "가로등 점등부",
+   "home": "셋집",
+   "desc": "lanky 55 year old lamplighter, grey whiskers, brown coat, cap with brass badge",
+   "seed": 5040
+  },
+  {
+   "id": "d41",
+   "name": "브리짓 오말리",
+   "role": "셋방 관리인",
+   "home": "셋방 건물",
+   "desc": "tired 44 year old Irish woman, red hair under a plain linen cap, patched brown shawl, grey dress",
+   "seed": 7041
+  },
+  {
+   "id": "d42",
+   "name": "조지프 레인",
+   "role": "가구 칠장이",
+   "home": "칠장이 공방",
+   "desc": "lean 36 year old varnisher man, short brown hair, paint stained canvas smock, rolled sleeves",
+   "seed": 7042
+  },
+  {
+   "id": "d43",
+   "name": "해나 프로스트",
+   "role": "하숙집 안주인",
+   "home": "하숙집",
+   "desc": "stern 50 year old landlady, greying dark hair in a bun, black lace cap, dark plum dress",
+   "seed": 7043
+  },
+  {
+   "id": "d44",
+   "name": "올리버 스미스",
+   "role": "석탄 배달꾼",
+   "home": "석탄 가게 위층",
+   "desc": "sturdy 30 year old coal porter, sooty face, short black hair, leather cap, dark wool coat",
+   "seed": 7044
+  }
+ ]
 }
