@@ -18,9 +18,9 @@ type SiteText = Omit<Site, 'door' | 'icon' | 'nearestPump' | 'waterKind' | 'wate
 const SITE_TEXT: SiteText[] = [
   {
     id: 'lewis', name: '브로드 가 40번지', kind: 'house', basis: 'record', proves: [],
-    fact: '아기 프랜시스, 어머니 세라, 경찰관 아버지, 기저귀 물과 정화조는 화이트헤드 목사의 1855년 조사 기록. 집에 사는 사람 수와 다른 사망자는 꾸민 것.',
+    fact: '아기 프랜시스, 어머니 세라, 경찰관 아버지, 기저귀 물과 정화조는 화이트헤드 목사의 1855년 조사 기록. 사망 1명은 지도의 그 집 막대 수와 같다(아버지는 손잡이를 뗀 날 쓰러져 이 유행의 막대에 들지 않는다). 집에 사는 사람 수는 꾸민 것.',
     npc: { name: '세라 루이스', role: '경찰관의 아내', portrait: 'sarah' },
-    people: 20, deaths: 2, smell: 'high', smellNote: '지하 정화조 악취',
+    people: 20, deaths: 1, smell: 'high', smellNote: '지하 정화조 악취',
     drankBroad: true, waterNote: '브로드 가 펌프, 문 앞',
     intro: [
       '(문이 조금 열린다.)',
@@ -32,7 +32,7 @@ const SITE_TEXT: SiteText[] = [
       '나: 이 집에서는 누가 앓았습니까?',
       '딸 프랜시스요. 태어난 지 다섯 달이었어요. 지난달 28일부터 설사를 하더니 이달 2일에 숨을 거뒀어요.',
       '의사 선생님은 콜레라가 아니라 설사로 기력이 다한 거라고 하셨어요.',
-      '같은 집 세입자 한 분도 1일에 돌아가셨어요. 이 집에 스무 명쯤 사는데 다들 겁에 질려 있어요.',
+      '이 집에 스무 명쯤 사는데 다들 겁에 질려 있어요. 남편마저 잘못될까 봐 밤에 잠을 못 자요.',
     ],
     air: [
       '나: 집 주변 공기는 어떻습니까?',
@@ -49,7 +49,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'lodging', name: '브로드 가 하숙집', kind: 'house', basis: 'composite', proves: [],
     npc: { name: '네드', role: '재단사 견습', portrait: 'ned' },
-    people: 18, deaths: 5, smell: 'high', smellNote: '뒷마당 오물통이 넘침',
+    people: 18, deaths: 3, smell: 'high', smellNote: '뒷마당 오물통이 넘침',
     drankBroad: true, waterNote: '브로드 가 펌프, 길 건너',
     intro: [
       '(계단마다 문이 닫혀 있다. 한 청년이 짐을 싸다 고개를 든다.)',
@@ -57,7 +57,7 @@ const SITE_TEXT: SiteText[] = [
     ],
     toll: [
       '나: 이 집에서는 몇 명이 앓았습니까?',
-      '방마다 한 가구씩 열여덟이 살았는데 닷새 사이에 다섯이 죽었어요.',
+      '방마다 한 가구씩 열여덟이 살았는데 닷새 사이에 셋이 죽었어요.',
       '스승님 내외가 먼저였고 3층 식구 셋이 뒤를 따랐습니다. 금요일 아침까지 멀쩡하던 분들이 저녁에 숨을 거뒀어요.',
     ],
     air: [
@@ -75,7 +75,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'cambridge', name: '케임브리지 가 모퉁이 집', kind: 'house', basis: 'composite', proves: [],
     npc: { name: '메리 앤', role: '세탁부', portrait: 'maryann' },
-    people: 9, deaths: 4, smell: 'high', smellNote: '하수구 악취',
+    people: 9, deaths: 3, smell: 'high', smellNote: '하수구 악취',
     drankBroad: true, waterNote: '브로드 가 펌프, 모퉁이',
     intro: [
       '(문틈으로 빨래 삶는 김이 새어 나온다.)',
@@ -83,7 +83,7 @@ const SITE_TEXT: SiteText[] = [
     ],
     toll: [
       '나: 가족 중에 앓은 분이 있습니까?',
-      '아홉 식구 가운데 넷을 묻었어요. 남편, 시어머니, 그리고 아이 둘.',
+      '아홉 식구 가운데 셋을 묻었어요. 남편, 시어머니, 그리고 큰아이.',
       '쌀뜨물 같은 설사를 쏟더니 입술이 파래지고… 하루를 못 넘겼어요.',
     ],
     air: [
@@ -128,7 +128,7 @@ const SITE_TEXT: SiteText[] = [
   {
     id: 'berwick', name: '버윅 가 대장간', kind: 'house', basis: 'composite', proves: [],
     npc: { name: '샘', role: '대장장이', portrait: 'sam' },
-    people: 10, deaths: 3, smell: 'high', smellNote: '뒷마당 오물통',
+    people: 10, deaths: 5, smell: 'high', smellNote: '뒷마당 오물통',
     drankBroad: true, waterNote: '브로드 가 펌프, 걸어서 2분',
     intro: [
       '(화덕 불이 꺼진 대장간. 사내가 팔짱을 끼고 서 있다.)',
@@ -136,7 +136,7 @@ const SITE_TEXT: SiteText[] = [
     ],
     toll: [
       '나: 이 집에서는 누가 앓았습니까?',
-      '열 식구 중 셋이 갔소. 아내와 견습 아이 둘.',
+      '열 식구 중 다섯이 갔소. 아내와 두 딸, 견습 아이 둘.',
       '토요일 밤에 다리에 쥐가 난다고 뒹굴더니 일요일 해 뜨기 전에 식었소.',
     ],
     air: [
@@ -241,11 +241,11 @@ const SITE_TEXT: SiteText[] = [
   },
   {
     id: 'eley', name: '일리 형제 뇌관 공장', kind: 'factory', basis: 'record', proves: ['far'],
-    fact: '직공 약 200명 가운데 18명 사망, 물통 두 개, 햄스테드의 어머니와 이즐링턴의 조카 모두 스노우의 보고서 그대로.',
+    fact: '직공 약 200명 가운데 18명 사망, 물통 두 개, 햄스테드의 어머니와 이즐링턴의 조카 모두 스노우의 보고서 그대로. 직공들은 자기 집에서 숨져, 지도에는 공장 자리가 아니라 저마다의 집에 막대가 있다.',
     clue: '소호에서 먼 햄스테드에 사는 부인이 사망',
     testimony: '뇌관 공장 주인의 어머니입니다. 소호에서 먼 햄스테드에 살았지만 날마다 브로드 가 펌프 물을 받아 마셨고 2일에 숨졌습니다. 함께 마신 조카도 이즐링턴에서 죽었습니다.',
     npc: { name: '작업반장', role: '브로드 가 37번지', portrait: 'foreman' },
-    people: 200, deaths: 18, smell: 'mid', smellNote: '화약과 하수구 냄새',
+    people: 200, deaths: 18, mapDeaths: 0, smell: 'mid', smellNote: '화약과 하수구 냄새',
     drankBroad: true, waterNote: '브로드 가 펌프, 작업장 물통 두 개',
     intro: [
       '(기계 소리 대신 정적이 흐르는 작업장.)',
@@ -272,9 +272,9 @@ const SITE_TEXT: SiteText[] = [
     outro: '저도 그 통의 물을 마셨는지 자꾸 기억을 더듬게 됩니다.',
   },
   {
-    id: 'littlepulteney', name: '리틀 풀트니 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
+    id: 'littlepulteney', name: '리틀 윈드밀 가 셋집', kind: 'house', basis: 'composite', proves: ['far'],
     clue: '냄새가 덜한 거리인데 남매가 사망',
-    testimony: '리틀 풀트니 가의 남매입니다. 브라이들 골목 펌프가 더 가깝고 냄새도 덜한 거리지만, 일부러 브로드 가 물을 길어 마셨고 둘 다 죽었습니다.',
+    testimony: '리틀 윈드밀 가의 남매입니다. 브라이들 골목 펌프가 더 가깝고 냄새도 덜한 거리지만, 일부러 브로드 가 물을 길어 마셨고 둘 다 죽었습니다.',
     npc: { name: '잭', role: '짐꾼', portrait: 'jack' },
     people: 7, deaths: 2, smell: 'low', smellNote: '냄새가 덜한 거리',
     drankBroad: true, waterNote: '브로드 가 펌프, 일부러 길어 옴',
@@ -529,7 +529,7 @@ function storyQuest(stage: number, has: (id: string) => boolean, area: string): 
         items: [
           { label: '브로드 가 굴드 댁', done: has('gould') },
           { label: '일리 형제 뇌관 공장', done: has('eley') },
-          { label: '리틀 풀트니 가 또는 카나비 가', done: far },
+          { label: '리틀 윈드밀 가 또는 카나비 가', done: far },
         ],
         targets: [...left(['gould', 'eley']), ...(far ? [] : ['littlepulteney', 'carnaby'])],
       };
@@ -594,7 +594,7 @@ export const NOTES: { title: string; body: string[]; button: string; predict?: {
       '좋소. 그러나 그럴듯한 생각과 증명된 사실은 다르오. 물이 원인이라면 이런 일도 있어야 하오.',
       '하나. 펌프 가까이 살아도 그 물을 마시지 않은 사람은 무사하다.',
       '둘. 멀리 살아도 그 물을 마신 사람은 앓는다.',
-      '브로드 가의 조류학자 굴드 씨 댁, 37번지 뇌관 공장, 그리고 다른 펌프가 더 가까운 리틀 풀트니 가나 카나비 가를 찾아가 확인하시오.',
+      '브로드 가의 조류학자 굴드 씨 댁, 37번지 뇌관 공장, 그리고 다른 펌프가 더 가까운 리틀 윈드밀 가나 카나비 가를 찾아가 확인하시오.',
     ],
     button: '확인하러 간다',
   },

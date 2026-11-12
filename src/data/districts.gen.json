@@ -642,6 +642,22 @@
  {
   "area": "team1",
   "icon": [
+   710,
+   590
+  ],
+  "door": [
+   738,
+   577
+  ],
+  "bars": true,
+  "id": "d41",
+  "deaths": 18,
+  "nearestPump": "broad",
+  "walkToBroad": 36
+ },
+ {
+  "area": "team1",
+  "icon": [
    915,
    686
   ],
@@ -650,10 +666,26 @@
    666
   ],
   "bars": true,
-  "id": "d41",
+  "id": "d42",
   "deaths": 12,
   "nearestPump": "broad",
   "walkToBroad": 396
+ },
+ {
+  "area": "team1",
+  "icon": [
+   789,
+   605
+  ],
+  "door": [
+   764,
+   611
+  ],
+  "bars": true,
+  "id": "d43",
+  "deaths": 10,
+  "nearestPump": "broad",
+  "walkToBroad": 81
  },
  {
   "area": "team3",
@@ -666,7 +698,7 @@
    597
   ],
   "bars": true,
-  "id": "d42",
+  "id": "d44",
   "deaths": 8,
   "nearestPump": "broad",
   "walkToBroad": 308
@@ -682,7 +714,7 @@
    495
   ],
   "bars": true,
-  "id": "d43",
+  "id": "d45",
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 99
@@ -698,7 +730,7 @@
    642
   ],
   "bars": true,
-  "id": "d44",
+  "id": "d46",
   "deaths": 7,
   "nearestPump": "broad",
   "walkToBroad": 215

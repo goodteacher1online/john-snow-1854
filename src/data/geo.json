@@ -16,19 +16,19 @@
     "newman": [905, 91]
   },
   "sites": {
-    "lewis": { "door": [704, 557], "icon": [700, 590] },
+    "lewis": { "door": [714, 560], "icon": [724, 563] },
     "eley": { "door": [672, 571], "icon": [668, 608] },
     "lodging": { "door": [690, 537], "icon": [686, 528] },
     "cambridge": { "door": [751, 598], "icon": [772, 600] },
-    "coffee": { "door": [770, 511], "icon": [766, 502] },
+    "coffee": { "door": [795, 486], "icon": [795, 486] },
     "berwick": { "door": [881, 560], "icon": [882, 566] },
     "brewery": { "door": [814, 500], "icon": [823, 566] },
     "workhouse": { "door": [701, 425], "icon": [630, 452] },
-    "gould": { "door": [838, 481], "icon": [833, 472] },
-    "littlepulteney": { "door": [935, 733], "icon": [922, 716] },
+    "gould": { "door": [826, 510], "icon": [826, 510] },
+    "littlepulteney": { "door": [771, 708], "icon": [771, 708] },
     "carnaby": { "door": [499, 560], "icon": [517, 562] },
-    "marlborough": { "door": [451, 492], "icon": [431, 508] },
-    "pulteney": { "door": [800, 770], "icon": [818, 772] },
+    "marlborough": { "door": [440, 494], "icon": [423, 496] },
+    "pulteney": { "door": [810, 770], "icon": [822, 776] },
     "rupert": { "door": [1022, 775], "icon": [1044, 778] }
   },
   "miasma": {

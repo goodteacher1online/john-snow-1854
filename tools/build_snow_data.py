@@ -75,6 +75,23 @@ def main():
         houses.append({'deaths': len(idx), 'points': [[round(x, 1), round(y, 1)] for x, y in mx]})
     houses.sort(key=lambda h: -h['deaths'])
     total = sum(h['deaths'] for h in houses)
+    # 집마다 문 앞 길이 '걸어서 브로드 가 펌프가 가장 가까운 거리'(catchment.png 의 붉은 길)에 드는가
+    walk = cv2.imread(str(ROOT / 'public' / 'assets' / 'walk_mask.png'), cv2.IMREAD_GRAYSCALE) > 0
+    red = cv2.imread(str(ROOT / 'public' / 'assets' / 'catchment.png'), cv2.IMREAD_UNCHANGED)[..., 3] > 0
+    _, (iy, ix) = ndi.distance_transform_edt(~walk, return_indices=True)
+    for h in houses:
+        # 쌓인 막대 가운데 길에 가장 가까운 점에서 가장 가까운 길
+        best = min(h['points'], key=lambda q: np.hypot(ix[int(q[1]), int(q[0])] - q[0], iy[int(q[1]), int(q[0])] - q[1]))
+        sx, sy = ix[int(best[1]), int(best[0])], iy[int(best[1]), int(best[0])]
+        h['broad'] = bool(red[sy, sx])
+        # 막대를 쌓는 방향(길에서 블록 안쪽으로). 막대는 이 방향에 수직으로 그린다
+        far = max(h['points'], key=lambda q: np.hypot(q[0] - sx, q[1] - sy))
+        v = np.array([far[0] - sx, far[1] - sy], float)
+        h['dir'] = [round(float(c), 3) for c in v / (np.linalg.norm(v) or 1)]
+    inside = sum(h['deaths'] for h in houses if h['broad'])
+    share = red.sum() / walk.sum()
+    print(f'  붉은 길은 지도 전체 길의 {share * 100:.0f}%')
+    print(f'  붉은 길(걸어서 브로드 가 펌프가 가장 가까운 곳)에 사는 사망자 {inside}명 / {total}명 ({inside / total * 100:.0f}%)')
     print(f'  사망자 {total}명, 주소(집) {len(houses)}곳, 가장 많은 집 {houses[0]["deaths"]}명')
     hist = {}
     for h in houses:
@@ -82,7 +99,7 @@ def main():
     print('  집당 사망자 분포:', ', '.join(f'{k}명 {v}곳' for k, v in sorted(hist.items())))
     out = {'_source': 'Tobler W. (1994) Snow\'s Cholera Map, NCGIA 디지털화(1992, Rusty Dodson). R 패키지 HistData 의 Snow.deaths. '
                       '좌표는 13개 펌프로 맞춰 snow_map.jpg 픽셀로 옮겼다.',
-           'total': total, 'houses': houses}
+           'total': total, 'insideBroad': inside, 'streetShare': round(float(share), 3), 'houses': houses}
     (DATA / 'snow_deaths.gen.json').write_text(json.dumps(out, ensure_ascii=False), encoding='utf-8')
 
     # 확인용: 원본 지도 위에 자료 점을 찍는다

@@ -174,7 +174,7 @@ def add_big(picked, walk, houses):
         dists = [np.hypot(*(np.array(snap_street(walk, int(x), int(y)) or (9e9, 9e9)) - (x, y))) for x, y in pts]
         inner = pts[int(np.argmax(dists))]
         x, y = int(round(inner[0])), int(round(inner[1]))
-        if not far_from((x, y), taken, 24):
+        if not far_from((x, y), taken, 16):
             continue                         # 이미 게임에 있는 집이다
         door = snap_street(walk, x, y)
         if door is None:

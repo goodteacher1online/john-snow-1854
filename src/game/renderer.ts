@@ -344,34 +344,36 @@ export class Renderer {
   /** 가까이서는 스노우의 지도처럼 사망자 한 명에 검은 막대 하나 */
   private drawDeathBars(s: Site, iconLeft: number, y: number) {
     const ctx = this.ctx, z = this.zoom;
+    const bars = s.mapDeaths ?? s.deaths;
     const bw = Math.max(12 * z, 18), bh = Math.max(2.8 * z, 4), pitch = Math.max(4.2 * z, 6.5), perCol = 9;
     const left = iconLeft - Math.max(5 * z, 6) - bw;
-    const cols = Math.max(1, Math.ceil(s.deaths / perCol));
-    const topY = y - Math.min(Math.max(s.deaths, 1), perCol) * pitch;
+    const cols = Math.max(1, Math.ceil(bars / perCol));
+    const topY = y - Math.min(Math.max(bars, 1), perCol) * pitch;
     // 종이색 바탕을 깔아 지도의 검은 선과 섞이지 않게 한다
     ctx.fillStyle = 'rgba(246, 239, 220, 0.92)';
     ctx.beginPath();
     ctx.roundRect(left - (cols - 1) * (bw + 3) - 4, topY - 4, cols * (bw + 3) + 5, y - topY + 6, 4);
     ctx.fill();
     ctx.fillStyle = INK;
-    for (let i = 0; i < s.deaths; i++) {
+    for (let i = 0; i < bars; i++) {
       const col = Math.floor(i / perCol), row = i % perCol;
       ctx.fillRect(left - col * (bw + 3), y - bh - row * pitch, bw, bh);
     }
-    this.label(`${s.deaths}명`, left + bw / 2 - (cols - 1) * (bw + 3) / 2, topY - 8, 19, s.deaths ? INK : '#5f5446', 4);
+    this.label(`${bars}명`, left + bw / 2 - (cols - 1) * (bw + 3) / 2, topY - 8, 19, bars ? INK : '#5f5446', 4);
   }
 
   /** 멀리서는 사망자 수만큼 넓어지는 검은 원 (넓이가 사람 수에 비례) */
   private drawDeathDot(s: Site, x: number, y: number) {
     const ctx = this.ctx;
-    const r = s.deaths ? 7 + Math.sqrt(s.deaths) * 3.4 : 8;
+    const bars = s.mapDeaths ?? s.deaths;
+    const r = bars ? 7 + Math.sqrt(bars) * 3.4 : 8;
     const cy = y - r - 2;
     ctx.beginPath();
     ctx.arc(x, cy, r, 0, Math.PI * 2);
     ctx.lineWidth = 3;
     ctx.strokeStyle = PAPER;
     ctx.stroke();
-    if (s.deaths) {
+    if (bars) {
       ctx.fillStyle = INK;
       ctx.fill();
     } else {
@@ -384,8 +386,8 @@ export class Renderer {
     ctx.font = `700 ${r >= 12 ? 15 : 13}px ${FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = s.deaths ? PAPER : INK;
-    ctx.fillText(String(s.deaths), x, cy + 1);
+    ctx.fillStyle = bars ? PAPER : INK;
+    ctx.fillText(String(bars), x, cy + 1);
   }
 
   private drawPump(wx: number, wy: number, noHandle: boolean) {

@@ -352,6 +352,22 @@
    "home": "석탄 가게 위층",
    "desc": "sturdy 30 year old coal porter, sooty face, short black hair, leather cap, dark wool coat",
    "seed": 7044
+  },
+  {
+   "id": "d45",
+   "name": "새뮤얼 브룩스",
+   "role": "제화공",
+   "home": "제화 공방",
+   "desc": "thin 39 year old bootmaker man, dark sideburns, leather apron, white shirt with rolled sleeves",
+   "seed": 7045
+  },
+  {
+   "id": "d46",
+   "name": "마거릿 헤일",
+   "role": "바느질삯꾼",
+   "home": "다락방 셋집",
+   "desc": "careworn 37 year old seamstress woman, light brown hair under a white cap, faded blue dress, pins on collar",
+   "seed": 7046
   }
  ]
 }

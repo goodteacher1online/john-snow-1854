@@ -74,12 +74,12 @@
  "sites": {
   "lewis": {
    "door": [
-    704,
-    557
+    712,
+    554
    ],
    "icon": [
-    700,
-    590
+    724,
+    563
    ],
    "nearestPump": "broad"
   },
@@ -118,12 +118,12 @@
   },
   "coffee": {
    "door": [
-    770,
-    511
+    798,
+    492
    ],
    "icon": [
-    766,
-    502
+    795,
+    486
    ],
    "nearestPump": "broad"
   },
@@ -162,23 +162,23 @@
   },
   "gould": {
    "door": [
-    838,
-    481
+    823,
+    504
    ],
    "icon": [
-    833,
-    472
+    826,
+    510
    ],
    "nearestPump": "broad"
   },
   "littlepulteney": {
    "door": [
-    926,
-    737
+    767,
+    710
    ],
    "icon": [
-    922,
-    716
+    771,
+    708
    ],
    "nearestPump": "bridle"
   },
@@ -195,23 +195,23 @@
   },
   "marlborough": {
    "door": [
-    451,
-    492
+    444,
+    498
    ],
    "icon": [
-    431,
-    508
+    423,
+    496
    ],
    "nearestPump": "little_marlborough"
   },
   "pulteney": {
    "door": [
-    800,
-    770
+    805,
+    772
    ],
    "icon": [
-    818,
-    772
+    822,
+    776
    ],
    "nearestPump": "bridle"
   },

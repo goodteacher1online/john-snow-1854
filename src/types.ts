@@ -24,6 +24,8 @@ export interface Site {
   npc: { name: string; role: string; portrait: PortraitId };
   people: number;
   deaths: number;
+  /** 지도에 그리는 막대 수가 deaths 와 다를 때 (공장 직공처럼 자기 집에서 숨진 경우) */
+  mapDeaths?: number;
   smell: Smell;
   smellNote: string;
   drankBroad: boolean;
