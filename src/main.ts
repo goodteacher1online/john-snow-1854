@@ -2,10 +2,11 @@
 import './style.css';
 import { Avatar, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
-  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, districtOf, AREA_CAP, RANKS, SOURCES, PRIMER, GLOSSARY,
+  SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, districtOf, AREA_CAP, SOURCES, PRIMER, GLOSSARY,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
+import { BADGES, HYPOTHESES, HYPO_WATER, LEVEL_NAMES, InquiryState, level } from './data/inquiry.ts';
 import snowDeaths from './data/snow_deaths.gen.json';
 import { Nav } from './game/nav.ts';
 import { Multiplayer } from './game/multiplayer.ts';
@@ -125,7 +126,7 @@ const closeModal = (id: string) => $(id).classList.remove('open');
 // 화면 위 정보
 // ---------------------------------------------------------------------------
 function updateHud(bump = false) {
-  const quest = questView(save.stage, has, myArea());
+  const quest = questView(save.stage, has, myArea(), save.seen);
   $('hud-date').textContent = DATES[save.stage];
   $('quest-title').textContent = quest.title;
   $('quest-items').innerHTML = quest.items.map(i => `<li class="${i.done ? 'done' : ''}">${esc(i.label)}</li>`).join('');
@@ -134,11 +135,10 @@ function updateHud(bump = false) {
     void $('quest').offsetWidth;
     $('quest').classList.add('bump');
   }
-  const next = RANKS.find(r => r[0] > save.xp);
-  const floor = RANKS.filter(r => r[0] <= save.xp).pop()![0];
-  $('hud-rank').textContent = rankOf(save.xp);
-  $('hud-xp').textContent = `${save.xp}점`;
-  $('hud-xp-bar').style.width = next ? `${(save.xp - floor) / (next[0] - floor) * 100}%` : '100%';
+  const lv = level(inquiry());
+  $('hud-rank').textContent = `탐구력 ${lv.lv}단계 · ${LEVEL_NAMES[lv.lv]}`;
+  $('hud-xp').textContent = `배지 ${(save.badges ?? []).length}/${BADGES.length}`;
+  $('hud-xp-bar').style.width = `${lv.avg}%`;
   $('hud-count').textContent = `기록 ${save.records.length}/${SITES.length}`;
   $('notebook-dot').classList.toggle('hidden', !notebook.needsReason);
   renderLedger();
@@ -201,11 +201,20 @@ function showNote(stage: number) {
   if (stage === STAGE.REASON && save.predict !== undefined) {
     body.unshift(`당신은 공기설대로라면 "${NOTES[STAGE.TEST_AIR].predict!.options[save.predict]}"라고 예상했소. 실제로는 구빈원 535명 가운데 5명, 양조장 70명 가운데 0명이었소.`);
   }
-  const ask = note.predict && save.predict === undefined ? note.predict : null;
+  if (stage === STAGE.PREDICT && save.hypo0 !== undefined) {
+    body.unshift(save.hypo0 === HYPO_WATER
+      ? '처음부터 물을 의심했군. 좋은 직감이오. 그러나 직감은 증거가 아니오. 시험해 보시오.'
+      : `처음에 당신은 "${HYPOTHESES[save.hypo0]}" 쪽을 가설로 세웠소. 그런데 기록이 다른 것을 가리켰고, 당신은 생각을 고쳤소. 과학자는 기록이 말하면 생각을 바꾸오.`);
+  }
+  // 먼저 첫 가설을, 그다음 예상을 묻는다
+  const askHypo = note.hypothesis && save.hypo0 === undefined;
+  const ask = askHypo ? { q: '당신의 첫 가설은? 지금까지 기록을 보고 무엇이 병과 가장 관련 있어 보이는지 고르시오.', options: HYPOTHESES }
+    : note.predict && save.predict === undefined ? note.predict : null;
   $('note-body').innerHTML = body.map(p => `<p>${esc(p)}</p>`).join('') + (ask ? `
     <p class="ask">${esc(ask.q)}</p>
     <div class="reason-opts">${ask.options.map((o, i) => `<button class="opt" data-i="${i}"><span class="num">${i + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>` : '');
   $('note-body').querySelectorAll<HTMLButtonElement>('.opt').forEach(b => b.addEventListener('click', () => {
+    if (askHypo) { save.hypo0 = Number(b.dataset.i); sound.playPen(); persist(); showNote(stage); return; }
     save.predict = Number(b.dataset.i);
     sound.playPen();
     $('note-ok').click();
@@ -231,7 +240,7 @@ $('note-ok').addEventListener('click', () => {
 function setStage(stage: number) {
   save.stage = stage;
   // 다음 단계 조건을 이미 채웠다면 건너뛴다
-  while (stageCleared(save.stage, has)) save.stage++;
+  while (stageCleared(save.stage, has, save.seen)) save.stage++;
   persist();
   updateHud(true);
   mp.sendProgress(save.records, save.stage);
@@ -239,6 +248,38 @@ function setStage(stage: number) {
 }
 
 function addXp(n: number) { save.xp += n; }
+
+/** 지금의 탐구 상태 (탐구력·배지 판정용) */
+function inquiry(): InquiryState {
+  return { records: recordedSites(), stage: save.stage, reasonStep: save.reasonStep, misses: save.misses,
+    seen: save.seen ?? {}, hypo0: save.hypo0, predict: save.predict, distPredict: save.distPredict };
+}
+
+/** 새로 얻은 탐구 배지를 알린다 */
+function checkBadges() {
+  const got = new Set(save.badges ?? []);
+  const st = inquiry();
+  const fresh = BADGES.filter(b => !got.has(b.id) && b.test(st));
+  if (!fresh.length) return;
+  save.badges = [...got, ...fresh.map(b => b.id)];
+  addXp(fresh.length * 50);
+  fresh.forEach((b, i) => setTimeout(() => {
+    sound.playClueRecorded();
+    toast(`탐구 배지 · ${b.name}`, b.desc, true);
+  }, 1200 + i * 2600));
+  persist();
+  updateHud();
+}
+
+/** 수첩 그래프를 봤다 */
+function markSeen(key: 'smell' | 'water' | 'dist' | 'table') {
+  if (save.seen?.[key]) return;
+  save.seen = { ...(save.seen ?? {}), [key]: true };
+  persist();
+  checkBadges();
+  updateHud(true);
+  if (stageCleared(save.stage, has, save.seen)) setStage(save.stage + 1);
+}
 
 function record(site: Site) {
   save.records.push(site.id);
@@ -255,11 +296,18 @@ function record(site: Site) {
   if (!matchMedia('(max-width: 820px)').matches) toggleLedger(true);
   updateHud();
   mp.sendProgress(save.records, save.stage);
-  if (stageCleared(save.stage, has)) setStage(save.stage + 1);
+  checkBadges();
+  if (stageCleared(save.stage, has, save.seen)) setStage(save.stage + 1);
 }
 
 const notebook = new Notebook({
   records: recordedSites,
+  seen: () => save.seen ?? {},
+  markSeen,
+  distPredict: () => save.distPredict,
+  setDistPredict(i) { save.distPredict = i; sound.playPen(); persist(); },
+  inquiry,
+  badges: () => save.badges ?? [],
   stage: () => save.stage,
   reasonStep: () => save.reasonStep,
   answer(step, correct) {
@@ -270,8 +318,9 @@ const notebook = new Notebook({
     addXp(XP.reason);
     notebook.close();
     flash();
-    toast('가설을 세웠다', '콜레라는 브로드 가 펌프의 물로 퍼진다', true);
+    toast('새 가설을 세웠다', '이제 이 가설이 맞는지 시험할 차례다', true);
     setStage(STAGE.PREDICT);
+    checkBadges();
   },
   startHearing: () => { void hearing(); },
 });
@@ -584,7 +633,7 @@ function toggleReal() {
 function updateGuide() {
   if (!nav.ready) return;
   let best: [number, number] | null = null, bd = Infinity, name = '';
-  for (const id of questView(save.stage, has, myArea()).targets) {
+  for (const id of questView(save.stage, has, myArea(), save.seen).targets) {
     const pos: [number, number] = id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : SITE_BY_ID[id].door;
     const d = Math.hypot(pos[0] - me.x, pos[1] - me.y);
     if (d < bd) { bd = d; best = pos; name = id === 'pump' ? BROAD_PUMP.name : SITE_BY_ID[id].name; }
@@ -832,7 +881,7 @@ function frame(now: number) {
       updateGuide();
     }
   }
-  const quest = questView(save.stage, has, myArea());
+  const quest = questView(save.stage, has, myArea(), save.seen);
   renderer.draw({
     me, others,
     records: new Set(save.records),

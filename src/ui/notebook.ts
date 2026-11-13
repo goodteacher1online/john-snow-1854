@@ -1,8 +1,11 @@
 import { Site, Smell } from '../types.ts';
 import { SITES, STAGE, REASONING, WATER_GROUPS, questView, smellWord } from '../data/story.ts';
+import { Seen, InquiryState, DIST_BANDS, DIST_NEED, DIST_PREDICT, BADGES, SKILL_NAMES, LEVEL_NAMES, distToBroad, skills, level } from '../data/inquiry.ts';
 import { esc, factsHtml, basisTag } from './cards.ts';
 
-type Tab = 'records' | 'compare' | 'reason';
+type Tab = 'records' | 'compare' | 'graph' | 'reason' | 'inquiry';
+/** 그래프를 그리기 시작할 만큼의 기록 수 */
+const GRAPH_MIN = 5;
 
 export interface NotebookHost {
   records(): Site[];
@@ -11,6 +14,12 @@ export interface NotebookHost {
   /** 추리 문항에 답했다. 맞으면 true */
   answer(step: number, correct: boolean): void;
   startHearing(): void;
+  seen(): Seen;
+  markSeen(key: keyof Seen): void;
+  distPredict(): number | undefined;
+  setDistPredict(i: number): void;
+  inquiry(): InquiryState;
+  badges(): string[];
 }
 
 /** 조사 수첩: 기록을 모으고, 견주고, 추리하는 곳 */
@@ -50,6 +59,8 @@ export class Notebook {
     document.getElementById('reason-dot')!.classList.toggle('hidden', !this.needsReason);
     if (tab === 'records') this.renderRecords();
     else if (tab === 'compare') this.renderCompare();
+    else if (tab === 'graph') this.renderGraph();
+    else if (tab === 'inquiry') this.renderInquiry();
     else this.renderReason();
     this.body.scrollTop = 0;
   }
@@ -121,6 +132,7 @@ export class Notebook {
       this.groupBy = b.dataset.by as 'smell' | 'water';
       this.renderCompare();
     }));
+    if (recs.length >= GRAPH_MIN) this.host.markSeen('table');
     // 막대가 0 에서 자라나도록 한 박자 늦춘다
     requestAnimationFrame(() => this.body.querySelectorAll<HTMLElement>('.bar i').forEach(i => { i.style.width = i.dataset.w + '%'; }));
   }
@@ -136,11 +148,17 @@ export class Notebook {
         <h3>아직 추리하기에는 기록이 모자라다</h3>
         <p class="sub">당국의 생각: 콜레라는 썩은 공기, 독기 때문에 생긴다.</p>
         <p>지금 할 일 — ${esc(quest.title)}</p>${checklist}`;
+    } else if (stage === STAGE.REASON && !(this.host.seen().smell && this.host.seen().water)) {
+      this.body.innerHTML = `
+        <h3>추리하기 전에, 기록을 그래프로 그려 보라</h3>
+        <p class="sub">숫자를 늘어놓기만 해서는 잘 보이지 않는다. 같은 기록을 냄새별로, 또 마시는 물별로 묶어 그려 본다.</p>${checklist}
+        <div class="actions"><button id="go-graph" class="btn primary">그래프 쪽으로</button></div>`;
+      document.getElementById('go-graph')!.addEventListener('click', () => this.show('graph'));
     } else if (stage === STAGE.REASON) {
       const step = this.host.reasonStep();
       const item = REASONING[step];
       this.body.innerHTML = `
-        <p class="sub">추리 ${step + 1} / ${REASONING.length} · 헷갈리면 비교 쪽에서 기록을 묶어 보라.</p>
+        <p class="sub">추리 ${step + 1} / ${REASONING.length} · 헷갈리면 그래프 쪽을 다시 보라.</p>
         <h3>${esc(item.q)}</h3>
         <div class="reason-opts">
           ${item.options.map((o, i) => `<button class="opt" data-i="${i}"><span class="num">${i + 1}</span><span>${esc(o.text)}</span></button>`).join('')}
@@ -154,9 +172,9 @@ export class Notebook {
       }));
     } else if (stage === STAGE.PREDICT) {
       this.body.innerHTML = `
-        <p class="sub">세운 가설</p>
+        <p class="sub">새로 세운 가설</p>
         <h3>콜레라는 브로드 가 펌프의 물로 퍼진다</h3>
-        <p>가설이 옳다면 이런 사람들이 있어야 한다. 찾아가 확인하라.</p>${checklist}`;
+        <p>가설이 옳다면 이런 사람들이 있어야 하고, 그래프는 이런 모양이어야 한다. 찾아가고 그려서 확인하라.</p>${checklist}`;
     } else if (stage === STAGE.HEARING) {
       this.body.innerHTML = `
         <p class="sub">9월 7일 목요일 저녁</p>
@@ -177,6 +195,134 @@ export class Notebook {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // 그래프 쪽
+  // -------------------------------------------------------------------------
+  private renderGraph() {
+    const recs = this.host.records();
+    const stage = this.host.stage();
+    if (recs.length < GRAPH_MIN) {
+      this.body.innerHTML = `<h3>기록을 그래프로 바꾸기</h3><p class="sub">기록이 ${GRAPH_MIN}곳 넘게 모이면 그래프를 그릴 수 있다. 지금 ${recs.length}곳.</p>`;
+      return;
+    }
+    // 사망자가 난 집이 몇 퍼센트인가. 집마다 사는 사람 수(일부는 꾸민 값)에 기대지 않는다
+    const rate = (sites: Site[]) => {
+      const hit = sites.filter(s => s.deaths > 0).length;
+      return { n: sites.length, hit, v: sites.length ? hit / sites.length * 100 : 0 };
+    };
+    const bySmell = ([['심함', 'high'], ['보통', 'mid'], ['약함', 'low']] as [string, Smell][])
+      .map(([label, k]) => ({ label, ...rate(recs.filter(s => s.smell === k)) })).filter(g => g.n > 0);
+    const SHORT: Record<string, string> = { broad: '브로드 가 펌프', pump: '다른 펌프', well: '건물 안 우물', pipe: '수도 회사 물', none: '안 마심' };
+    // 기록에 한 곳도 없는 갈래는 그리지 않는다
+    const byWater = WATER_GROUPS.map(([k, label]) => ({ label: SHORT[k] ?? label, ...rate(recs.filter(s => s.waterKind === k)) })).filter(g => g.n > 0);
+    // 두 그래프의 세로 눈금을 같게 해야 견줄 수 있다
+    const top = 100;
+
+    const distOpen = stage >= STAGE.PREDICT;
+    const enough = recs.length >= DIST_NEED;
+    const pred = this.host.distPredict();
+    let dist = '';
+    if (!distOpen) {
+      dist = `<p class="locked">새 가설을 세우면 열린다. 그 가설이 맞는지 이 그래프로 시험하게 된다.</p>`;
+    } else if (!enough) {
+      dist = `<p class="locked">기록이 ${DIST_NEED}곳 넘게 모여야 그릴 수 있다. 지금 ${recs.length}곳. 펌프 가까운 곳과 먼 곳을 고루 조사하라.</p>`;
+    } else if (pred === undefined) {
+      dist = `<p class="ask">${esc(DIST_PREDICT.q)}</p><p class="sub">그리기 전에 먼저 예상하라.</p>
+        <div class="reason-opts">${DIST_PREDICT.options.map((o, i) => `<button class="opt" data-pred="${i}"><span class="num">${i + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+    } else {
+      const bands = DIST_BANDS.map((b, i) => {
+        const lo = i ? DIST_BANDS[i - 1].max : 0;
+        const sites = recs.filter(s => { const d = distToBroad(s); return d >= lo && d < b.max; });
+        return { label: b.label, n: sites.length, v: sites.length ? sites.reduce((a, s) => a + s.deaths, 0) / sites.length : 0, sites };
+      });
+      const shape = bands[0].v > bands[bands.length - 1].v ? 1 : bands[0].v < bands[bands.length - 1].v ? 0 : 2;
+      dist = '<section class="dist-chart">' + columnChart(bands.map(b => ({ label: b.label, v: b.v, note: `${b.n}곳`, dots: b.sites.map(s => s.deaths) })), niceMax(Math.max(...bands.map(b => b.v), ...recs.map(s => s.deaths), 1)), '집마다 사망자 (막대: 평균, 점: 한 집)', 1) + '</section>'
+        + `<p class="verdict ${pred === shape ? 'hit' : ''}">당신의 예상: <b>${esc(DIST_PREDICT.options[pred])}</b> · 그래프: <b>${esc(DIST_PREDICT.options[shape])}</b>${pred === shape ? ' · 예상이 맞았다' : ' · 예상과 다르다. 왜 그럴까?'}</p>`;
+    }
+
+    this.body.innerHTML = `
+      <h3>기록을 그래프로 바꾸기</h3>
+      <p class="sub">기록 ${recs.length}곳. 같은 기록을 두 가지로 묶어, 묶음마다 사망자가 난 집이 몇 퍼센트인지 그린다. 두 그래프의 세로 눈금은 같다.</p>
+      <div class="charts">
+        <section><h4>냄새로 묶으면</h4>${columnChart(bySmell.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 중 ${g.hit}곳` })), top, '사망자가 난 집 (%)', 0)}</section>
+        <section><h4>마시는 물로 묶으면</h4>${columnChart(byWater.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 중 ${g.hit}곳` })), top, '사망자가 난 집 (%)', 0)}</section>
+      </div>
+      <p class="sub">어느 쪽으로 묶었을 때 사망자가 난 집과 무사한 집이 더 또렷하게 갈리는가? 거의 0인 묶음과 거의 100인 묶음이 생기는 쪽이 죽음과 더 관련 있다.</p>
+      <h3 class="table-title">브로드 가 펌프에서의 거리와 사망</h3>
+      ${dist}`;
+    this.body.querySelectorAll<HTMLButtonElement>('[data-pred]').forEach(b => b.addEventListener('click', () => {
+      this.host.setDistPredict(Number(b.dataset.pred));
+      this.renderGraph();
+    }));
+    this.host.markSeen('smell');
+    this.host.markSeen('water');
+    if (distOpen && enough && pred !== undefined) this.host.markSeen('dist');
+  }
+
+  // -------------------------------------------------------------------------
+  // 탐구 쪽: 탐구력과 배지
+  // -------------------------------------------------------------------------
+  private renderInquiry() {
+    const st = this.host.inquiry();
+    const sk = skills(st), lv = level(st);
+    const got = new Set(this.host.badges());
+    const tips: Record<string, string> = {
+      observe: '집을 더 많이 조사하면 오른다',
+      compare: '비교 표와 그래프를 그려 보면 오른다',
+      reason: '추리 문제를 풀면 오른다. 틀리지 않을수록 높다',
+      verify: '예상을 적고, 가설을 시험하는 집을 찾아가면 오른다',
+    };
+    this.body.innerHTML = `
+      <h3>탐구력 ${lv.lv}단계 · ${LEVEL_NAMES[lv.lv]}</h3>
+      <p class="sub">과학자는 많이 보고, 견주고, 생각하고, 시험한다. 네 가지가 고루 자라야 다음 단계가 된다.</p>
+      <div class="skills">${(Object.keys(sk) as (keyof typeof sk)[]).map(k => `
+        <div class="skill"><div class="skill-head"><b>${SKILL_NAMES[k]}</b><span class="mono">${sk[k]}</span></div>
+          <div class="meter"><i style="width:${sk[k]}%"></i></div><small>${tips[k]}</small></div>`).join('')}
+      </div>
+      <h3 class="table-title">탐구 배지 ${got.size} / ${BADGES.length}</h3>
+      <div class="badges">${BADGES.map(b => `
+        <div class="badge ${got.has(b.id) ? 'on' : ''}">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><path d="M8.5 15 7 21l5-2.5L17 21l-1.5-6"/>${got.has(b.id) ? '<path d="m9.5 10 1.8 1.8 3.4-3.6"/>' : ''}</svg>
+          <div><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>
+        </div>`).join('')}
+      </div>`;
+  }
+
   /** 열려 있는 쪽을 다시 그린다 (기록이 바뀌었을 때) */
   public refresh() { if (this.isOpen) this.show(this.tab); }
+}
+
+/** 보기 좋은 눈금 꼭대기 값 */
+function niceMax(v: number) {
+  const steps = [1, 2, 2.5, 5, 10];
+  const mag = 10 ** Math.floor(Math.log10(v));
+  return steps.map(s => s * mag).find(s => s >= v) ?? 10 * mag;
+}
+
+/** 세로 막대그래프 (SVG). 가장 높은 막대는 붉게. dots 가 있으면 한 집 한 집을 점으로 겹쳐 찍는다 */
+function columnChart(cols: { label: string; v: number; note: string; dots?: number[] }[], top: number, yLabel: string, digits = 1) {
+  const W = 420, H = 262, L = 40, B = 46, T = 34, R = 8;
+  const cw = (W - L - R) / cols.length, ph = H - B - T;
+  const y = (v: number) => T + ph - v / top * ph;
+  const maxV = Math.max(...cols.map(c => c.v));
+  const ticks = [0, top / 2, top];
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${yLabel}">`;
+  for (const tv of ticks) {
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(tv)}" y2="${y(tv)}" class="grid"/><text x="${L - 6}" y="${y(tv) + 4}" text-anchor="end" class="tick">${+tv.toFixed(1)}</text>`;
+  }
+  s += `<text x="4" y="13" class="axis">${yLabel}</text>`;
+  cols.forEach((c, i) => {
+    const x = L + i * cw + cw * 0.18, w = cw * 0.64;
+    const hi = c.v === maxV && c.v > 0 && cols.length > 1;
+    s += `<rect x="${x}" y="${y(c.v)}" width="${w}" height="${Math.max(0, T + ph - y(c.v))}" class="${hi ? 'col hi' : 'col'}"><animate attributeName="height" from="0" to="${Math.max(0, T + ph - y(c.v))}" dur="0.6s"/><animate attributeName="y" from="${T + ph}" to="${y(c.v)}" dur="0.6s"/></rect>`;
+    if (!c.note.startsWith('0곳')) s += `<text x="${x + w / 2}" y="${y(c.v) - 5}" text-anchor="middle" class="val">${c.v.toFixed(digits)}</text>`;
+    (c.dots ?? []).forEach((d, k) => {
+      const dx = x + w / 2 + ((k * 37) % 21 - 10) * (w / 30);
+      s += `<circle cx="${dx}" cy="${y(Math.min(d, top))}" r="3.2" class="dot"/>`;
+    });
+    s += `<text x="${x + w / 2}" y="${H - B + 18}" text-anchor="middle" class="lab">${c.label}</text>`;
+    s += `<text x="${x + w / 2}" y="${H - B + 36}" text-anchor="middle" class="note">${c.note}</text>`;
+  });
+  s += `<line x1="${L}" x2="${W - R}" y1="${T + ph}" y2="${T + ph}" class="base"/></svg>`;
+  return s;
 }

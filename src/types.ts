@@ -94,6 +94,14 @@ export interface SaveData {
   asked: Record<string, QuestionId[]>;
   xp: number;
   reasonStep: number;
+  /** 공기설을 시험하기 전에 고른 첫 가설 (inquiry.ts 의 HYPOTHESES 번호) */
+  hypo0?: number;
+  /** 거리 그래프를 보기 전에 한 예상 */
+  distPredict?: number;
+  /** 수첩 그래프를 봤는지 */
+  seen?: Partial<Record<'smell' | 'water' | 'dist' | 'table', boolean>>;
+  /** 받은 탐구 배지 */
+  badges?: string[];
   misses: number;
   noteSeen: number;
   /** 지난번에 시작한 방과 영역. 바뀌면 새 영역의 시작 장소에서 출발한다 */

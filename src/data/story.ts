@@ -482,7 +482,20 @@ export const districtOf = (area: string) => SITES.filter(s => s.area === area &&
 // 진행 단계
 // ---------------------------------------------------------------------------
 export const STAGE = { FIRST: 0, TEST_AIR: 1, REASON: 2, PREDICT: 3, HEARING: 4, HANDLE: 5, DONE: 6 } as const;
-export const FIRST_NEED = 3;
+/** 첫 관찰: 모두 이만큼, 그 가운데 사망자가 난 집과 무사한 집이 각각 이만큼 */
+export const FIRST_NEED = { total: 8, deaths: 5, safe: 2 };
+/** 공기설 시험: 구빈원·양조장 말고도 냄새가 고약한데 무사한 집을 이만큼 더 */
+export const COUNTER_NEED = 1;
+/** 거리 그래프를 그리려면 필요한 기록 수 */
+export const DIST_NEED = 20;
+/** 수첩 그래프를 봤는지 (inquiry.ts 의 Seen 과 같다) */
+type SeenFlags = Partial<Record<'smell' | 'water' | 'dist' | 'table', boolean>>;
+const firstCounts = (has: (id: string) => boolean) => {
+  const recs = SITES.filter(s => has(s.id));
+  return { total: recs.length, deaths: recs.filter(s => s.deaths > 0).length, safe: recs.filter(s => s.deaths === 0).length };
+};
+const extraCounter = (has: (id: string) => boolean) =>
+  SITES.filter(s => has(s.id) && s.smell === 'high' && s.deaths === 0 && s.id !== 'brewery' && s.id !== 'workhouse').length;
 
 export const DATES = [
   '1854년 9월 4일 월요일', '9월 5일 화요일', '9월 5일 화요일 밤', '9월 6일 수요일',
@@ -492,8 +505,8 @@ export const DATES = [
 export interface QuestView { title: string; items: { label: string; done: boolean }[]; targets: string[] }
 
 /** 이야기 단계의 할 일에, 내 영역의 구역 조사를 덧붙인다 */
-export function questView(stage: number, has: (id: string) => boolean, area = 'team1'): QuestView {
-  const v = storyQuest(stage, has, area);
+export function questView(stage: number, has: (id: string) => boolean, area = 'team1', seen: SeenFlags = {}): QuestView {
+  const v = storyQuest(stage, has, area, seen);
   const mine = districtOf(area);
   const n = mine.filter(s => has(s.id)).length;
   v.items.push({ label: `${areaName(area)} 구역 조사 ${n} / ${mine.length}곳`, done: n === mine.length });
@@ -502,34 +515,58 @@ export function questView(stage: number, has: (id: string) => boolean, area = 't
   return v;
 }
 
-function storyQuest(stage: number, has: (id: string) => boolean, area: string): QuestView {
+function storyQuest(stage: number, has: (id: string) => boolean, area: string, seen: SeenFlags): QuestView {
   const left = (ids: string[]) => ids.filter(id => !has(id));
   switch (stage) {
     case STAGE.FIRST: {
-      const n = SITES.filter(s => s.deaths > 0 && has(s.id)).length;
+      const c = firstCounts(has);
       return {
-        title: '사망자가 나온 집을 조사하라',
-        items: [{ label: `사망자가 나온 집 ${Math.min(n, FIRST_NEED)} / ${FIRST_NEED}곳`, done: n >= FIRST_NEED }],
-        // 브로드 가의 이야기 집, 그리고 내 구역에서 사망자가 나온 집 어디든
-        targets: left(['lewis', 'lodging', 'cambridge', 'coffee', ...districtOf(area).filter(s => s.deaths > 0).map(s => s.id)]),
+        title: '거리를 돌며 관찰을 쌓아라',
+        items: [
+          { label: `조사한 집 ${Math.min(c.total, FIRST_NEED.total)} / ${FIRST_NEED.total}곳`, done: c.total >= FIRST_NEED.total },
+          { label: `그 가운데 사망자가 난 집 ${Math.min(c.deaths, FIRST_NEED.deaths)} / ${FIRST_NEED.deaths}곳`, done: c.deaths >= FIRST_NEED.deaths },
+          { label: `무사한 집 ${Math.min(c.safe, FIRST_NEED.safe)} / ${FIRST_NEED.safe}곳`, done: c.safe >= FIRST_NEED.safe },
+        ],
+        // 모자란 쪽의 집으로 안내한다: 이야기 집과 내 구역
+        targets: left([
+          ...(c.deaths < FIRST_NEED.deaths ? ['lewis', 'lodging', 'cambridge', 'coffee', ...districtOf(area).filter(s => s.deaths > 0).map(s => s.id)] : []),
+          ...(c.safe < FIRST_NEED.safe ? ['pulteney', 'rupert', ...districtOf(area).filter(s => s.deaths === 0).map(s => s.id)] : []),
+        ]),
       };
     }
-    case STAGE.TEST_AIR:
+    case STAGE.TEST_AIR: {
+      const n = extraCounter(has);
       return {
         title: '공기설을 시험하라',
-        items: [{ label: '폴란드 가 구빈원', done: has('workhouse') }, { label: '라이온 양조장', done: has('brewery') }],
-        targets: left(['workhouse', 'brewery']),
+        items: [
+          { label: '폴란드 가 구빈원', done: has('workhouse') },
+          { label: '라이온 양조장', done: has('brewery') },
+          { label: `냄새가 고약한 다른 곳 ${Math.min(n, COUNTER_NEED)} / ${COUNTER_NEED}곳`, done: n >= COUNTER_NEED },
+        ],
+        targets: [...left(['workhouse', 'brewery']), ...(n >= COUNTER_NEED ? [] : left(['marlborough', ...districtOf(area).filter(s => s.smell === 'high').map(s => s.id)]))],
       };
+    }
     case STAGE.REASON:
-      return { title: '수첩을 펴고 기록을 견주어 보라', items: [{ label: '수첩의 추리 쪽', done: false }], targets: [] };
+      return {
+        title: '그래프로 견주고 추리하라',
+        items: [
+          { label: '수첩 그래프: 냄새로 묶어 그리기', done: !!seen.smell },
+          { label: '수첩 그래프: 마시는 물로 묶어 그리기', done: !!seen.water },
+          { label: '수첩 추리: 두 문제', done: false },
+        ],
+        targets: [],
+      };
     case STAGE.PREDICT: {
       const far = has('littlepulteney') || has('carnaby');
+      const n = SITES.filter(s => has(s.id)).length;
       return {
-        title: '가설이 맞는지 확인하라',
+        title: '가설이 맞는지 시험하라',
         items: [
           { label: '브로드 가 굴드 댁', done: has('gould') },
           { label: '일리 형제 뇌관 공장', done: has('eley') },
           { label: '리틀 윈드밀 가 또는 카나비 가', done: far },
+          { label: `기록 ${Math.min(n, DIST_NEED)} / ${DIST_NEED}곳`, done: n >= DIST_NEED },
+          { label: '수첩 그래프: 펌프에서의 거리와 사망', done: !!seen.dist },
         ],
         targets: [...left(['gould', 'eley']), ...(far ? [] : ['littlepulteney', 'carnaby'])],
       };
@@ -546,35 +583,42 @@ function storyQuest(stage: number, has: (id: string) => boolean, area: string): 
 }
 
 /** 단계를 넘어갈 조건이 채워졌는가 */
-export function stageCleared(stage: number, has: (id: string) => boolean): boolean {
-  if (stage === STAGE.FIRST) return SITES.filter(s => s.deaths > 0 && has(s.id)).length >= FIRST_NEED;
-  if (stage === STAGE.TEST_AIR) return has('workhouse') && has('brewery');
-  if (stage === STAGE.PREDICT) return has('gould') && has('eley') && (has('littlepulteney') || has('carnaby'));
+export function stageCleared(stage: number, has: (id: string) => boolean, seen: SeenFlags = {}): boolean {
+  if (stage === STAGE.FIRST) {
+    const c = firstCounts(has);
+    return c.total >= FIRST_NEED.total && c.deaths >= FIRST_NEED.deaths && c.safe >= FIRST_NEED.safe;
+  }
+  if (stage === STAGE.TEST_AIR) return has('workhouse') && has('brewery') && extraCounter(has) >= COUNTER_NEED;
+  if (stage === STAGE.PREDICT) {
+    return has('gould') && has('eley') && (has('littlepulteney') || has('carnaby'))
+      && SITES.filter(s => has(s.id)).length >= DIST_NEED && !!seen.dist;
+  }
   return false;
 }
 
 // ---------------------------------------------------------------------------
 // 스노우 박사의 쪽지 (단계가 바뀔 때마다 한 장)
 // ---------------------------------------------------------------------------
-export const NOTES: { title: string; body: string[]; button: string; predict?: { q: string; options: string[] } }[] = [
+export const NOTES: { title: string; body: string[]; button: string; predict?: { q: string; options: string[] }; hypothesis?: boolean }[] = [
   {
     title: '조사관에게',
     body: [
       '지난 목요일 밤부터 브로드 가 일대에서 콜레라로 수백 명이 쓰러졌소. 교구 위원회는 늘 그렇듯 썩은 공기, 독기 탓이라 하오.',
       '나는 의심 가는 데가 있소. 하지만 말하지 않겠소. 당신 눈으로 보고 판단하시오.',
       '집집마다 찾아가 세 가지를 묻고 빠짐없이 적으시오. 누가 죽었는지, 주변 공기는 어떤지, 마실 물은 어디서 길어 오는지.',
-      '먼저 사망자가 나온 집 세 곳부터 시작하시오.',
+      '서둘러 결론 내리지 마시오. 먼저 거리를 돌며 적어도 여덟 집을 보시오. 사망자가 난 집만 보아서는 안 되오. 무사한 집도 보아야 견줄 수 있소.'
     ],
     button: '조사를 시작한다',
   },
   {
     title: '공기설을 시험할 때요',
     body: [
-      '세 집을 보았군. 모두 악취를 탓했을 것이오.',
+      '여덟 집을 보았군. 사람들은 대개 악취를 탓했을 것이오. 그런데 당신 생각은 어떻소? 기록판을 다시 보고 먼저 당신의 첫 가설을 정하시오.',
       '그렇다면 시험해 봅시다. 공기가 원인이라면 가장 비좁고 냄새가 고약한 곳에서 가장 많이 죽어야 하오.',
-      '폴란드 가의 구빈원에는 535명이 모여 사오. 브로드 가의 양조장은 펌프가 대문 앞이오. 두 곳을 조사하시오.',
+      '폴란드 가의 구빈원에는 535명이 모여 사오. 브로드 가의 양조장은 펌프가 대문 앞이오. 두 곳을 조사하고, 냄새가 고약한 곳을 한 곳 더 찾아보시오.',
     ],
-    button: '두 곳을 조사한다',
+    button: '시험하러 간다',
+    hypothesis: true,
     predict: {
       q: '가기 전에 먼저 예상해 보시오. 공기설이 옳다면 두 곳에서는 어떤 일이 벌어졌겠소?',
       options: ['많은 사람이 죽었을 것이다', '거의 죽지 않았을 것이다'],
@@ -584,7 +628,8 @@ export const NOTES: { title: string; body: string[]; button: string; predict?: {
     title: '무엇이 다르오?',
     body: [
       '이상하지 않소? 같은 공기를 마시는데 한쪽은 죽고 한쪽은 멀쩡하오.',
-      '수첩을 펴고 기록을 나란히 놓아 보시오. 죽음이 닥친 곳과 비껴간 곳은 무엇이 다르오?',
+      '숫자를 늘어놓기만 해서는 잘 보이지 않소. 수첩의 그래프 쪽에서 기록을 냄새별로, 또 마시는 물별로 묶어 그려 보시오. 묶음마다 사망자가 난 집이 몇 퍼센트인지 견주면 되오.',
+      '두 그래프를 보았으면 추리 쪽으로 가시오. 죽음이 닥친 곳과 비껴간 곳은 무엇이 다르오?',
     ],
     button: '수첩을 편다',
   },
@@ -595,6 +640,7 @@ export const NOTES: { title: string; body: string[]; button: string; predict?: {
       '하나. 펌프 가까이 살아도 그 물을 마시지 않은 사람은 무사하다.',
       '둘. 멀리 살아도 그 물을 마신 사람은 앓는다.',
       '브로드 가의 조류학자 굴드 씨 댁, 37번지 뇌관 공장, 그리고 다른 펌프가 더 가까운 리틀 윈드밀 가나 카나비 가를 찾아가 확인하시오.',
+      '셋. 그 물이 원인이라면 펌프에서 멀어질수록 사망자는 어떻게 되어야 하겠소? 기록을 스무 곳 넘게 모은 뒤 수첩의 그래프 쪽에서 거리와 사망을 그려 확인하시오.',
     ],
     button: '확인하러 간다',
   },

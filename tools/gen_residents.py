@@ -41,6 +41,10 @@ def bracket(age: int) -> int:
 
 
 TOO_CLOSE = {'jack', 'r_d217', 'r_d66'}
+_bad = RAW / 'gender_bad.txt'
+GENDER_BAD = set(_bad.read_text(encoding='utf-8').split()) if _bad.exists() else set()
+# 주민은 설정 파일에 성별이 적혀 있다 (설명만으로는 틀릴 수 있다)
+PEOPLE_FEMALE = {f"r_{p['id']}": p['female'] for p in json.loads((ROOT / 'src' / 'data' / 'district_people.json').read_text(encoding='utf-8'))['people'] if 'female' in p}
 
 
 def bases():
@@ -54,7 +58,12 @@ def bases():
         raw, cut = RAW / f'{name}.png', CUT / f'{name}.png'
         if not raw.exists() or not cut.exists() or edge_cut(Image.open(cut).convert('RGBA')):
             continue
+        # 성별 검사(audit_gender.py)에서 얼굴이나 옷이 설정과 어긋난 그림은 틀로 쓰지 않는다
+        if name in GENDER_BAD:
+            continue
         female, age = person_meta(desc)
+        if name in PEOPLE_FEMALE:
+            female = PEOPLE_FEMALE[name]
         out.append((name, female, bracket(age)))
     return out
 

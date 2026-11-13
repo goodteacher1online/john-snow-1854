@@ -32,10 +32,11 @@ const visible = (page, sel) => page.locator(sel).isVisible();
 /** 쪽지가 떠 있으면 읽고 닫는다 */
 async function dismissNote(page) {
   await page.waitForTimeout(1700);
-  if (await visible(page, '#note.open')) {
-    const predict = page.locator('#note-body .opt').first();      // 예상을 묻는 쪽지면 하나 고른다
-    if (await predict.count()) await predict.click(); else await page.click('#note-ok');
-    await page.waitForTimeout(300);
+  // 첫 가설 → 예상 → 확인 단추. 묻는 것이 남아 있는 동안 차례로 답한다
+  for (let i = 0; i < 4 && await visible(page, '#note.open'); i++) {
+    const ask = page.locator('#note-body .opt').first();
+    if (await ask.count()) await ask.click(); else await page.click('#note-ok');
+    await page.waitForTimeout(350);
   }
 }
 
@@ -97,8 +98,10 @@ await p2.click('#btn-start');
 await p2.waitForSelector('#note.open');
 await p2.click('#note-ok');
 
-await visit(p1, 'lewis');
-await visit(p1, 'cambridge');
+// 1단계: 관찰 8곳 (사망자 난 집 5곳, 무사한 집 2곳 이상)
+for (const id of ['lewis', 'cambridge', 'coffee', 'berwick', 'pulteney', 'rupert']) await visit(p1, id);
+console.log('관찰 7곳 뒤 단계', (await state(p1)).stage, '(아직 0이어야 한다)');
+await visit(p1, 'carnaby');
 await p1.waitForSelector('#note.open');
 await shot(p1, '07b_predict_note');
 await dismissNote(p1);                       // 공기설 시험
@@ -116,9 +119,14 @@ await visit(p1, 'workhouse');
 await p1.waitForTimeout(400);
 await shot(p1, '08_key_clue');
 await visit(p1, 'brewery');
+console.log('구빈원·양조장 뒤 단계', (await state(p1)).stage, '(아직 1이어야 한다)');
+await visit(p1, 'marlborough');              // 냄새가 고약한 다른 곳 한 곳 더
 await dismissNote(p1);                       // 추리 → 수첩이 열린다
 await p1.waitForSelector('#notebook.open');
-await shot(p1, '09_reason');
+await shot(p1, '09_reason_needs_graph');
+await p1.click('#go-graph');                 // 그래프를 먼저 그린다
+await p1.waitForTimeout(900);
+await shot(p1, '09b_graph');
 await p1.click('#notebook .tab[data-tab="compare"]');
 await p1.waitForTimeout(800);
 await shot(p1, '10_compare_smell');
@@ -135,7 +143,21 @@ await dismissNote(p1);                       // 가설 확인
 console.log('추리 뒤', (await state(p1)).stage);
 await visit(p1, 'gould');
 await visit(p1, 'eley');
-await visit(p1, 'carnaby');
+await visit(p1, 'littlepulteney');
+// 기록을 스무 곳 넘게 모은 뒤 거리 그래프
+for (const id of ['d01', 'd02', 'd03', 'd05', 'd06', 'd09', 'd13', 'd25', 'd33', 'd36', 'd41', 'd42']) await visit(p1, id);
+console.log('기록', (await state(p1)).records.length, '단계', (await state(p1)).stage, '(아직 3이어야 한다)');
+await p1.keyboard.press('n');
+await p1.click('#notebook .tab[data-tab="graph"]');
+await p1.waitForTimeout(500);
+await shot(p1, '12b_dist_predict');
+await p1.click('[data-pred="1"]');
+await p1.waitForTimeout(900);
+await shot(p1, '12c_dist_graph');
+await p1.click('#notebook .tab[data-tab="inquiry"]');
+await p1.waitForTimeout(400);
+await shot(p1, '12d_inquiry');
+await p1.click('#notebook-close');
 await dismissNote(p1);                       // 위원회 → 수첩
 await p1.waitForSelector('#go-hearing');
 await p1.click('#notebook .tab[data-tab="records"]');
