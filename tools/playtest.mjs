@@ -44,7 +44,7 @@ async function dismissNote(page) {
 async function playInterview(page) {
   await page.waitForSelector('#scene:not(.hidden)');
   for (let guard = 0; guard < 80 && await visible(page, '#scene'); guard++) {
-    const opt = page.locator('#scene-choices .opt:not(.done):not(.leave)').first();
+    const opt = page.locator('#scene-choices .opt:not(.done):not(.leave):not([disabled])').first();
     if (await opt.count()) await opt.click();
     else await page.keyboard.press('Space');
     await page.waitForTimeout(60);
@@ -147,6 +147,9 @@ await visit(p1, 'littlepulteney');
 // 기록을 스무 곳 넘게 모은 뒤 거리 그래프
 for (const id of ['d01', 'd02', 'd03', 'd05', 'd06', 'd09', 'd13', 'd25', 'd33', 'd36', 'd41', 'd42']) await visit(p1, id);
 console.log('기록', (await state(p1)).records.length, '단계', (await state(p1)).stage, '(아직 3이어야 한다)');
+// 가설을 세우기 전에 기록한 예외 사례를 다시 찾아가 까닭을 밝힌다
+await visit(p1, 'brewery');
+await shot(p1, '12a_revisit_done');
 await p1.keyboard.press('n');
 await p1.click('#notebook .tab[data-tab="graph"]');
 await p1.waitForTimeout(500);
@@ -175,10 +178,18 @@ await pick('브로드 가 40번지');              // 틀린 증거
 await p1.waitForTimeout(700);
 await shot(p1, '14_hearing_rebuff');
 await pick('폴란드 가 구빈원');
+await pick('이 기록 하나면');                 // 한 장으로는 모자라다
+await p1.waitForTimeout(500);
+await shot(p1, '14b_hearing_backup');
+await pick('악취로 묶은');
+await p1.waitForTimeout(600);
+await shot(p1, '14c_hearing_graph');
 await pick('라이온 양조장');
+await pick('마시는 물로 묶은');
 for (let i = 0; i < 12 && !(await p1.locator('#scene-choices .opt').count()); i++) { await p1.keyboard.press('Space'); await p1.waitForTimeout(80); }
 await shot(p1, '15_hearing_choices');
 await pick('일리 형제 뇌관 공장');
+await pick('마시는 물로 묶은');
 for (let i = 0; i < 20 && await visible(p1, '#scene'); i++) { await p1.keyboard.press('Space'); await p1.waitForTimeout(80); }
 await dismissNote(p1);                       // 손잡이
 console.log('위원회 뒤', (await state(p1)).stage);

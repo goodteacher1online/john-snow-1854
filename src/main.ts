@@ -346,6 +346,8 @@ async function interview(site: Site) {
   try {
     if (has(site.id)) {
       await scene.say(['(이미 기록을 마친 곳이다.)', site.outro]);
+      // 새 가설을 세우기 전에 기록한 예외 사례는 다시 찾아와 까닭을 밝힐 수 있다
+      if (anomalyOf(site)) { await explainHouse(site, true); checkBadges(); updateHud(); }
       scene.close();
       return;
     }
@@ -389,9 +391,9 @@ async function predictHouse(site: Site, again: boolean) {
 }
 
 /** 예상이 빗나갔거나 예외 사례면, 그 까닭을 기록에서 찾는다 */
-async function explainHouse(site: Site) {
+async function explainHouse(site: Site, revisit = false) {
   if (save.stage < STAGE.PREDICT || save.why?.includes(site.id)) return;
-  const guess = save.preds?.[site.id], died = site.deaths > 0;
+  const guess = revisit ? undefined : save.preds?.[site.id], died = site.deaths > 0;
   const miss = guess !== undefined && (guess === 1) !== died;
   const odd = anomalyOf(site);
   if (guess !== undefined && !miss) { addXp(XP.hit); await scene.say(['(예상이 맞았다.)']); }
@@ -488,7 +490,7 @@ function graphLine(key: 'smell' | 'water') {
   const w = split(s => s.drankBroad);
   if (key === 'water') return `나: (수첩의 그래프를 펼친다) 마시는 물로 묶었습니다. 브로드 가 펌프 물을 마신 집 ${w.a}곳 가운데 ${w.pa}%, 다른 물을 마신 집 ${w.b}곳 가운데 ${w.pb}%에서 사망자가 났습니다. 어디에 사느냐가 아니라 무엇을 마셨느냐가 갈랐습니다.`;
   const m = split(s => s.smell === 'high');
-  const tail = m.gap < w.gap ? `물로 묶었을 때의 차이(${w.gap}%p)보다 훨씬 작습니다.` : '냄새만으로는 설명이 끝나지 않습니다.';
+  const tail = m.gap < w.gap ? `물로 묶었을 때의 차이(${w.gap}%p)보다 작습니다.` : '냄새만으로는 설명이 끝나지 않습니다.';
   return `나: (수첩의 그래프를 펼친다) 악취로 묶었습니다. 악취가 심한 집 ${m.a}곳 가운데 ${m.pa}%, 그렇지 않은 집 ${m.b}곳 가운데 ${m.pb}%에서 사망자가 났습니다. 차이는 ${m.gap}%p, ${tail}`;
 }
 

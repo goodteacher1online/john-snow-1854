@@ -1,6 +1,6 @@
 import { Site, Smell } from '../types.ts';
 import { SITES, STAGE, REASONING, WATER_GROUPS, questView, smellWord } from '../data/story.ts';
-import { Seen, InquiryState, DIST_BANDS, DIST_NEED, DIST_PREDICT, BADGES, SKILL_NAMES, LEVEL_NAMES, distToBroad, skills, level } from '../data/inquiry.ts';
+import { Seen, InquiryState, DIST_BANDS, DIST_NEED, DIST_PREDICT, BADGES, SKILL_NAMES, LEVEL_NAMES, distToBroad, skills, level, predStats } from '../data/inquiry.ts';
 import { esc, factsHtml, basisTag } from './cards.ts';
 
 type Tab = 'records' | 'compare' | 'graph' | 'reason' | 'inquiry';
@@ -266,6 +266,7 @@ export class Notebook {
     const st = this.host.inquiry();
     const sk = skills(st), lv = level(st);
     const got = new Set(this.host.badges());
+    const ps = predStats(st);
     const tips: Record<string, string> = {
       observe: '집을 더 많이 조사하면 오른다',
       compare: '비교 표와 그래프를 그려 보면 오른다',
@@ -279,6 +280,20 @@ export class Notebook {
         <div class="skill"><div class="skill-head"><b>${SKILL_NAMES[k]}</b><span class="mono">${sk[k]}</span></div>
           <div class="meter"><i style="width:${sk[k]}%"></i></div><small>${tips[k]}</small></div>`).join('')}
       </div>
+      <h3 class="table-title">예상과 예외</h3>
+      ${this.host.stage() >= STAGE.PREDICT ? '<p class="sub">예외 사례는 까닭을 밝힌 곳 / 찾은 곳. 가설을 세우기 전에 기록한 곳은 다시 찾아가면 까닭을 밝힐 수 있다.</p>' : ''}
+      ${this.host.stage() < STAGE.PREDICT
+        ? '<p class="sub">새 가설을 세운 뒤부터는 문을 두드리기 전에 결과를 예상한다. 빗나간 예상과 예외 사례는 까닭을 밝히면 더 큰 배움이 된다.</p>'
+        : `<div class="skills">
+        <div class="skill"><div class="skill-head"><b>예상 적중</b><span class="mono">${ps.hit} / ${ps.n}</span></div>
+          <div class="meter"><i style="width:${ps.n ? Math.round(ps.hit / ps.n * 100) : 0}%"></i></div><small>문을 두드리기 전에 사망자가 났을지 예상한다</small></div>
+        <div class="skill"><div class="skill-head"><b>빗나간 예상에서 배우기</b><span class="mono">${ps.learned} / ${ps.missed}</span></div>
+          <div class="meter"><i style="width:${ps.missed ? Math.round(ps.learned / ps.missed * 100) : 0}%"></i></div><small>틀린 예상도 까닭을 밝히면 점수가 된다</small></div>
+        <div class="skill"><div class="skill-head"><b>예외 · 펌프 곁인데 무사</b><span class="mono">${ps.nearWhy} / ${ps.near}</span></div>
+          <div class="meter"><i style="width:${ps.near ? Math.round(ps.nearWhy / ps.near * 100) : 0}%"></i></div><small>펌프가 코앞인데 아무도 죽지 않은 곳</small></div>
+        <div class="skill"><div class="skill-head"><b>예외 · 멀리서 사망</b><span class="mono">${ps.farWhy} / ${ps.far}</span></div>
+          <div class="meter"><i style="width:${ps.far ? Math.round(ps.farWhy / ps.far * 100) : 0}%"></i></div><small>다른 펌프가 더 가까운데 사망자가 난 곳</small></div>
+      </div>`}
       <h3 class="table-title">탐구 배지 ${got.size} / ${BADGES.length}</h3>
       <div class="badges">${BADGES.map(b => `
         <div class="badge ${got.has(b.id) ? 'on' : ''}">
