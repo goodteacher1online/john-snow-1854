@@ -671,7 +671,8 @@ $('help-note').addEventListener('click', () => {
 $('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
 $('about-body').innerHTML = SOURCES.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
 $('help-about').addEventListener('click', () => { closeModal('help'); openModal('about'); });
-$('primer-body').innerHTML = PRIMER.map(s => `<h2>${esc(s.title)}</h2>${s.body.map(b => `<p>${esc(b)}</p>`).join('')}`).join('')
+$('primer-body').innerHTML = PRIMER.map(s => `<h2>${esc(s.title)}</h2>${s.body.map(b => `<p>${esc(b)}</p>`).join('')}`
+  + (s.figure ? `<figure class="primer-figure"><img src="${s.figure.src}" alt="${esc(s.figure.alt)}"><figcaption>${esc(s.figure.caption)}</figcaption></figure>` : '')).join('')
   + `<h2>낱말 풀이</h2><dl class="glossary">${GLOSSARY.map(([w, d]) => `<dt>${esc(w)}</dt><dd>${esc(d)}</dd>`).join('')}</dl>`;
 $('btn-primer').addEventListener('click', () => openModal('primer'));
 $('help-primer').addEventListener('click', () => { closeModal('help'); openModal('primer'); });

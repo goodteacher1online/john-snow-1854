@@ -491,3 +491,10 @@ body.in-scene #hint-click { display: none; }
 /* 면담 화면: 가운데 기록 카드는 줄어들지 않고, 인물이 남는 폭 안에서 비율을 지킨 채 작아진다 */
 .scene-stage .card { flex: none; }
 .scene-stage .portrait { min-width: 0; max-width: calc((100% - 400px) / 2); object-fit: contain; object-position: bottom center; }
+
+/* 단추에 마우스를 올려 배경이 검게 바뀌면 글자와 아이콘도 반드시 흰색으로 (옅은 단추 규칙보다 우선) */
+.btn:not(.primary):hover, .btn.ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn:hover *, .seg button[aria-pressed='true'] *, #legend button.on *, #legend button:hover * { color: inherit; }
+.primer-figure { display: flex; align-items: center; gap: 18px; margin: 14px 0 4px; padding: 12px 16px; border: 1px solid var(--rule); border-radius: 14px; }
+.primer-figure img { height: 150px; width: auto; flex: none; }
+.primer-figure figcaption { font-size: 16px; color: var(--ink-soft); word-break: keep-all; }
