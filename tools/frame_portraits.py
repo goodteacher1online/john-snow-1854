@@ -25,8 +25,8 @@ CUT = RAW / 'cut'
 OUT = ROOT / 'public' / 'assets' / 'portraits'
 
 OUT_W, OUT_H = 520, 500
-FACE_W = 230          # 얼굴 폭 (출력 픽셀)
-FACE_Y = 0.47         # 얼굴 중심 높이 (출력 높이에 대한 비율)
+FACE_W = 160          # 얼굴 폭 (출력 픽셀). 어깨까지 판 안에 들어오도록 작게
+FACE_Y = 0.36         # 얼굴 중심 높이 (출력 높이에 대한 비율, 가장 높은 자리)
 
 _casc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
@@ -71,15 +71,16 @@ def fit_scale(cut: Image.Image, cx: float, cy: float, s: float) -> float:
 
 
 def edge_cut(cut: Image.Image) -> str:
-    """배경을 지운 그림에서 인물이 위나 양옆 테두리에 닿았으면(그림 밖으로 잘렸으면) 어디인지 돌려준다"""
+    """배경을 지운 그림에서 인물이 위나 양옆 테두리에 닿았으면(그림 밖으로 잘렸으면) 어디인지 돌려준다.
+    어깨 끝까지 그림 안에 들어와야 액자에 넣었을 때 옆이 세로로 잘려 보이지 않는다 (맨 아래 3%만 봐준다)"""
     a = np.array(cut)[..., 3] > 128
     h = a.shape[0]
     where = []
-    if a[:2].sum() > 2:
+    if a[:3].any():
         where.append('위')
-    if a[: int(h * 0.82), :2].sum() > 2:
+    if a[: int(h * 0.97), :3].any():
         where.append('왼쪽')
-    if a[: int(h * 0.82), -2:].sum() > 2:
+    if a[: int(h * 0.97), -3:].any():
         where.append('오른쪽')
     return ' '.join(where)
 
@@ -118,49 +119,56 @@ def generate_clean(pipe, session, name: str, prompt: str, neg: str, seed: int, t
     return bad
 
 
+CHEST_MIN = 1.25      # 얼굴 가운데부터 가슴 아래 끝까지 최소 길이 (얼굴 폭의 배수). 이보다 짧으면 다시 그려야 한다
+
+
 def frame(name: str) -> str:
+    """얼굴 크기를 모두 같게 맞춰 같은 크기의 판에 놓는다.
+    원본에서 어깨가 그림 테두리에 닿기 시작하는 높이 위에서 가슴을 수평으로 잘라, 어깨 옆이 세로로 잘려 보이지 않게 한다.
+    그림이 판 아래까지 닿지 않으면 늘려 메우지 않고 아래로 내려 붙인다"""
     raw = Image.open(RAW / f'{name}.png')
     cut = Image.open(CUT / f'{name}.png').convert('RGBA')
     k = cut.width / raw.width                       # 배경 지운 그림이 원본과 크기가 다를 수 있다
     f = find_face(raw)
     if f is None:
-        return f'{name}: 얼굴을 못 찾아 그대로 둠'
+        return f'{name}: 얼굴을 못 찾아 그대로 둠 [다시 그리기]'
     cx, cy, fw = (v * k for v in f)
-    s = fit_scale(cut, cx, cy, FACE_W / fw)
-    big = cut.resize((round(cut.width * s), round(cut.height * s)), Image.LANCZOS)
+    a = np.array(cut)
+    solid = a[..., 3] > 128
+    H, W = solid.shape
+    # 어깨가 그림 옆 테두리에 닿는 첫 줄 (얼굴 아래에서). 그 위까지만 쓴다
+    side = solid[:, :3].any(axis=1) | solid[:, -3:].any(axis=1)
+    rows = np.nonzero(side & (np.arange(H) > cy + fw * 0.6))[0]
+    keep = int(rows[0]) - 2 if len(rows) else H
+    ys = np.nonzero(solid[:keep].any(axis=1))[0]
+    top = int(ys.min())
+    chest = (keep - cy) / fw
+    s = FACE_W / fw
+    # 머리 위 여백: 모자가 큰 사람은 판 위로 넘치지 않게 얼굴을 조금 낮춘다 (크기는 그대로)
+    face_y = max(OUT_H * FACE_Y, (cy - top) * s + MARGIN_TOP)
+    # 가슴 아래 끝이 판 바닥에 못 미치면 아래로 내려 붙인다
+    bottom = face_y + (keep - cy) * s
+    if bottom < OUT_H:
+        face_y += OUT_H - bottom
+    # 판에 보이는 줄들에서 어깨 폭이 판보다 넓으면 배율을 줄인다 (드문 경우)
+    vis_bottom = int(min(keep, cy + (OUT_H - face_y) / s))
+    cols = np.nonzero(solid[top:vis_bottom].any(axis=0))[0]
+    half = max(cx - cols.min(), cols.max() + 1 - cx)
+    if half * s > OUT_W / 2 - MARGIN_SIDE:
+        s = (OUT_W / 2 - MARGIN_SIDE) / half
+    a[keep:, :, 3] = 0                               # 가슴 아래 끝에서 수평으로 자른다
+    body = Image.fromarray(a)
+    big = body.resize((round(W * s), round(H * s)), Image.LANCZOS)
     out = Image.new('RGBA', (OUT_W, OUT_H))
-    ox, oy = round(OUT_W / 2 - cx * s), round(OUT_H * FACE_Y - cy * s)
-    out.alpha_composite(big, (ox, oy)) if ox >= 0 and oy >= 0 else out.paste(big, (ox, oy), big)
-    # 그림이 판 아래까지 닿지 않으면 바닥이 떠 보이므로, 옷 끝 몇 줄을 아래로 늘여 메운다
-    gap = OUT_H - (oy + big.height)
-    if gap > 0:
-        edge = out.crop((0, OUT_H - gap - 3, OUT_W, OUT_H - gap))
-        out.alpha_composite(edge.resize((OUT_W, gap + 1), Image.BILINEAR), (0, OUT_H - gap - 1))
-    # 어깨 끝이 판 옆 테두리에 조금 못 미치면(원본 그림 밖으로 나갔던 몸) 세로로 잘려 보이므로,
-    # 아래에서부터 곧게 선 가장자리 구간만 골라 옷을 테두리까지 늘인다. 비스듬한 어깨선은 건드리지 않는다
-    a = np.array(out)
-    body = a[..., 3] > 128
-    for side in (0, 1):
-        edge = None
-        for y in range(OUT_H - 1, int(OUT_H * 0.5), -1):
-            xs = np.nonzero(body[y])[0]
-            if not len(xs):
-                break
-            x = xs[0] if side == 0 else xs[-1]
-            gap = x if side == 0 else OUT_W - 1 - x
-            if edge is None:
-                if not 0 < gap <= 48:
-                    break
-                edge = x
-            elif abs(x - edge) > 1:
-                break
-            if side == 0:
-                a[y, :x] = a[y, x + 1]
-            else:
-                a[y, x + 1:] = a[y, x - 1]
-    out = Image.fromarray(a)
+    ox, oy = round(OUT_W / 2 - cx * s), round(face_y - cy * s)
+    out.paste(big, (ox, oy), big)
     out.save(OUT / f'{name}.webp', quality=88, method=6)
-    return f'{name}: 얼굴 폭 {fw:.0f} -> {FACE_W}, 배율 {s:.2f}' + (f'  (아래 {gap}px 메움)' if gap > 0 else '')
+    flag = ''
+    if chest < CHEST_MIN:
+        flag = f' [가슴이 짧음 {chest:.2f}, 다시 그리기]'
+    if s < FACE_W / fw * 0.9:
+        flag += f' [어깨가 넓어 얼굴이 작아짐 {s / (FACE_W / fw):.2f}]'
+    return f'{name}: 얼굴 폭 {fw:.0f}, 가슴 {chest:.2f}, 얼굴 높이 {face_y / OUT_H:.2f}' + flag
 
 
 def sheet(names):

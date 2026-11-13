@@ -40,12 +40,16 @@ def bracket(age: int) -> int:
     return 0 if age < 34 else 1 if age < 52 else 2
 
 
+TOO_CLOSE = {'jack', 'r_d217', 'r_d66'}
+
+
 def bases():
     """(이름, 여성?, 나이대) 목록. 원본이 잘리지 않은 것만"""
     import gen_portraits
     out = []
     for name, (desc, _) in gen_portraits.PEOPLE.items():
-        if name.startswith('player_') or name in ('chairman', 'physician'):
+        # 얼굴이 그림을 꽉 채운 원본은 틀로 쓰면 가슴이 짧게 나온다
+        if name.startswith('player_') or name in ('chairman', 'physician') or name in TOO_CLOSE:
             continue
         raw, cut = RAW / f'{name}.png', CUT / f'{name}.png'
         if not raw.exists() or not cut.exists() or edge_cut(Image.open(cut).convert('RGBA')):
@@ -62,6 +66,11 @@ def main(args):
 
     people = json.loads((ROOT / 'src' / 'data' / 'district_people.json').read_text(encoding='utf-8'))['people']
     by_id = {p['id']: p for p in people}
+    # 면담 상대(이야기 집·위원)도 같은 방식으로 다시 그릴 수 있다
+    import gen_portraits
+    for nm, (desc, seed) in gen_portraits.PEOPLE.items():
+        if not nm.startswith('r_') and not nm.startswith('player_'):
+            by_id[nm] = {'id': nm, 'desc': desc, 'seed': seed, 'name': nm}
     # 조사관(inv_<id>)도 같은 방식으로 다시 그릴 수 있다
     import gen_investigators
     for iid, (who, outfit, seed, _) in gen_investigators.INVESTIGATORS.items():
@@ -82,11 +91,11 @@ def main(args):
     for k, spec in enumerate(specs):
         pid, _, override = spec.partition(':')
         p = by_id[pid]
-        name = pid if pid.startswith('inv_') else f'r_{pid}'
+        name = pid if (pid.startswith('inv_') or not pid[1:].isdigit()) else f'r_{pid}'
         female = p.get('female', person_meta(p['desc'])[0])
         age = p.get('age', person_meta(p['desc'])[1])
         # 성별과 나이대가 같은 기본 인물을 돌아가며 쓴다 (같은 얼굴이 몰리지 않게)
-        same = [b for b in pool if b[1] == female and b[2] == bracket(age)] or [b for b in pool if b[1] == female]
+        same = [b for b in pool if b[1] == female and b[2] == bracket(age) and b[0] != name] or [b for b in pool if b[1] == female and b[0] != name]
         base = same[sum(map(ord, pid)) % len(same)][0]
         init = Image.open(RAW / f'{base}.png').convert('RGB').resize((768, 768))
         seed = int(override) if override else seeds.get(name, p['seed'])

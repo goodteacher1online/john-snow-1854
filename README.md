@@ -68,9 +68,8 @@ tools/build_buildings.py 주택 그림의 벽돌·창·지붕으로 양조장·�
 tools/build_snow_data.py 공개 사망자 자료(578명)를 이 지도 좌표로 옮기고 집(주소)별로 묶는다
 tools/build_districts.py 스노우 지도에서 영역마다 집 8곳과 사망자 7명 이상인 큰 집을 고르고, 사망자 수를 공개 자료에서 가져온다
 tools/gen_investigators.py 조사관 12명의 상반신과 전신
-tools/frame_portraits.py 흉상들의 얼굴 크기와 위치를 하나로 맞춘다
+tools/frame_portraits.py 흉상들의 얼굴 크기를 하나로 맞추고, 어깨가 그림 밖으로 나간 높이 위에서 가슴을 수평으로 잘라 같은 판에 놓는다. --audit 로 잘린 원본을 찾는다
 tools/gen_portraits.py   면담 상대의 흉상을 로컬 GPU(Stable Diffusion, DreamShaper 8)로 생성한다. 머리나 어깨가 잘리면 시드를 바꿔 다시 뽑는다
-tools/gen_buildings.py   지도 위 건물과 펌프 그림을 같은 방식으로 생성한다
 tools/gen_residents.py   영역 집 주민의 흉상을, 잘 나온 기본 인물을 바탕으로 머리 모양과 옷만 바꿔 그린다(img2img)
 tools/playtest.mjs     한 판을 처음부터 끝까지 자동으로 돌려 보는 점검
 tools/loadtest.mjs     브라우저 창 N개를 같은 방에 넣어 동시 접속을 재현하는 점검

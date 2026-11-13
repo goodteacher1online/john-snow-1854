@@ -793,7 +793,7 @@ export const SOURCES: { title: string; items: string[] }[] = [
     items: [
       '인물 흉상은 Stable Diffusion(DreamShaper 8)으로 만든 지어낸 얼굴이다. 굴드, 허긴스 같은 실존 인물의 초상이 아니다.',
       '영역 집 주민은 앞의 흉상들을 바탕으로 머리 모양과 옷차림을 바꿔 그린 것(img2img)이다. 모두 지어낸 사람이다.',
-      '지도 위 인물과 건물, 펌프는 인공지능으로 만든 그림이다(이전 작업의 Antigravity 이미지 생성, 그리고 이 PC의 DreamShaper 8).',
+      '지도 위 조사관 전신은 이 PC의 DreamShaper 8로 만든 그림이다. 주택과 펌프 그림은 이전 작업에서 Antigravity의 이미지 생성 기능으로 만들었고, 양조장·공장·구빈원은 그 주택 그림을 이어 붙인 합성이다.',
       '글꼴: 강원교육모두, 강원특별자치도교육청.',
     ],
   },
