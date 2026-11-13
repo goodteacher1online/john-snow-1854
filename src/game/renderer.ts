@@ -35,6 +35,8 @@ export interface Frame {
 /** 건물 그림의 폭(월드 단위). 높이는 그림 비율을 따른다 */
 const ICON_W: Record<SiteKind, number> = { house: 28, brewery: 62, factory: 50, workhouse: 92 };
 const AVATAR_H = 44;
+/** 자유 조사 집 건물 폭 (월드 단위). 맡은 집(28)보다 조금 작게 */
+const FREE_W = 20;
 /** 이보다 작게 보면(축소하면) 막대 대신 원으로 사망자 수를 보인다 */
 const DOT_ZOOM = 1.15;
 const PUMP_H = 44;
@@ -77,6 +79,36 @@ export class Renderer {
     factory: load('./assets/houses/house_factory.webp'),
     workhouse: load('./assets/houses/house_workhouse.webp'),
   };
+
+  /** 자유 조사 집에 쓰는 주택 그림. 벽돌 색을 바꾼 네 가지 (그림을 읽은 뒤 한 번 만든다) */
+  private houseTints: HTMLCanvasElement[] = [];
+  private static TINTS = ['none', 'brightness(0.8) saturate(0.9)', 'sepia(0.55) hue-rotate(-12deg) saturate(0.9) brightness(1.12)', 'saturate(0.35) brightness(0.92)'];
+
+  private tinted(i: number): CanvasImageSource | null {
+    const img = this.icons.house;
+    if (!ok(img)) return null;
+    if (!this.houseTints.length) {
+      this.houseTints = Renderer.TINTS.map(filter => {
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        const g = c.getContext('2d')!;
+        g.filter = filter;
+        g.drawImage(img, 0, 0);
+        return c;
+      });
+    }
+    return this.houseTints[i % this.houseTints.length];
+  }
+
+  /** 자유 조사 집의 건물 자리: 막대 묶음의 안쪽 끝에서 조금 더 블록 안쪽 (월드 좌표)과 쌓는 방향 */
+  private freeSpot(s: Site): { x: number; y: number; dx: number; dy: number } {
+    const pts = s.points!;
+    let far = pts[0], fd = -1;
+    for (const q of pts) { const d = Math.hypot(q[0] - s.door[0], q[1] - s.door[1]); if (d > fd) { fd = d; far = q; } }
+    const l = Math.hypot(far[0] - s.door[0], far[1] - s.door[1]) || 1;
+    const dx = (far[0] - s.door[0]) / l, dy = (far[1] - s.door[1]) / l;
+    return { x: far[0] + dx * 10, y: far[1] + dy * 10 + FREE_W * 0.4, dx, dy };
+  }
 
   constructor(private canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
@@ -122,7 +154,11 @@ export class Renderer {
       if (Math.hypot(wx - s.door[0], wy - s.door[1]) < 16) return s;
     }
     for (const s of SITES) {
-      if (s.points) continue;
+      if (s.points) {
+        const sp = this.freeSpot(s), fh = FREE_W * 1.69;
+        if (Math.abs(wx - sp.x) < FREE_W / 2 + 3 && wy < sp.y + 3 && wy > sp.y - fh - 3) return s;
+        continue;
+      }
       const [iw, ih] = this.iconSize(s.kind);
       if (Math.abs(wx - s.icon[0]) < iw / 2 + 4 && wy < s.icon[1] + 4 && wy > s.icon[1] - ih - 4) return s;
     }
@@ -275,7 +311,7 @@ export class Renderer {
     const done = f.records.has(s.id);
     const target = f.targets.has(s.id);
     const free = !!s.points && !target && f.nearId !== s.id;
-    if (free && this.zoom < 1.1 && !done) return;            // 전체 지도에서는 자유 조사 집의 빈 문을 감춘다
+    if (free && !done) return;          // 자유 조사 집은 건물로 알아보고, 문 표시는 가까이 갔을 때와 기록한 뒤에만
     const r = free ? Math.max(3.5, 3.6 * this.zoom) : Math.max(5, 5.5 * this.zoom);
     if (target) {
       const pulse = (f.time * 0.9) % 1;
@@ -351,9 +387,28 @@ export class Renderer {
 
   /** 자유 조사 집: 기록하면 스노우의 지도와 같은 자리에 막대를 쌓는다 */
   private drawFreeSite(s: Site, f: Frame) {
+    const ctx = this.ctx, z = this.zoom;
+    // 건물: 모든 자유 조사 집에 세운다 (막대 묶음 안쪽 끝)
+    const sp = this.freeSpot(s);
+    const [bx, by] = this.toScreen(sp.x, sp.y);
+    if (bx > -80 && by > -40 && bx < this.vw + 80 && by < this.vh + 160) {
+      const img = this.tinted(Number(s.id.slice(1)));
+      const w = FREE_W * z, h = w * 1.69;
+      ctx.fillStyle = 'rgba(35, 26, 18, 0.2)';
+      ctx.beginPath();
+      ctx.ellipse(bx, by, w * 0.55, Math.max(2.5, h * 0.05), 0, 0, Math.PI * 2);
+      ctx.fill();
+      if (img) {
+        const done = f.records.has(s.id) || f.classRecords.has(s.id);
+        if (done && z < DOT_ZOOM) ctx.globalAlpha = 0.5;
+        if (f.nearId === s.id) { ctx.shadowColor = 'rgba(255, 244, 214, 0.95)'; ctx.shadowBlur = 14; }
+        ctx.drawImage(img, bx - w / 2, by - h, w, h);
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+      }
+    }
     const mine = f.records.has(s.id);
     if (!mine && !f.classRecords.has(s.id)) return;
-    const ctx = this.ctx, z = this.zoom;
     const pts = s.points!;
     const [dx, dy] = pts.length > 1
       ? (() => { const a = pts[0], b = pts[pts.length - 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; })()
@@ -504,7 +559,7 @@ export class Renderer {
     for (const s of SITES) {
       const near = f.nearId === s.id, target = f.targets.has(s.id);
       if (!near && !target) continue;
-      const at = s.points ? s.door : s.icon;
+      const at = s.points ? (({ x, y }) => [x, y])(this.freeSpot(s)) : s.icon;
       const [x, y] = this.toScreen(at[0], at[1]);
       this.label(s.name, x, y + 10, near ? 21 : 19, target ? RED : INK, near ? 5 : 4, true);
     }
