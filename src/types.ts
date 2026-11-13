@@ -102,6 +102,12 @@ export interface SaveData {
   seen?: Partial<Record<'smell' | 'water' | 'dist' | 'table', boolean>>;
   /** 받은 탐구 배지 */
   badges?: string[];
+  /** 문을 두드리기 전 예상: 집 id → 1 사망자가 났을 것 / 0 없을 것 */
+  preds?: Record<string, number>;
+  /** 빗나간 예상이나 예외 사례의 까닭을 밝힌 집 */
+  why?: string[];
+  /** 위원회 반박을 그래프로 뒷받침한 횟수 */
+  strong?: number;
   misses: number;
   noteSeen: number;
   /** 지난번에 시작한 방과 영역. 바뀌면 새 영역의 시작 장소에서 출발한다 */

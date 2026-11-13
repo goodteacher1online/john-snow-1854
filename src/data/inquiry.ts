@@ -22,6 +22,33 @@ export interface InquiryState {
   predict?: number;
   /** 거리 그래프 전 예상 */
   distPredict?: number;
+  /** 문을 두드리기 전 예상: 집 id → 1 사망자가 났을 것 / 0 없을 것 */
+  preds?: Record<string, number>;
+  /** 빗나간 예상이나 예외 사례의 까닭을 밝힌 집 */
+  why?: string[];
+  /** 위원회 반박을 그래프로 뒷받침한 횟수 */
+  strong?: number;
+}
+
+/** 예외 사례: 펌프가 코앞인데 무사하거나, 다른 펌프가 더 가까운데 사망자가 난 곳 */
+export const anomalyOf = (s: Site): 'near' | 'far' | undefined =>
+  s.proves.includes('near') ? 'near' : s.proves.includes('far') ? 'far' : undefined;
+/** 마신 물로 사망 여부가 설명되는 집인가 */
+export const waterExplains = (s: Site) => (s.deaths > 0) === s.drankBroad;
+
+/** 예상 적중과 예외 사례 */
+export function predStats(st: InquiryState) {
+  const preds = st.preds ?? {}, why = new Set(st.why ?? []);
+  const guessed = st.records.filter(s => preds[s.id] !== undefined);
+  const hits = guessed.filter(s => (preds[s.id] === 1) === (s.deaths > 0));
+  const missed = guessed.filter(s => (preds[s.id] === 1) !== (s.deaths > 0) && waterExplains(s));
+  const odd = (k: 'near' | 'far') => st.records.filter(s => anomalyOf(s) === k);
+  return {
+    n: guessed.length, hit: hits.length,
+    missed: missed.length, learned: missed.filter(s => why.has(s.id)).length,
+    near: odd('near').length, nearWhy: odd('near').filter(s => why.has(s.id)).length,
+    far: odd('far').length, farWhy: odd('far').filter(s => why.has(s.id)).length,
+  };
 }
 
 /** 공기설을 시험하기 전에 고르는 첫 가설 */
@@ -84,4 +111,8 @@ export const BADGES: { id: string; name: string; desc: string; test: (st: Inquir
   { id: 'clean', name: '한 번에 추리', desc: '추리 문제를 틀리지 않고 풀었다', test: st => st.stage >= STAGE.PREDICT && st.misses === 0 },
   { id: 'dose', name: '거리와 죽음', desc: `기록 ${DIST_NEED}곳 넘게 모아 펌프에서의 거리와 사망을 그래프로 그렸다`, test: st => !!st.seen.dist },
   { id: 'dosehit', name: '맞힌 예상', desc: '거리 그래프의 모양을 미리 맞혔다', test: st => st.distPredict === DIST_PREDICT.ok && !!st.seen.dist },
+  { id: 'calib', name: '정확한 예상', desc: '문을 두드리기 전에 열 번 넘게 예상하고 열에 일곱 넘게 맞혔다', test: st => { const p = predStats(st); return p.n >= 10 && p.hit / p.n >= 0.7; } },
+  { id: 'learn', name: '틀려도 배운다', desc: '빗나간 예상의 까닭을 세 번 밝혔다', test: st => predStats(st).learned >= 3 },
+  { id: 'bounty', name: '예외 사냥꾼', desc: '펌프 곁인데 무사한 집과 멀리서 사망자가 난 집을 둘 다 찾아 까닭을 밝혔다', test: st => { const p = predStats(st); return p.nearWhy > 0 && p.farWhy > 0; } },
+  { id: 'strong', name: '강한 증거', desc: '위원회의 세 반론을 모두 그래프로 뒷받침했다', test: st => (st.strong ?? 0) >= 3 },
 ];
