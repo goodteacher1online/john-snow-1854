@@ -1,12 +1,12 @@
 /// <reference types="vite/client" />
 import './style.css';
-import { Avatar, PortraitId, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
+import { Avatar, PortraitId, Proof, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
   SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, districtOf, AREA_CAP, SOURCES, PRIMER, GLOSSARY,
   questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
-import { BADGES, HYPOTHESES, HYPO_WATER, LEVEL_NAMES, InquiryState, level } from './data/inquiry.ts';
+import { BADGES, HYPOTHESES, HYPO_WATER, LEVEL_NAMES, InquiryState, level, anomalyOf, waterExplains, DIST_BANDS, distToBroad } from './data/inquiry.ts';
 import snowDeaths from './data/snow_deaths.gen.json';
 import { Nav } from './game/nav.ts';
 import { Multiplayer } from './game/multiplayer.ts';
@@ -20,7 +20,7 @@ const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as 
 const SAVE_KEY = 'snow1854.save.v2';
 const SPEED = 92;            // 걷는 속도 (월드 단위/초)
 const REACH = 40;            // 문·펌프에 손이 닿는 거리
-const XP = { record: 40, clue: 30, reason: 100, rebut: 80, handle: 100 };
+const XP = { record: 40, clue: 30, reason: 100, rebut: 80, handle: 100, hit: 15, why: 30, strong: 40 };
 const portraitUrl = (id: PortraitId) => `./assets/portraits/${id}.webp`;
 const QUESTION_LABEL: Record<QuestionId, string> = {
   toll: '누가 앓았는지 묻는다', air: '주변 공기와 냄새를 묻는다', water: '마실 물을 어디서 긷는지 묻는다',
@@ -252,7 +252,8 @@ function addXp(n: number) { save.xp += n; }
 /** 지금의 탐구 상태 (탐구력·배지 판정용) */
 function inquiry(): InquiryState {
   return { records: recordedSites(), stage: save.stage, reasonStep: save.reasonStep, misses: save.misses,
-    seen: save.seen ?? {}, hypo0: save.hypo0, predict: save.predict, distPredict: save.distPredict };
+    seen: save.seen ?? {}, hypo0: save.hypo0, predict: save.predict, distPredict: save.distPredict,
+    preds: save.preds, why: save.why, strong: save.strong };
 }
 
 /** 새로 얻은 탐구 배지를 알린다 */
@@ -348,6 +349,7 @@ async function interview(site: Site) {
       scene.close();
       return;
     }
+    await predictHouse(site, asked.length > 0);
     await scene.say(asked.length ? ['(다시 문을 두드렸다.)'] : site.intro);
     while (asked.length < QUESTIONS.length) {
       const i = await scene.choose('무엇을 물을까?', [
@@ -365,11 +367,60 @@ async function interview(site: Site) {
       }
     }
     await scene.say([site.outro]);
+    await explainHouse(site);
     scene.close();
     record(site);
   } catch (e) {
     if (!(e instanceof SceneClosed)) throw e;
   }
+}
+
+/** 새 가설을 세운 뒤에는 문을 두드리기 전에 결과를 예상한다 */
+async function predictHouse(site: Site, again: boolean) {
+  if (again || save.stage < STAGE.PREDICT || save.preds?.[site.id] !== undefined) return;
+  const band = DIST_BANDS.find(b => distToBroad(site) <= b.max)!.label;
+  const i = await scene.choose(`문을 두드리기 전에 예상해 보자. 브로드 가 펌프에서의 거리: ${band}. 이 집에서 사망자가 났을까?`, [
+    { label: '났을 것이다' }, { label: '없을 것이다' }, { label: '예상하지 않고 두드린다', leave: true },
+  ]);
+  if (i === 2) return;
+  save.preds = { ...(save.preds ?? {}), [site.id]: i === 0 ? 1 : 0 };
+  sound.playPen();
+  persist();
+}
+
+/** 예상이 빗나갔거나 예외 사례면, 그 까닭을 기록에서 찾는다 */
+async function explainHouse(site: Site) {
+  if (save.stage < STAGE.PREDICT || save.why?.includes(site.id)) return;
+  const guess = save.preds?.[site.id], died = site.deaths > 0;
+  const miss = guess !== undefined && (guess === 1) !== died;
+  const odd = anomalyOf(site);
+  if (guess !== undefined && !miss) { addXp(XP.hit); await scene.say(['(예상이 맞았다.)']); }
+  if (!miss && !odd) return;
+  if (!waterExplains(site)) {
+    await scene.say(['(마신 물로도 설명되지 않는 집이다. 스노우의 지도에도 이런 집이 몇 곳 있었다. 다른 까닭이 있었을지 모른다.)']);
+    return;
+  }
+  const what = miss ? '예상이 빗나갔다.' : odd === 'near' ? '예외 사례다. 펌프가 코앞인데 모두 무사하다.' : '예외 사례다. 다른 펌프가 더 가까운데 사망자가 났다.';
+  const opts = [
+    { label: site.drankBroad ? '브로드 가 펌프 물을 마셨기 때문이다' : '브로드 가 펌프 물을 마시지 않았기 때문이다', ok: true },
+    { label: died ? '냄새가 고약한 공기 탓이다' : '공기가 맑은 곳이라서다', ok: false },
+    { label: '그냥 운이다', ok: false },
+  ];
+  const r = [...site.id].reduce((n, c) => n + c.charCodeAt(0), 0) % 3;
+  const order = [...opts.slice(r), ...opts.slice(0, r)];
+  const tried = new Set<number>();
+  for (;;) {
+    const i = await scene.choose(`${what} 왜 그랬을까?`, order.map((o, k) => ({ label: o.label, disabled: tried.has(k) })));
+    if (order[i].ok) break;
+    tried.add(i);
+    sound.playWrong();
+    await scene.say([`(기록을 다시 본다. 악취는 ${smellWord(site.smell)}, 마시는 물은 ${site.waterShort}.)`]);
+  }
+  save.why = [...(save.why ?? []), site.id];
+  addXp(tried.size ? Math.round(XP.why / 2) : XP.why);
+  sound.playClueRecorded();
+  await scene.say([`(그렇다. 이 집의 삶과 죽음을 가른 것은 마신 물이다.${miss ? ' 빗나간 예상 덕분에 하나 더 배웠다.' : ''})`]);
+  persist();
 }
 
 // ---------------------------------------------------------------------------
@@ -394,12 +445,13 @@ async function hearing() {
           disabled: used.has(s.id),
         })), true);
         const s = recs[i];
-        const fits = s.proves.includes(round.need) && (round.need !== 'near' || s.nearestPump === 'broad');
-        if (fits) {
+        if (fitsRound(s, round.need)) {
           used.add(s.id);
+          await scene.say(['나: ' + (s.testimonies?.[round.need] ?? s.testimony)]);
+          await backUp(round.need, used);
           sound.playClueRecorded();
           addXp(XP.rebut);
-          await scene.say(['나: ' + (s.testimonies?.[round.need] ?? s.testimony), round.ok]);
+          await scene.say([round.ok]);
           break;
         }
         save.misses++;
@@ -411,9 +463,68 @@ async function hearing() {
     await scene.say(HEARING.verdict);
     scene.close();
     setStage(STAGE.HANDLE);
+    checkBadges();
   } catch (e) {
     if (!(e instanceof SceneClosed)) throw e;
     persist();
+  }
+}
+
+const fitsRound = (s: Site, need: Proof) => s.proves.includes(need) && (need !== 'near' || s.nearestPump === 'broad');
+/** 반론마다 그 말을 무너뜨리는 그래프 */
+const ROUND_GRAPH: Record<Proof, 'smell' | 'water'> = { smell: 'smell', near: 'water', far: 'water' };
+const GRAPH_NAME = { smell: '악취로 묶은 그래프', water: '마시는 물로 묶은 그래프', dist: '펌프에서의 거리 그래프' } as const;
+
+/** 기록한 집을 둘로 나누어 사망자가 난 집의 비율(%)을 견준다 */
+function split(test: (s: Site) => boolean) {
+  const recs = recordedSites();
+  const pct = (xs: Site[]) => xs.length ? Math.round(xs.filter(s => s.deaths > 0).length / xs.length * 100) : 0;
+  const a = recs.filter(test), b = recs.filter(s => !test(s));
+  return { a: a.length, b: b.length, pa: pct(a), pb: pct(b), gap: Math.abs(pct(a) - pct(b)) };
+}
+
+/** 그래프를 펼쳐 보이며 하는 말. 숫자는 지금까지의 기록에서 센다 */
+function graphLine(key: 'smell' | 'water') {
+  const w = split(s => s.drankBroad);
+  if (key === 'water') return `나: (수첩의 그래프를 펼친다) 마시는 물로 묶었습니다. 브로드 가 펌프 물을 마신 집 ${w.a}곳 가운데 ${w.pa}%, 다른 물을 마신 집 ${w.b}곳 가운데 ${w.pb}%에서 사망자가 났습니다. 어디에 사느냐가 아니라 무엇을 마셨느냐가 갈랐습니다.`;
+  const m = split(s => s.smell === 'high');
+  const tail = m.gap < w.gap ? `물로 묶었을 때의 차이(${w.gap}%p)보다 훨씬 작습니다.` : '냄새만으로는 설명이 끝나지 않습니다.';
+  return `나: (수첩의 그래프를 펼친다) 악취로 묶었습니다. 악취가 심한 집 ${m.a}곳 가운데 ${m.pa}%, 그렇지 않은 집 ${m.b}곳 가운데 ${m.pb}%에서 사망자가 났습니다. 차이는 ${m.gap}%p, ${tail}`;
+}
+
+/** 기록 한 장으로는 '우연'이라는 반론을 넘지 못한다. 그래프나 같은 갈래 기록으로 뒷받침한다 */
+async function backUp(need: Proof, used: Set<string>) {
+  await scene.say(['한 곳뿐이라면 우연일 수도 있소.']);
+  for (;;) {
+    const seen = save.seen ?? {};
+    const graphs = (['smell', 'water', 'dist'] as const).filter(k => seen[k]);
+    const more = recordedSites().filter(o => !used.has(o.id) && fitsRound(o, need));
+    const i = await scene.choose('무엇으로 뒷받침할까?', [
+      ...graphs.map(k => ({ label: `수첩 · ${GRAPH_NAME[k]}`, sub: '여러 집을 한꺼번에 견준 것' })),
+      { label: '같은 갈래 기록을 하나 더 내놓는다', sub: more.length ? `내놓을 수 있는 기록 ${more.length}곳` : '그런 기록이 더 없다', disabled: !more.length },
+      { label: '이 기록 하나면 충분하다' },
+    ]);
+    if (i < graphs.length) {
+      if (graphs[i] === ROUND_GRAPH[need]) {
+        await scene.say([graphLine(ROUND_GRAPH[need])]);
+        save.strong = (save.strong ?? 0) + 1;
+        addXp(XP.strong);
+        return;
+      }
+      save.misses++;
+      sound.playWrong();
+      await scene.say(['그 그래프가 내 말과 무슨 상관이오?']);
+    } else if (i === graphs.length) {
+      const j = await scene.choose('어느 기록을 더 내놓을까?', more.map(s => ({
+        label: s.name, sub: `${s.people}명 가운데 ${s.deaths}명 사망 · 악취 ${smellWord(s.smell)} · ${s.waterNote}`,
+      })), true);
+      const s = more[j];
+      used.add(s.id);
+      await scene.say(['나: ' + (s.testimonies?.[need] ?? s.testimony), '두 곳이라… 우연이라 하기는 어렵군.']);
+      return;
+    } else {
+      await scene.say(['그것만으로는 모자라오. 더 내놓으시오.']);
+    }
   }
 }
 
