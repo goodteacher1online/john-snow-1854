@@ -75,7 +75,7 @@ def main():
             print(f'  ... {k}/{len(names)}', flush=True)
     print('\n'.join(rows))
     print(f'어긋난 그림 {len(bad)}개')
-    (RAW / 'gender_bad.txt').write_text(' '.join(bad), encoding='utf-8')
+    (RAW / 'gender_bad.txt').write_text(' '.join(bad) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':
