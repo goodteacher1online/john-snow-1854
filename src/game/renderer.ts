@@ -203,6 +203,8 @@ export class Renderer {
     sprites.push({ y: f.me.y, draw: () => this.drawAvatar(f.me, true, f.time, 0) });
     sprites.sort((a, b) => a.y - b.y);
     for (const s of sprites) s.draw();
+    // 사망자 표시는 모든 건물을 그린 뒤 맨 위에 (앞 건물에 가려 잘리지 않게)
+    if (!f.showReal) for (const s of SITES) this.drawRecord(s, f);
     if (f.showReal) this.drawRealDeaths();
 
     this.queueLabels(f);
@@ -367,21 +369,30 @@ export class Renderer {
 
     const near = f.nearId === s.id;
     const img = this.icons[s.kind];
-    if (ok(img) && z < DOT_ZOOM && (f.records.has(s.id) || f.classRecords.has(s.id))) ctx.globalAlpha = 0.45;
+    if (ok(img) && !near && (f.records.has(s.id) || f.classRecords.has(s.id))) ctx.globalAlpha = z < DOT_ZOOM ? 0.45 : 0.5;
     if (ok(img)) {
       if (near) { ctx.shadowColor = 'rgba(255, 244, 214, 0.95)'; ctx.shadowBlur = 16; }
       ctx.drawImage(img, x - w / 2, y - h, w, h);
       ctx.shadowBlur = 0;
     }
     ctx.globalAlpha = 1;
+  }
 
-    // 내 기록과, 같은 영역 친구들이 조사한 곳의 기록 (친구 것은 조금 옅게)
+  /** 기록한 곳의 사망자 표시. 내 기록과, 친구들이 조사한 곳 (친구 것은 조금 옅게) */
+  private drawRecord(s: Site, f: Frame) {
     const mine = f.records.has(s.id);
     if (!mine && !f.classRecords.has(s.id)) return;
+    const ctx = this.ctx, z = this.zoom;
     ctx.save();
     ctx.globalAlpha = mine ? 1 : 0.6;
-    if (z < DOT_ZOOM) this.drawDeathDot(s, x, y);
-    else this.drawDeathBars(s, x - w / 2, y);
+    if (s.points) this.drawFreeBars(s);
+    else {
+      const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
+      if (x > -200 && y > -80 && x < this.vw + 200 && y < this.vh + 320) {
+        if (z < DOT_ZOOM) this.drawDeathDot(s, x, y);
+        else this.drawDeathBars(s, x - this.iconSize(s.kind)[0] * z / 2, y);
+      }
+    }
     ctx.restore();
   }
 
@@ -400,23 +411,24 @@ export class Renderer {
       ctx.fill();
       if (img) {
         const done = f.records.has(s.id) || f.classRecords.has(s.id);
-        if (done && z < DOT_ZOOM) ctx.globalAlpha = 0.5;
+        if (done && f.nearId !== s.id) ctx.globalAlpha = 0.5;
         if (f.nearId === s.id) { ctx.shadowColor = 'rgba(255, 244, 214, 0.95)'; ctx.shadowBlur = 14; }
         ctx.drawImage(img, bx - w / 2, by - h, w, h);
         ctx.shadowBlur = 0;
         ctx.globalAlpha = 1;
       }
     }
-    const mine = f.records.has(s.id);
-    if (!mine && !f.classRecords.has(s.id)) return;
+  }
+
+  /** 자유 조사 집의 막대: 스노우의 지도와 같은 자리에, 길에 수직으로. 건물 위에 사망자 수를 적는다 */
+  private drawFreeBars(s: Site) {
+    const ctx = this.ctx, z = this.zoom;
     const pts = s.points!;
     const [dx, dy] = pts.length > 1
       ? (() => { const a = pts[0], b = pts[pts.length - 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; })()
       : (() => { const l = Math.hypot(pts[0][0] - s.door[0], pts[0][1] - s.door[1]) || 1; return [(pts[0][0] - s.door[0]) / l, (pts[0][1] - s.door[1]) / l]; })();
     const half = Math.max(4.5 * z, 5.5), thick = Math.max(1.8 * z, 2.6);
     const px = -dy * half, py = dx * half;
-    ctx.save();
-    ctx.globalAlpha = mine ? 1 : 0.6;
     ctx.beginPath();
     for (const [wx, wy] of pts) {
       const [x, y] = this.toScreen(wx, wy);
@@ -429,7 +441,25 @@ export class Renderer {
     ctx.strokeStyle = INK;
     ctx.lineWidth = thick;
     ctx.stroke();
-    ctx.restore();
+    if (z < DOT_ZOOM) return;
+    const sp = this.freeSpot(s);
+    const [bx, by] = this.toScreen(sp.x, sp.y);
+    this.countTag(pts.length, bx, by - FREE_W * z * 1.69 - 4, 17);
+  }
+
+  /** 사망자 수 글씨: 종이색 테두리를 둘러 지도 위에서도 읽힌다 (바닥에서 위로 쌓듯 아래 기준) */
+  private countTag(n: number, x: number, bottom: number, size: number) {
+    const ctx = this.ctx;
+    ctx.font = `700 ${size}px ${FONT}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = PAPER;
+    const str = `${n}명`;
+    ctx.strokeText(str, x, bottom);
+    ctx.fillStyle = n ? INK : '#5f5446';
+    ctx.fillText(str, x, bottom);
   }
 
   /** 스노우의 지도처럼: 집 앞 길에서 블록 안쪽으로, 사망자 한 명에 막대 하나씩 쌓는다 */
@@ -464,20 +494,31 @@ export class Renderer {
     const ctx = this.ctx, z = this.zoom;
     const bars = s.mapDeaths ?? s.deaths;
     const bw = Math.max(12 * z, 18), bh = Math.max(2.8 * z, 4), pitch = Math.max(4.2 * z, 6.5), perCol = 9;
-    const left = iconLeft - Math.max(5 * z, 6) - bw;
     const cols = Math.max(1, Math.ceil(bars / perCol));
-    const topY = y - Math.min(Math.max(bars, 1), perCol) * pitch;
-    // 종이색 바탕을 깔아 지도의 검은 선과 섞이지 않게 한다
-    ctx.fillStyle = 'rgba(246, 239, 220, 0.92)';
+    const rows = Math.max(1, Math.ceil(bars / cols));          // 열마다 고르게: 10명이면 5개씩 두 줄
+    const gap = 3, pad = 5, head = 24;
+    const cardW = cols * bw + (cols - 1) * gap + pad * 2;
+    const cardH = rows * pitch + pad * 2 + head;
+    const right = iconLeft - Math.max(4 * z, 5);
+    const cx = right - cardW, cy = y - cardH;
+    // 종이 카드: 머리에 사망자 수, 아래에 한 사람에 막대 하나
+    ctx.fillStyle = 'rgba(246, 239, 220, 0.96)';
+    ctx.strokeStyle = 'rgba(35, 26, 18, 0.55)';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(left - (cols - 1) * (bw + 3) - 4, topY - 4, cols * (bw + 3) + 5, y - topY + 6, 4);
+    ctx.roundRect(cx, cy, cardW, cardH, 6);
     ctx.fill();
+    ctx.stroke();
+    ctx.font = `700 20px ${FONT}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = bars ? INK : '#5f5446';
+    ctx.fillText(`${bars}명`, cx + cardW / 2, cy + pad + head / 2);
     ctx.fillStyle = INK;
     for (let i = 0; i < bars; i++) {
-      const col = Math.floor(i / perCol), row = i % perCol;
-      ctx.fillRect(left - col * (bw + 3), y - bh - row * pitch, bw, bh);
+      const col = Math.floor(i / rows), row = i % rows;
+      ctx.fillRect(cx + pad + col * (bw + gap), y - pad - bh - row * pitch, bw, bh);
     }
-    this.label(`${bars}명`, left + bw / 2 - (cols - 1) * (bw + 3) / 2, topY - 8, 19, bars ? INK : '#5f5446', 4);
   }
 
   /** 멀리서는 사망자 수만큼 넓어지는 검은 원 (넓이가 사람 수에 비례) */
