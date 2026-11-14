@@ -3,7 +3,7 @@ import './style.css';
 import { Avatar, PortraitId, Proof, QuestionId, RemotePlayer, SaveData, Site } from './types.ts';
 import {
   SITES, SITE_BY_ID, PUMPS, BROAD_PUMP, STAGE, DATES, NOTES, REASONING, HEARING, EPILOGUE, AREAS, LOOKS, WORLD_SCALE, districtOf, AREA_CAP, SOURCES, PRIMER, GLOSSARY,
-  questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName,
+  questView, stageCleared, hearingRebuff, smellWord, placeName, rankOf, teamColor, areaName, SNOW_DAYS, tollAt,
 } from './data/story.ts';
 import { Renderer } from './game/renderer.ts';
 import { BADGES, HYPOTHESES, HYPO_WATER, LEVEL_NAMES, InquiryState, level, anomalyOf, waterExplains, DIST_BANDS, distToBroad } from './data/inquiry.ts';
@@ -128,7 +128,13 @@ const closeModal = (id: string) => $(id).classList.remove('open');
 function updateHud(bump = false) {
   const quest = questView(save.stage, has, myArea(), save.seen);
   $('hud-date').textContent = DATES[save.stage];
+  const toll = tollAt(save.stage);
+  $('hud-toll').innerHTML = `9월 ${toll.day}일까지 숨진 사람 <b>${toll.dead}</b>명 · 그날 새로 앓은 사람 <b>${toll.fresh}</b>명`;
   $('quest-title').textContent = quest.title;
+  if (save.stage >= STAGE.PREDICT && !save.snowOpen) {
+    const g = classGoal();
+    quest.items.push({ label: `${save.room ? '반 공동 목표' : '조사 목표'} ${g.n} / ${g.need}곳 · 스노우의 기록 열기`, done: false });
+  }
   $('quest-items').innerHTML = quest.items.map(i => `<li class="${i.done ? 'done' : ''}">${esc(i.label)}</li>`).join('');
   if (bump) {
     $('quest').classList.remove('bump');
@@ -563,13 +569,31 @@ function removeHandle() {
 // ---------------------------------------------------------------------------
 // 맺음
 // ---------------------------------------------------------------------------
+/** 스노우의 표: 날마다 새로 앓은 사람. 손잡이를 뗀 9월 8일을 붉게 표시한다 */
+function daysChart() {
+  const days = SNOW_DAYS.filter(x => (x.m === 8 && x.d >= 28) || (x.m === 9 && x.d <= 20));
+  const W = 560, H = 210, L = 34, B = 30, T = 14, bw = (W - L - 6) / days.length, max = 150;
+  const y = (v: number) => T + (H - T - B) * (1 - v / max);
+  const after = SNOW_DAYS.filter(x => x.m === 9 && x.d > 8).reduce((n, x) => n + x.attacks, 0);
+  const bars = days.map((x, i) => {
+    const hi = x.m === 9 && x.d === 8, cx = L + i * bw;
+    return `<rect class="col${hi ? ' hi' : ''}" x="${(cx + 2).toFixed(1)}" y="${y(x.attacks).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${(H - B - y(x.attacks)).toFixed(1)}"><title>${x.m}월 ${x.d}일 ${x.attacks}명</title></rect>`
+      + (x.d % 2 === 0 || hi ? `<text class="axis" x="${(cx + bw / 2).toFixed(1)}" y="${H - B + 16}" text-anchor="middle">${x.m === 8 ? '8/' : ''}${x.d}</text>` : '')
+      + (x.attacks >= 50 || hi ? `<text class="val" x="${(cx + bw / 2).toFixed(1)}" y="${(y(x.attacks) - 4).toFixed(1)}" text-anchor="middle">${x.attacks}</text>` : '');
+  }).join('');
+  const grid = [50, 100, 150].map(v => `<line class="grid" x1="${L}" x2="${W - 6}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="날마다 새로 앓은 사람 수. 9월 1일 143명이 가장 많고 손잡이를 뗀 9월 8일에는 12명">
+    ${grid}<line class="base" x1="${L}" x2="${W - 6}" y1="${H - B}" y2="${H - B}"/>${bars}</svg>
+    <p class="days-cap">스노우의 표로 그린 날마다 새로 앓은 사람 (붉은 막대가 손잡이를 뗀 9월 8일). 그 뒤 9월 말까지 새로 앓은 사람은 ${after}명이다. 손잡이를 떼어 몇 명을 살렸는지는 아무도 모른다. 그래프와 아래 이야기를 보고 손잡이를 뗀 일이 무엇을 막았는지 생각해 보자.</p>`;
+}
+
 function openEnding(page: number) {
   const last = page === EPILOGUE.length - 1;
   const p = EPILOGUE[page];
   $('ending-step').textContent = `그 뒤의 이야기 ${page + 1} / ${EPILOGUE.length}`;
   $('ending-title').textContent = p.title;
   const grade = save.misses <= 1 && save.records.length >= 12 ? '최우수' : save.misses <= 4 || save.records.length >= 10 ? '우수' : '수료';
-  $('ending-body').innerHTML = p.body.map(t => `<p>${esc(t)}</p>`).join('') + (last ? `
+  $('ending-body').innerHTML = p.body.map(t => `<p>${esc(t)}</p>`).join('') + (page === 0 ? daysChart() : '') + (last ? `
     <div class="report">
       <div><b>${save.records.length}/${SITES.length}</b><span>조사한 곳</span></div>
       <div><b>${save.misses}</b><span>빗나간 추리</span></div>
@@ -728,14 +752,40 @@ function legendText() {
   const deaths = '검은 원 속 숫자가 사망자 수 · 가까이 보면 막대 하나가 한 사람';
   if (save.stage < STAGE.PREDICT) return deaths;
   const { total, insideBroad, streetShare } = snowDeaths;
-  const toggle = `<button id="btn-real" class="${showReal ? 'on' : ''}">${showReal ? '내 기록만 보기' : `스노우의 기록 ${total}명 모두 보기`}</button> <kbd>D</kbd>`;
+  const g = classGoal();
+  const toggle = save.snowOpen
+    ? `<button id="btn-real" class="${showReal ? 'on' : ''}">${showReal ? '내 기록만 보기' : `스노우의 기록 ${total}명 모두 보기`}</button> <kbd>D</kbd>`
+    : `${save.room ? '반 공동 목표' : '조사 목표'} ${g.n}/${g.need}곳을 채우면 스노우의 기록 ${total}명이 열린다`;
   if (!showReal) return `<b>붉은 길</b> 걸어서 브로드 가 펌프가 가장 가까운 거리 · ${deaths} · ${toggle}`;
   return `스노우가 기록한 사망자 <b>${total}명</b> 가운데 <b>${insideBroad}명(${Math.round(insideBroad / total * 100)}%)</b>이 붉은 길에 살았다. `
     + `붉은 길은 이 지도의 길 가운데 ${Math.round(streetShare * 100)}%뿐이다 · ${toggle}`;
 }
 
+/**
+ * 반 공동 목표: 반 전체가 기록한 곳이 이만큼 모이면 모두에게 스노우의 기록(사망자 전부) 겹쳐 보기가 열린다.
+ * 혼자 조사할 때는 내 기록만으로 센다
+ */
+function classGoal() {
+  const union = new Set([...save.records, ...others.flatMap(o => o.records), ...Object.values(mp.classAreas).flat()]);
+  const need = save.room ? Math.ceil(SITES.length / 2) : 30;
+  return { n: Math.min(union.size, need), need, pct: Math.min(100, Math.round(union.size / need * 100)) };
+}
+/** 목표를 채웠는지 보고, 처음 채웠으면 알린다 (가설을 세우기 전에 채웠으면 그때까지 기다린다) */
+function checkGoal() {
+  if (save.snowOpen || save.stage < STAGE.PREDICT) return;
+  const g = classGoal();
+  if (g.n < g.need) return;
+  save.snowOpen = true;
+  persist();
+  sound.playClueRecorded();
+  flash();
+  toast(save.room ? '반 공동 목표를 채웠다' : '조사 목표를 채웠다', `기록한 곳이 ${g.need}곳을 넘었다. 지도에서 스노우가 기록한 사망자 ${snowDeaths.total}명을 모두 겹쳐 볼 수 있다 (D)`, true);
+  if (save.room) tick('반 전체가 스노우의 기록을 열었다');
+  updateHud();
+}
+
 function toggleReal() {
-  if (save.stage < STAGE.PREDICT) return;
+  if (save.stage < STAGE.PREDICT || !save.snowOpen) return;
   showReal = !showReal;
   if (showReal && !overview) setOverview(true);
   $('legend').innerHTML = legendText();
@@ -769,11 +819,16 @@ function renderBoard() {
     return;
   }
   const full = all.length > AREA_CAP;
+  const g = classGoal();
   $('board').innerHTML = `
     <h3>${esc(areaName(save.team))} 영역 · <span class="${full ? 'over' : ''}">${all.length} / ${AREA_CAP}명</span> · ${union.size}/${SITES.length}곳</h3>
     <p class="room">방 번호 <b class="mono">${esc(save.room)}</b><button class="btn small" data-copy>초대 주소 복사</button></p>
     ${full ? '<p class="room over">이 영역에 사람이 너무 많다. 연결이 끊길 수 있다.</p>' : ''}
     <ul>${all.map(p => `<li><span>${esc(p.name)}</span><span>${STAGE_LABEL[p.stage] ?? ''} · ${p.records.length}곳</span></li>`).join('')}</ul>
+    <h4>반 공동 목표 · 스노우의 기록 열기</h4>
+    <div class="meter"><i style="width:${save.snowOpen ? 100 : g.pct}%"></i></div>
+    <p class="goal">${save.snowOpen ? '열렸다. 지도에서 D 를 누르면 스노우가 기록한 사망자 모두가 겹쳐 보인다'
+      : `반 전체 기록 <b>${g.n} / ${g.need}</b>곳 · 채우면 모두에게 스노우의 기록이 열린다${save.stage < STAGE.PREDICT ? ' (새 가설을 세운 뒤에)' : ''}`}</p>
     <h4>반 전체 구역 조사</h4>
     <ul>${AREAS.map(ar => {
       const ids = districtOf(ar.id).map(s => s.id);
@@ -986,7 +1041,9 @@ function frame(now: number) {
         if (far) $('legend').innerHTML = legendText();
       }
       const friendCount = new Set([...others.flatMap(o => o.records), ...Object.values(mp.classAreas).flat()].filter(id => !has(id))).size;
-      if (ledgerKey !== `${save.records.length}|${friendCount}`) renderLedger();
+      if (ledgerKey !== `${save.records.length}|${friendCount}`) { renderLedger(); if (!save.snowOpen) updateHud(); }
+      // 쪽지나 장면이 떠 있지 않을 때 알린다
+      if (!save.snowOpen && !paused && (save.noteSeen >= save.stage || save.stage >= STAGE.DONE)) checkGoal();
       if (others.length >= AREA_CAP && !crowdWarned) {
         crowdWarned = true;
         toast(`${areaName(save.team)} 영역이 가득 찼다`, `한 영역에 ${AREA_CAP}명까지 권한다. 함께 단추에서 다른 영역으로 옮길 수 있다`, true);
@@ -1032,6 +1089,8 @@ if (import.meta.env.DEV) {
       nav,
       peerRecords: () => others.reduce((n, o) => n + o.records.length, 0),
       classRecordCount: () => new Set(Object.values(mp.classAreas).flat()).size,
+      /** 공동 목표 점검용: 아직 안 간 집을 n곳 기록한 것으로 친다 */
+      fillRecords: (n: number) => { save.records = [...save.records, ...SITES.filter(s => !has(s.id)).slice(0, n).map(s => s.id)]; updateHud(); },
     },
   });
 }

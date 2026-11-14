@@ -502,6 +502,30 @@ export const DATES = [
   '9월 7일 목요일 저녁', '9월 8일 금요일 아침', '9월 8일 금요일',
 ];
 
+/**
+ * 스노우가 보고서(1855)에 실은 날마다 새로 앓은 사람(attacks)과 숨진 사람(deaths).
+ * 8월 19일부터 9월 30일까지. 날짜를 모르는 45명은 빠져 있다. 출처: HistData 의 Snow.dates
+ */
+export const SNOW_DAYS: { m: 8 | 9; d: number; attacks: number; deaths: number }[] = ([
+  [8, 19, 1, 1], [8, 20, 1, 0], [8, 21, 1, 2], [8, 22, 0, 0], [8, 23, 1, 0], [8, 24, 1, 2], [8, 25, 0, 0], [8, 26, 1, 0],
+  [8, 27, 1, 1], [8, 28, 1, 0], [8, 29, 1, 1], [8, 30, 8, 2], [8, 31, 56, 3],
+  [9, 1, 143, 70], [9, 2, 116, 127], [9, 3, 54, 76], [9, 4, 46, 71], [9, 5, 36, 45], [9, 6, 20, 37], [9, 7, 28, 32],
+  [9, 8, 12, 30], [9, 9, 11, 24], [9, 10, 5, 18], [9, 11, 5, 15], [9, 12, 1, 6], [9, 13, 3, 13], [9, 14, 0, 6],
+  [9, 15, 1, 8], [9, 16, 4, 6], [9, 17, 2, 5], [9, 18, 3, 2], [9, 19, 0, 3], [9, 20, 0, 0], [9, 21, 2, 0],
+  [9, 22, 1, 2], [9, 23, 1, 3], [9, 24, 1, 0], [9, 25, 1, 0], [9, 26, 1, 2], [9, 27, 1, 0], [9, 28, 0, 2],
+  [9, 29, 0, 1], [9, 30, 0, 0],
+] as const).map(([m, d, attacks, deaths]) => ({ m, d, attacks, deaths }));
+
+/** 단계마다 하루를 다 센 마지막 날 (9월 며칠). 시계는 조사를 마칠 때만 흐르므로 서둘러도 늦장 부려도 숫자는 같다 */
+const STAGE_THROUGH = [3, 4, 5, 5, 7, 7, 8];
+
+/** 이 단계의 날짜까지 숨진 사람과, 그날 새로 앓은 사람 */
+export function tollAt(stage: number) {
+  const day = STAGE_THROUGH[Math.min(stage, STAGE_THROUGH.length - 1)];
+  const upto = SNOW_DAYS.filter(x => x.m === 8 || x.d <= day);
+  return { day, dead: upto.reduce((n, x) => n + x.deaths, 0), fresh: upto[upto.length - 1].attacks };
+}
+
 export interface QuestView { title: string; items: { label: string; done: boolean }[]; targets: string[] }
 
 /** 이야기 단계의 할 일에, 내 영역의 구역 조사를 덧붙인다 */

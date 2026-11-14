@@ -102,6 +102,8 @@ export interface SaveData {
   seen?: Partial<Record<'smell' | 'water' | 'dist' | 'table', boolean>>;
   /** 받은 탐구 배지 */
   badges?: string[];
+  /** 반 공동 목표를 채워 스노우의 기록 겹쳐 보기가 열렸는지 */
+  snowOpen?: boolean;
   /** 문을 두드리기 전 예상: 집 id → 1 사망자가 났을 것 / 0 없을 것 */
   preds?: Record<string, number>;
   /** 빗나간 예상이나 예외 사례의 까닭을 밝힌 집 */

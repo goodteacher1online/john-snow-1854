@@ -544,3 +544,11 @@ body.in-scene #hint-click { display: none; }
 .badge.on svg { color: var(--red); }
 @media (max-width: 820px) { .charts, .skills { grid-template-columns: 1fr; } }
 .dist-chart { max-width: 560px; border: 1px solid var(--rule); border-radius: 12px; padding: 10px 12px 4px; margin-top: 8px; }
+
+/* 사망자 시계 (날짜 아래) */
+.toll { margin: 2px 0 4px; font-size: 15px; color: var(--on-ink-muted); }
+.toll b { color: var(--on-ink); font-family: var(--mono); }
+/* 반 공동 목표 */
+#board .goal { margin: 4px 0 2px; font-size: 16px; color: var(--on-ink-muted); word-break: keep-all; }
+#board .goal b { color: var(--on-ink); font-family: var(--mono); }
+.days-cap { margin-top: 6px; font-size: 17px !important; color: var(--muted); }
