@@ -117,12 +117,12 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
 
     const role = p.role, nm = p.name;
     // 직업과 사는 곳에 맞춘 말투. 같은 집은 늘 같은 대사가 나오도록 집 id 로 고른다
-    const v = voiceOf(role), female = !!p.female;
+    const v = voiceOf(role);
     const h = (salt: number) => hashOf(g.id, salt);
     const say = (arr: string[], salt: number) => fill(pickAt(arr, h(salt)), v, `${role} ${nm}${josa(nm, '이', '가')}`, p.home);
     const toll = deaths > 0
       ? [pickAt([`${peopleCount}명이 사는데 ${deaths}명이 죽었어요.`, `이 집엔 ${peopleCount}명이 살아요. 그 가운데 ${deaths}명을 잃었어요.`, `${peopleCount}명 가운데 ${deaths}명이 죽었어요.`], h(3)),
-        victims(deaths, female, v.aide, h(4)),
+        victims(deaths, v.aide, h(4)),
         h(5) % 2 ? pickAt(SYMPTOM, h(6)) : say(v.sick, 6),
         ...(h(7) % 3 === 0 ? [pickAt(STREET_DEAD, h(8))] : [])]
       : [pickAt([`${peopleCount}명이 사는데 다행히 아무도 앓지 않았어요.`, `${peopleCount}명 모두 무사해요.`, `이 집 ${peopleCount}명은 아무도 앓지 않았어요.`], h(3)),
