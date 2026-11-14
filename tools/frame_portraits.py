@@ -186,6 +186,10 @@ def frame(name: str) -> str:
     # 가슴 아래 끝이 판 바닥에 못 미쳐도 얼굴은 다른 사람과 같은 높이에 둔다 (내려 붙이면 얼굴이 작고 낮아 보인다).
     # 대신 아래 끝을 부드럽게 흐려 판 중간에서 툭 잘린 것처럼 보이지 않게 한다
     bottom = face_y + (keep - cy) * s
+    # 조금 모자라면 (판 높이의 12% 이하) 통째로 내려 바닥에 붙인다. 칸 안에서 붕 떠 보이지 않게
+    if OUT_H - 60 <= bottom < OUT_H:
+        face_y += OUT_H - bottom
+        bottom = OUT_H
     fade = bottom < OUT_H - 2
     # 판에 보이는 줄들에서 어깨 폭이 판보다 넓으면 배율을 줄인다 (드문 경우)
     vis_bottom = int(min(keep, cy + (OUT_H - face_y) / s))
