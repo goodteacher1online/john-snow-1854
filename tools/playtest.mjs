@@ -233,6 +233,14 @@ await p1.evaluate(() => window.__game.fillRecords(140));
 await p1.waitForTimeout(1500);
 console.log('목표 뒤 열림', (await state(p1)).snowOpen, '기록', (await state(p1)).records.length);
 await shot(p1, '21d_goal_toast');
+// 기록한 집의 사망자 카드: 큰 집과 작은 집이 같은 모양인지 가까이서 본다
+await p1.keyboard.press('m');
+await p1.waitForTimeout(800);
+for (let i = 0; i < 4; i++) { await p1.mouse.move(640, 400); await p1.mouse.wheel(0, -300); await p1.waitForTimeout(150); }
+await p1.waitForTimeout(800);
+await shot(p1, '21g_cards_near');
+await p1.keyboard.press('m');
+await p1.waitForTimeout(800);
 await p1.keyboard.press('d');
 await p1.waitForTimeout(1200);
 await shot(p1, '21e_snow_overlay');
@@ -240,6 +248,18 @@ await p1.keyboard.press('b');
 await p1.waitForTimeout(800);
 await shot(p1, '21f_board_goal');
 await p1.keyboard.press('Escape');
+// 기록을 마친 집 문 앞에 서도 다시 켜지지 않아야 한다
+{
+  const recs = (await state(p1)).records.slice(0, 20);
+  let lit = [];
+  for (const id of recs) {
+    const [x, y] = await p1.evaluate(i => window.__game.door(i), id);
+    await p1.evaluate(([x, y]) => window.__game.teleport(x, y), [x, y]);
+    await p1.waitForTimeout(120);
+    if ((await state(p1)).near === id) lit.push(id);
+  }
+  console.log('기록한 집 문 앞에서 켜진 곳', lit.length ? lit : '없음', `(${recs.length}곳 확인)`);
+}
 const end = await state(p1);
 console.log('끝', { stage: end.stage, records: end.records.length, xp: end.xp, misses: end.misses });
 

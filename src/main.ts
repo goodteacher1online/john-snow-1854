@@ -710,9 +710,12 @@ function move(dt: number) {
 }
 
 let stepClock = 0;
+/** 기록을 마친 집은 다시 들어가지 않는다. 가설 전에 기록한 예외 사례로, 아직 까닭을 밝힐 수 있는 집만 예외 */
+const canRevisit = (s: Site) => save.stage >= STAGE.PREDICT && !save.why?.includes(s.id) && !!anomalyOf(s) && waterExplains(s);
 function updateNear() {
   let best: string | null = null, bd = REACH;
   for (const s of SITES) {
+    if (has(s.id) && !canRevisit(s)) continue;
     const d = Math.hypot(s.door[0] - me.x, s.door[1] - me.y);
     if (d < bd) { bd = d; best = s.id; }
   }
@@ -731,7 +734,7 @@ function updateNear() {
   if (best.startsWith('pump:')) {
     label = best === 'pump:broad' && save.stage === STAGE.HANDLE ? '손잡이 떼어 내기' : '펌프 살펴보기';
   } else {
-    label = `${has(best) ? '다시 찾아가기' : '문 두드리기'} · ${SITE_BY_ID[best].name}`;
+    label = `${has(best) ? '까닭 밝히러 다시 찾아가기' : '문 두드리기'} · ${SITE_BY_ID[best].name}`;
   }
   $('prompt-text').textContent = label;
 }

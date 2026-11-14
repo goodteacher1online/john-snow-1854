@@ -137,7 +137,7 @@ def generate_clean(pipe, session, name: str, prompt: str, neg: str, seed: int, t
     best = None
     for i in range(tries):
         s = seed + i * 7919
-        img = pipe(prompt, negative_prompt=neg, width=768, height=768, num_inference_steps=28, guidance_scale=6.5,
+        img = pipe(prompt, negative_prompt=neg, width=768, height=960, num_inference_steps=28, guidance_scale=6.5,
                    generator=torch.Generator('cuda').manual_seed(s)).images[0]
         cut = remove(img, session=session, post_process_mask=True)
         why, pen = problems(img, cut)

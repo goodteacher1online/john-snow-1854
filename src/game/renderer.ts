@@ -399,7 +399,7 @@ export class Renderer {
       const [x, y] = this.toScreen(s.icon[0], s.icon[1]);
       if (x > -200 && y > -80 && x < this.vw + 200 && y < this.vh + 320) {
         if (z < DOT_ZOOM) this.drawDeathDot(s, x, y);
-        else if (!this.drawDeathBars(s, x - this.iconSize(s.kind)[0] * z / 2, y)) this.drawDeathDot(s, x, y);
+        else if (!this.drawDeathBars(s, x, y)) this.drawDeathDot(s, x, y);
       }
     }
     ctx.restore();
@@ -453,8 +453,10 @@ export class Renderer {
     if (z < DOT_ZOOM) return;
     const sp = this.freeSpot(s);
     const [bx, by] = this.toScreen(sp.x, sp.y);
-    // 건물 위에 사망자 수 (다른 글자와 겹치면 비켜 놓거나 생략한다)
-    this.label(`${pts.length}명`, bx, by - FREE_W * z * 1.69 - 2, 17, INK, 2);
+    // 건물 위에, 큰 집들과 같은 사망자 카드. 다른 카드와 겹치면 옆이나 위로 비켜 놓고, 끝내 자리가 없으면 글자로만
+    const top = by - FREE_W * z * 1.69 - 4, step = Math.max(14 * z, 22);
+    const spots: [number, number][] = [[bx, top], [bx - step, top], [bx + step, top], [bx, top - step], [bx - step * 2, top], [bx + step * 2, top]];
+    if (!spots.some(([x, y]) => this.deathCard(pts.length, x, y, true))) this.label(`${pts.length}명`, bx, top + 2, 17, INK, 2);
   }
 
   /** 스노우의 지도처럼: 집 앞 길에서 블록 안쪽으로, 사망자 한 명에 막대 하나씩 쌓는다 */
@@ -485,17 +487,25 @@ export class Renderer {
   }
 
   /** 가까이서는 스노우의 지도처럼 사망자 한 명에 검은 막대 하나 */
-  private drawDeathBars(s: Site, iconLeft: number, y: number): boolean {
+  private drawDeathBars(s: Site, x: number, y: number): boolean {
+    const z = this.zoom, [iw, ih] = this.iconSize(s.kind), n = s.mapDeaths ?? s.deaths, gap = Math.max(4 * z, 5);
+    // 건물 왼쪽 → 건물 위 → 건물 오른쪽 순으로, 다른 카드와 겹치지 않는 자리에
+    return this.deathCard(n, x - iw * z / 2 - gap, y, false)
+      || this.deathCard(n, x, y - ih * z - 4, true)
+      || this.deathCard(n, x + iw * z / 2 + gap, y, false, true);
+  }
+
+  /** 사망자 카드: 머리에 사망자 수, 아래에 한 사람에 막대 하나. x 는 카드 오른쪽 끝(centered 면 가운데, fromLeft 면 왼쪽 끝), y 는 카드 아래 끝.
+   *  다른 카드와 겹치면 그리지 않고 false */
+  private deathCard(bars: number, x: number, y: number, centered: boolean, fromLeft = false): boolean {
     const ctx = this.ctx, z = this.zoom;
-    const bars = s.mapDeaths ?? s.deaths;
     const bw = Math.max(12 * z, 18), bh = Math.max(2.8 * z, 4), pitch = Math.max(4.2 * z, 6.5), perCol = 9;
     const cols = Math.max(1, Math.ceil(bars / perCol));
     const rows = Math.max(1, Math.ceil(bars / cols));          // 열마다 고르게: 10명이면 5개씩 두 줄
     const gap = 3, pad = 5, head = 24;
     const cardW = cols * bw + (cols - 1) * gap + pad * 2;
     const cardH = rows * pitch + pad * 2 + head;
-    const right = iconLeft - Math.max(4 * z, 5);
-    const cx = right - cardW, cy = y - cardH;
+    const cx = centered ? x - cardW / 2 : fromLeft ? x : x - cardW, cy = y - cardH;
     if (this.cards.some(([a, b, w, h]) => cx < a + w + 2 && a < cx + cardW + 2 && cy < b + h + 2 && b < cy + cardH + 2)) return false;
     this.cards.push([cx, cy, cardW, cardH]);
     // 종이 카드: 머리에 사망자 수, 아래에 한 사람에 막대 하나
