@@ -36,6 +36,7 @@ NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, cr
 
 # 상반신이 전신과 다르게 나오기 쉬운 것 (모자, 수염 따위)을 사람마다 따로 막는다
 EXTRA_NEG = {
+    'f3': 'cleavage, low neckline, bare shoulders, bare chest, off-shoulder, corset',
     'm1': 'beard, moustache, stubble, woman, feminine face, androgynous, girl, long hair, two faces',
     'm3': 'hair on top of head, dark hair, dark beard, hat',
     'm4': 'hat, cap, woman, feminine face, girl',
@@ -47,7 +48,7 @@ EXTRA_NEG = {
 INVESTIGATORS = {
     'f1': ('calm determined 27 year old woman, brown hair in a low bun', 'plain navy high-neck dress with small white collar', 611, 1001),
     'f2': ('lively 22 year old woman, red hair in a braid, freckles', 'moss green wool dress, cream knitted shawl', 1102, 4002),
-    'f3': ('serious 34 year old woman, black hair, white cotton cap', 'dark grey dress, long white apron', 1103, 1003),
+    'f3': ('serious 34 year old woman, black hair, white cotton cap', 'modest dark grey long-sleeved dress buttoned up to a high white collar, long white apron', 1103, 1003),
     'f4': ('kind 45 year old woman, auburn hair, straw bonnet', 'plum purple dress, brown cape', 1104, 1004),
     'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'long mustard yellow dress to the ankles, short brown jacket', 1105, 1005),
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 4002),
