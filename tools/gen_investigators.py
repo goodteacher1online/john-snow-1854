@@ -29,7 +29,7 @@ STYLE = '1850s London, plain light grey background, realistic digital painting, 
 BUST = 'symmetrical front-facing bust portrait, head straight, eyes looking at camera, both shoulders fully visible, upper chest,'
 # 지도 위에서 걷는 방향이 보이도록 오른쪽을 보고 걷는 옆모습으로 그린다 (왼쪽으로 걸을 때는 뒤집어 쓴다)
 BODY = 'side view full body of one person walking to the right, profile facing right, whole figure from head to shoes, small figure,'
-NEG_BUST = ('looking away, head turned, three-quarter view, profile, monochrome, full body, hands, cropped head, text, watermark, '
+NEG_BUST = ('two people, duplicate, second person, looking away, head turned, three-quarter view, profile, monochrome, full body, hands, cropped head, text, watermark, '
             'frame, border, vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, smiling')
 NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, crowd, sitting, front view, facing camera, facing viewer, facing left, back view, short skirt, '
             'monochrome, text, watermark, frame, modern clothing, deformed, extra limbs, blurry, cartoon, anime, 3d render')
@@ -51,9 +51,9 @@ INVESTIGATORS = {
     'f4': ('kind 45 year old woman, auburn hair, straw bonnet', 'plum purple dress, brown cape', 1104, 1004),
     'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'long mustard yellow dress to the ankles, short brown jacket', 1105, 1005),
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 4002),
-    'm1': ('calm 32 year old English gentleman, adult man, strong masculine jaw, short slicked back dark hair, clean shaven face', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
+    'm1': ('calm 32 year old man, masculine jaw, slicked back dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
     'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 4001),
-    'm3': ('stern 55 year old man, completely bald head, short grey white beard', 'grey frock coat, grey waistcoat, red cravat', 3413, 3113),
+    'm3': ('stern 55 year old bald man, short grey beard', 'grey frock coat, red cravat', 3413, 3113),
     'm4': ('eager 19 year old young man, masculine face, messy curly black hair, bare head', 'dark brown wool coat, cream knitted scarf, brown waistcoat', 1114, 4001),
     'm5': ('dignified 58 year old man, grey moustache, wearing a tall black top hat', 'black overcoat, black waistcoat, white shirt, black bow tie', 1115, 1015),
     'm6': ('thoughtful 30 year old Black African man, dark brown skin, very short cropped black hair, full black beard, bare head', 'dark green frock coat, cream waistcoat, white shirt, black cravat', 1116, 1016),
