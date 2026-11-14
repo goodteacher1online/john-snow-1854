@@ -483,21 +483,25 @@ const fitsRound = (s: Site, need: Proof) => s.proves.includes(need) && (need !==
 const ROUND_GRAPH: Record<Proof, 'smell' | 'water'> = { smell: 'smell', near: 'water', far: 'water' };
 const GRAPH_NAME = { smell: '악취로 묶은 그래프', water: '마시는 물로 묶은 그래프', dist: '펌프에서의 거리 그래프' } as const;
 
-/** 기록한 집을 둘로 나누어 사망자가 난 집의 비율(%)을 견준다 */
+/** 기록한 곳을 둘로 나누어 사는 사람 백 명에 몇 명이 죽었는지 견준다 (수첩 그래프와 같은 잣대) */
 function split(test: (s: Site) => boolean) {
   const recs = recordedSites();
-  const pct = (xs: Site[]) => xs.length ? Math.round(xs.filter(s => s.deaths > 0).length / xs.length * 100) : 0;
+  const per100 = (xs: Site[]) => {
+    const people = xs.reduce((n, s) => n + s.people, 0);
+    return people ? Math.round(xs.reduce((n, s) => n + s.deaths, 0) / people * 1000) / 10 : 0;
+  };
   const a = recs.filter(test), b = recs.filter(s => !test(s));
-  return { a: a.length, b: b.length, pa: pct(a), pb: pct(b), gap: Math.abs(pct(a) - pct(b)) };
+  const pa = per100(a), pb = per100(b);
+  return { a: a.length, b: b.length, pa, pb, gap: Math.round(Math.abs(pa - pb) * 10) / 10 };
 }
 
 /** 그래프를 펼쳐 보이며 하는 말. 숫자는 지금까지의 기록에서 센다 */
 function graphLine(key: 'smell' | 'water') {
   const w = split(s => s.drankBroad);
-  if (key === 'water') return `나: (수첩의 그래프를 펼친다) 마시는 물로 묶었습니다. 브로드 가 펌프 물을 마신 집 ${w.a}곳 가운데 ${w.pa}%, 다른 물을 마신 집 ${w.b}곳 가운데 ${w.pb}%에서 사망자가 났습니다. 어디에 사느냐가 아니라 무엇을 마셨느냐가 갈랐습니다.`;
+  if (key === 'water') return `나: (수첩의 그래프를 펼친다) 마시는 물로 묶었습니다. 브로드 가 펌프 물을 마신 ${w.a}곳에서는 사는 사람 백 명에 ${w.pa}명, 다른 물을 마신 ${w.b}곳에서는 백 명에 ${w.pb}명이 죽었습니다. 어디에 사느냐가 아니라 무엇을 마셨느냐가 갈랐습니다.`;
   const m = split(s => s.smell === 'high');
-  const tail = m.gap < w.gap ? `물로 묶었을 때의 차이(${w.gap}%p)보다 작습니다.` : '냄새만으로는 설명이 끝나지 않습니다.';
-  return `나: (수첩의 그래프를 펼친다) 악취로 묶었습니다. 악취가 심한 집 ${m.a}곳 가운데 ${m.pa}%, 그렇지 않은 집 ${m.b}곳 가운데 ${m.pb}%에서 사망자가 났습니다. 차이는 ${m.gap}%p, ${tail}`;
+  const tail = m.gap < w.gap ? `물로 묶었을 때의 차이(백 명에 ${w.gap}명)보다 작습니다.` : '냄새만으로는 설명이 끝나지 않습니다.';
+  return `나: (수첩의 그래프를 펼친다) 악취로 묶었습니다. 악취가 심한 ${m.a}곳에서는 백 명에 ${m.pa}명, 그렇지 않은 ${m.b}곳에서는 백 명에 ${m.pb}명이 죽었습니다. 차이는 백 명에 ${m.gap}명, ${tail}`;
 }
 
 /** 기록 한 장으로는 '우연'이라는 반론을 넘지 못한다. 그래프나 같은 갈래 기록으로 뒷받침한다 */

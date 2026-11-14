@@ -32,21 +32,33 @@ PEOPLE = {
     'sarah':     ('sad pale tired woman aged 32, brown hair, plain white cotton cap, dark grey high-neck dress, brown wool shawl', 212),
     'ned':       ('thin anxious 17 year old apprentice boy, dark messy hair, grey waistcoat, collarless shirt', 23),
     'maryann':   ('sturdy 42 year old washerwoman, weathered kind face, faded blue headscarf, coarse linen dress and apron', 31),
-    'keeper':    ('middle-aged 52 year old shopkeeper woman, lined face, greying auburn hair in a bun, lace cap, dark green dress, white apron', 503),
-    'sam':       ('broad 45 year old blacksmith, dark full beard, sooty face, leather apron over rough shirt, stern sad eyes', 52),
-    'huggins':   ('stout 60 year old rich brewer, ruddy round face, bald, grey side whiskers, brown frock coat, cravat', 61),
-    'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, dark navy coat, white collar, color painting', 501),
+    'keeper':    ('middle-aged 52 year old coffee house keeper woman, lined face, greying auburn hair in a bun, white lace cap, dark green dress, white apron', 503),
+    'sam':       ('broad 45 year old blacksmith, dark full beard, short dark hair, bare head, sooty face, brown leather apron over rough grey shirt, stern sad eyes', 52),
+    'huggins':   ('stout 60 year old wealthy brewery owner, ruddy round face, bald head, grey side whiskers, brown frock coat, gold watch chain, cravat, bare head', 61),
+    'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, plain dark navy civilian frock coat, white collar, bare head, color painting', 501),
     'scholar':   ('thoughtful 50 year old gentleman naturalist, receding dark hair, sideburns, olive green coat, silk cravat', 85),
     'foreman':   ('38 year old factory foreman, brown moustache, flat cap, grey waistcoat, white shirt, worried look', 93),
     'jack':      ('20 year old street porter, freckled face, sandy hair, cloth cap, red neckerchief, worn brown jacket, sad eyes', 104),
     'ellen':     ('35 year old grieving mother, red tired eyes, black bonnet tied under chin, black shawl, dark dress', 118),
-    'abe':       ('72 year old retired coachman, deeply wrinkled friendly face, white whiskers, old blue greatcoat, knitted scarf', 803),
+    'abe':       ('very old 72 year old retired coachman, deeply wrinkled friendly face, white hair, bushy white side whiskers, old faded blue greatcoat, grey knitted scarf', 803),
     'harriet':   ('refined 62 year old wealthy lady, silver hair in a neat bun, lavender silk high-neck dress, lace collar', 137),
-    'hugh':      ('burly 42 year old man, thick neck, ruddy face, dark moustache, short dark hair, white shirt, dark navy apron with thin stripes', 431),
+    'hugh':      ('burly 42 year old butcher, thick neck, ruddy face, dark moustache, short dark hair, bare head, white shirt with rolled sleeves, navy and white striped butcher apron', 431),
     'player_female_bust': ('calm determined 27 year old woman investigator, brown hair in a low bun, plain navy high-neck dress, small white collar', 611),
     'player_male_bust':   ('calm 30 year old man investigator, short dark hair, clean shaven, buttoned dark navy frock coat, white high collar, black silk cravat', 706),
     'chairman':  ('stern 66 year old parish chairman, white hair, heavy eyebrows, dark charcoal frock coat, burgundy cravat, doubtful frown', 502),
-    'physician': ('46 year old physician, brown trimmed beard, sceptical face, dark brown coat, grey cravat, white collar, color painting', 364),
+    'physician': ('46 year old Victorian physician, short brown hair, brown trimmed beard, sceptical face, dark brown frock coat, grey cravat, white high collar, bare head, color painting', 364),
+}
+
+
+# 설명과 다르게 나오기 쉬운 것 (모자·제복 따위)을 사람마다 따로 막는다
+EXTRA_NEG = {
+    'keeper': 'young woman, girl',
+    'sam': 'hood, bonnet, hat, bare chest',
+    'huggins': 'hat, cap, uniform, epaulettes, military, police',
+    'master': 'hat, cap, uniform, epaulettes, military, navy captain, beard, moustache',
+    'abe': 'dark hair, young man, bow tie',
+    'hugh': 'hat, cap, hood, cape',
+    'physician': 'hat, cap, apron, long hair',
 }
 
 
@@ -70,7 +82,8 @@ def generate(names):
         name, _, override = name.partition(':')
         desc, seed = PEOPLE[name]
         seed = int(override) if override else chosen_seed(name, seed)
-        bad = generate_clean(pipe, session, name, f'{FRAME} {desc}, {STYLE}', NEG, seed)
+        neg = NEG + (', ' + EXTRA_NEG[name] if name in EXTRA_NEG else '')
+        bad = generate_clean(pipe, session, name, f'{FRAME} {desc}, {STYLE}', neg, seed)
         if bad:
             print(f'  [{name}] 여러 번 뽑아도 {bad} 잘림. 설명을 바꿔 보시오')
         print('  ', frame(name))                      # 얼굴 크기와 위치를 다른 인물과 맞춘다

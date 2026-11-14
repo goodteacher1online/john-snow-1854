@@ -205,10 +205,12 @@ export class Notebook {
       this.body.innerHTML = `<h3>기록을 그래프로 바꾸기</h3><p class="sub">기록이 ${GRAPH_MIN}곳 넘게 모이면 그래프를 그릴 수 있다. 지금 ${recs.length}곳.</p>`;
       return;
     }
-    // 사망자가 난 집이 몇 퍼센트인가. 집마다 사는 사람 수(일부는 꾸민 값)에 기대지 않는다
+    // 묶음마다 사는 사람 백 명에 몇 명이 죽었나 (비교 쪽과 같은 잣대).
+    // '사망자가 난 집의 비율'로 그리면 535명이 사는 구빈원도 작은 집 하나와 같은 무게가 되어, 사망 5명뿐인 우물 묶음이 50%로 부풀었다.
+    // 스노우도 구빈원을 이렇게(사람 수에 견준 사망) 따졌다
     const rate = (sites: Site[]) => {
-      const hit = sites.filter(s => s.deaths > 0).length;
-      return { n: sites.length, hit, v: sites.length ? hit / sites.length * 100 : 0 };
+      const people = sites.reduce((a, s) => a + s.people, 0), deaths = sites.reduce((a, s) => a + s.deaths, 0);
+      return { n: sites.length, people, deaths, v: people ? deaths / people * 100 : 0 };
     };
     const bySmell = ([['심함', 'high'], ['보통', 'mid'], ['약함', 'low']] as [string, Smell][])
       .map(([label, k]) => ({ label, ...rate(recs.filter(s => s.smell === k)) })).filter(g => g.n > 0);
@@ -216,7 +218,7 @@ export class Notebook {
     // 기록에 한 곳도 없는 갈래는 그리지 않는다
     const byWater = WATER_GROUPS.map(([k, label]) => ({ label: SHORT[k] ?? label, ...rate(recs.filter(s => s.waterKind === k)) })).filter(g => g.n > 0);
     // 두 그래프의 세로 눈금을 같게 해야 견줄 수 있다
-    const top = 100;
+    const top = niceMax(Math.max(...bySmell.map(g => g.v), ...byWater.map(g => g.v), 1));
 
     const distOpen = stage >= STAGE.PREDICT;
     const enough = recs.length >= DIST_NEED;
@@ -242,12 +244,12 @@ export class Notebook {
 
     this.body.innerHTML = `
       <h3>기록을 그래프로 바꾸기</h3>
-      <p class="sub">기록 ${recs.length}곳. 같은 기록을 두 가지로 묶어, 묶음마다 사망자가 난 집이 몇 퍼센트인지 그린다. 두 그래프의 세로 눈금은 같다.</p>
+      <p class="sub">기록 ${recs.length}곳. 같은 기록을 두 가지로 묶어, 묶음마다 사는 사람 백 명에 몇 명이 죽었는지 그린다. 두 그래프의 세로 눈금은 같다.</p>
       <div class="charts">
-        <section><h4>냄새로 묶으면</h4>${columnChart(bySmell.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 중 ${g.hit}곳` })), top, '사망자가 난 집 (%)', 0)}</section>
-        <section><h4>마시는 물로 묶으면</h4>${columnChart(byWater.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 중 ${g.hit}곳` })), top, '사망자가 난 집 (%)', 0)}</section>
+        <section><h4>냄새로 묶으면</h4>${columnChart(bySmell.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 · ${g.people}명 중 ${g.deaths}명` })), top, '백 명에 사망 (명)', 1)}</section>
+        <section><h4>마시는 물로 묶으면</h4>${columnChart(byWater.map(g => ({ label: g.label, v: g.v, note: `${g.n}곳 · ${g.people}명 중 ${g.deaths}명` })), top, '백 명에 사망 (명)', 1)}</section>
       </div>
-      <p class="sub">어느 쪽으로 묶었을 때 사망자가 난 집과 무사한 집이 더 또렷하게 갈리는가? 거의 0인 묶음과 거의 100인 묶음이 생기는 쪽이 죽음과 더 관련 있다.</p>
+      <p class="sub">어느 쪽으로 묶었을 때 죽음이 한 묶음에 더 또렷하게 몰리는가? 한 묶음만 유난히 높고 나머지는 0에 가까운 쪽이 죽음과 더 관련 있다. (사망자 수는 스노우의 기록, 집마다 사는 사람 수는 대부분 어림값이다.)</p>
       <h3 class="table-title">브로드 가 펌프에서의 거리와 사망</h3>
       ${dist}`;
     this.body.querySelectorAll<HTMLButtonElement>('[data-pred]').forEach(b => b.addEventListener('click', () => {
