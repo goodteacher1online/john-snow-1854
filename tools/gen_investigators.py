@@ -38,7 +38,7 @@ NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, cr
 EXTRA_NEG = {
     'f3': 'cleavage, low neckline, bare shoulders, bare chest, off-shoulder, corset',
     'm1': 'beard, moustache, stubble, woman, feminine face, androgynous, girl, long hair, two faces',
-    'm3': 'hair on top of head, dark hair, dark beard, hat',
+    'm3': 'close-up, face close-up, hair on top of head, dark hair, dark beard, hat',
     'm4': 'hat, cap, woman, feminine face, girl',
     'm5': 'bare head, no hat',
     'm6': 'hat, top hat, cap, long hair, ponytail, light skin',
@@ -54,7 +54,7 @@ INVESTIGATORS = {
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 4002),
     'm1': ('calm 32 year old man, masculine jaw, slicked back dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
     'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 4001),
-    'm3': ('stern 55 year old bald man, short grey beard', 'grey frock coat, red cravat', 3413, 3113),
+    'm3': ('stern 55 year old bald man, short grey beard', 'grey frock coat, grey waistcoat, bright red cravat', 3413, 3113),
     'm4': ('eager 19 year old young man, masculine face, messy curly black hair, bare head', 'dark brown wool coat, cream knitted scarf, brown waistcoat', 1114, 4001),
     'm5': ('dignified 58 year old man, grey moustache, wearing a tall black top hat', 'black overcoat, black waistcoat, white shirt, black bow tie', 1115, 1015),
     'm6': ('thoughtful 30 year old Black African man, dark brown skin, very short cropped black hair, full black beard, bare head', 'dark green frock coat, cream waistcoat, white shirt, black cravat', 1116, 1016),
