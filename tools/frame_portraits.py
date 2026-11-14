@@ -162,7 +162,7 @@ CHEST_MIN = 1.25      # 얼굴 가운데부터 가슴 아래 끝까지 최소 �
 def frame(name: str) -> str:
     """얼굴 크기를 모두 같게 맞춰 같은 크기의 판에 놓는다.
     원본에서 어깨가 그림 테두리에 닿기 시작하는 높이 위에서 가슴을 수평으로 잘라, 어깨 옆이 세로로 잘려 보이지 않게 한다.
-    그림이 판 아래까지 닿지 않으면 늘려 메우지 않고 아래로 내려 붙인다"""
+    그림이 판 아래까지 닿지 않으면 얼굴 높이는 그대로 두고 아래 끝을 흐린다"""
     raw = Image.open(RAW / f'{name}.png')
     cut = Image.open(CUT / f'{name}.png').convert('RGBA')
     k = cut.width / raw.width                       # 배경 지운 그림이 원본과 크기가 다를 수 있다
@@ -183,10 +183,10 @@ def frame(name: str) -> str:
     s = FACE_W / fw
     # 머리 위 여백: 모자가 큰 사람은 판 위로 넘치지 않게 얼굴을 조금 낮춘다 (크기는 그대로)
     face_y = max(OUT_H * FACE_Y, (cy - top) * s + MARGIN_TOP)
-    # 가슴 아래 끝이 판 바닥에 못 미치면 아래로 내려 붙인다
+    # 가슴 아래 끝이 판 바닥에 못 미쳐도 얼굴은 다른 사람과 같은 높이에 둔다 (내려 붙이면 얼굴이 작고 낮아 보인다).
+    # 대신 아래 끝을 부드럽게 흐려 판 중간에서 툭 잘린 것처럼 보이지 않게 한다
     bottom = face_y + (keep - cy) * s
-    if bottom < OUT_H:
-        face_y += OUT_H - bottom
+    fade = bottom < OUT_H - 2
     # 판에 보이는 줄들에서 어깨 폭이 판보다 넓으면 배율을 줄인다 (드문 경우)
     vis_bottom = int(min(keep, cy + (OUT_H - face_y) / s))
     cols = np.nonzero(solid[top:vis_bottom].any(axis=0))[0]
@@ -199,10 +199,17 @@ def frame(name: str) -> str:
     out = Image.new('RGBA', (OUT_W, OUT_H))
     ox, oy = round(OUT_W / 2 - cx * s), round(face_y - cy * s)
     out.paste(big, (ox, oy), big)
+    if fade:
+        o = np.array(out)
+        b = int(min(OUT_H, round(bottom)))
+        n = max(30, int(FACE_W * 0.45))
+        ramp = np.linspace(1, 0, n)[:, None]
+        o[b - n:b, :, 3] = (o[b - n:b, :, 3] * ramp).astype(np.uint8)
+        out = Image.fromarray(o)
     out.save(OUT / f'{name}.webp', quality=88, method=6)
     flag = ''
     if chest < CHEST_MIN:
-        flag = f' [가슴이 짧음 {chest:.2f}, 다시 그리기]'
+        flag = f' [가슴이 짧음 {chest:.2f}, 아래를 흐림]'
     if s < FACE_W / fw * 0.9:
         flag += f' [어깨가 넓어 얼굴이 작아짐 {s / (FACE_W / fw):.2f}]'
     return f'{name}: 얼굴 폭 {fw:.0f}, 가슴 {chest:.2f}, 얼굴 높이 {face_y / OUT_H:.2f}' + flag

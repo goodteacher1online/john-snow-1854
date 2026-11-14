@@ -22,7 +22,7 @@ import os
 MODEL = os.environ.get('SD_MODEL', 'Lykon/dreamshaper-8')
 
 # CLIP 은 77 토큰까지만 읽으므로 구도를 맨 앞에, 설명은 짧게 쓴다
-FRAME = 'symmetrical front-facing bust portrait, small head with empty space above, eyes looking at camera, both shoulders fully visible, upper chest,'
+FRAME = 'medium shot, waist up portrait of one person, symmetrical front-facing, small head with empty space above, eyes looking at camera, both shoulders fully visible, upper chest,'
 STYLE = '1850s London, plain light grey background, realistic digital painting, soft light, muted colors'
 NEG = ('two people, crowd, duplicate, second person, looking away, looking down, head turned, three-quarter view, tilted head, monochrome, grayscale, profile, side view, teenager, child, full body, waist, hands, arms crossed, bare shoulders, cleavage, cropped head, text, watermark, frame, border, '
        'vignette, modern clothing, deformed, blurry, cartoon, anime, 3d render, makeup, jewelry, smiling')
@@ -34,7 +34,7 @@ PEOPLE = {
     'maryann':   ('sturdy 42 year old washerwoman, weathered kind face, faded blue headscarf, coarse linen dress and apron', 31),
     'keeper':    ('middle-aged 52 year old coffee house keeper woman, lined face, greying auburn hair in a bun, white lace cap, dark green dress, white apron', 503),
     'sam':       ('broad 45 year old blacksmith, dark full beard, short dark hair, bare head, sooty face, brown leather apron over rough grey shirt, stern sad eyes', 52),
-    'huggins':   ('stout 60 year old wealthy brewery owner, ruddy round face, bald head, grey side whiskers, brown frock coat, gold watch chain, cravat, bare head', 61),
+    'huggins':   ('bald stout 60 year old wealthy brewery owner, ruddy round face, grey side whiskers, brown frock coat, gold watch chain, cravat, bare head', 61),
     'master':    ('thin stern 52 year old workhouse master, clean shaven, grey hair, small round spectacles, plain dark navy civilian frock coat, white collar, bare head, color painting', 501),
     'scholar':   ('thoughtful 50 year old gentleman naturalist, receding dark hair, sideburns, olive green coat, silk cravat', 85),
     'foreman':   ('38 year old factory foreman, brown moustache, flat cap, grey waistcoat, white shirt, worried look', 93),
@@ -54,9 +54,9 @@ PEOPLE = {
 EXTRA_NEG = {
     'keeper': 'young woman, girl',
     'sam': 'hood, bonnet, hat, bare chest',
-    'huggins': 'hat, cap, uniform, epaulettes, military, police',
+    'huggins': 'hat, bowler hat, top hat, cap, hair on top of head, uniform, epaulettes, military, police',
     'master': 'hat, cap, uniform, epaulettes, military, navy captain, beard, moustache',
-    'abe': 'dark hair, young man, bow tie',
+    'abe': 'hat, cap, bowler hat, dark hair, young man, bow tie',
     'hugh': 'hat, cap, hood, cape',
     'physician': 'hat, cap, apron, long hair',
 }

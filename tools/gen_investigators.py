@@ -83,7 +83,7 @@ def main(args):
         if not body_only:
             seed = int(override) if override else chosen_seed(name, bust_seed)
             neg = NEG_BUST + (', ' + EXTRA_NEG[iid] if iid in EXTRA_NEG else '')
-            bad = generate_clean(pipe, session, name, f'{BUST} small head, chest visible, {who}, {outfit}, {STYLE}', neg, seed)
+            bad = generate_clean(pipe, session, name, f'medium shot, waist up portrait of one person, {BUST} {who}, {outfit}, {STYLE}', neg, seed)
             if bad:
                 print(f'  [{name}] 여러 번 뽑아도 깨끗하지 않음: {bad}')
             print('  상반신', frame(name))
