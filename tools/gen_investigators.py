@@ -34,6 +34,15 @@ NEG_BUST = ('looking away, head turned, three-quarter view, profile, monochrome,
 NEG_BODY = ('cropped, close-up, bust, cut off feet, cut off head, two people, crowd, sitting, front view, facing camera, facing viewer, facing left, back view, short skirt, '
             'monochrome, text, watermark, frame, modern clothing, deformed, extra limbs, blurry, cartoon, anime, 3d render')
 
+# 상반신이 전신과 다르게 나오기 쉬운 것 (모자, 수염 따위)을 사람마다 따로 막는다
+EXTRA_NEG = {
+    'm1': 'beard, moustache, stubble',
+    'm3': 'hair on top of head, dark hair, dark beard, hat',
+    'm4': 'hat, cap, woman, feminine face, girl',
+    'm5': 'bare head, no hat',
+    'm6': 'hat, top hat, cap',
+}
+
 # id: (사람, 옷차림, 상반신 시드, 전신 시드). 옷차림은 두 그림에 똑같이 쓴다
 INVESTIGATORS = {
     'f1': ('calm determined 27 year old woman, brown hair in a low bun', 'plain navy high-neck dress with small white collar', 611, 1001),
@@ -42,12 +51,12 @@ INVESTIGATORS = {
     'f4': ('kind 45 year old woman, auburn hair, straw bonnet', 'plum purple dress, brown cape', 1104, 1004),
     'f5': ('bright 25 year old woman, fair blonde hair in a low bun', 'long mustard yellow dress to the ankles, short brown jacket', 1105, 1005),
     'f6': ('wise 56 year old woman, grey hair in a bun, small spectacles', 'dark brown dress with lace collar', 1106, 4002),
-    'm1': ('calm 30 year old man, short dark hair, clean shaven', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
+    'm1': ('calm 30 year old man, slicked back dark hair, clean shaven face', 'buttoned dark navy frock coat, white high collar, black cravat', 706, 1011),
     'm2': ('cheerful 24 year old man, ginger hair, freckles', 'brown tweed jacket, green waistcoat, white shirt', 1112, 4001),
-    'm3': ('steady 42 year old man, bald, short dark beard', 'grey frock coat, red cravat', 3413, 3113),
-    'm4': ('eager 19 year old man, curly black hair', 'brown corduroy jacket, blue scarf', 1114, 4001),
-    'm5': ('dignified 58 year old man, white moustache, black top hat', 'black overcoat, grey waistcoat', 1115, 1015),
-    'm6': ('thoughtful 30 year old Black man, short black hair, trimmed beard', 'dark green frock coat, cream waistcoat, white cravat', 1116, 1016),
+    'm3': ('stern 55 year old man, completely bald head, short grey white beard', 'grey frock coat, grey waistcoat, red cravat', 3413, 3113),
+    'm4': ('eager 19 year old young man, masculine face, messy curly black hair, bare head', 'dark brown wool coat, cream knitted scarf, brown waistcoat', 1114, 4001),
+    'm5': ('dignified 58 year old man, grey moustache, wearing a tall black top hat', 'black overcoat, black waistcoat, white shirt, black bow tie', 1115, 1015),
+    'm6': ('thoughtful 30 year old Black man, short black hair, full black beard, bare head', 'dark green frock coat, cream waistcoat, white shirt, black cravat', 1116, 1016),
 }
 
 
@@ -73,7 +82,8 @@ def main(args):
         gen = lambda s: torch.Generator('cuda').manual_seed(s)
         if not body_only:
             seed = int(override) if override else chosen_seed(name, bust_seed)
-            bad = generate_clean(pipe, session, name, f'{BUST} {who}, {outfit}, {STYLE}, small head, chest visible', NEG_BUST, seed)
+            neg = NEG_BUST + (', ' + EXTRA_NEG[iid] if iid in EXTRA_NEG else '')
+            bad = generate_clean(pipe, session, name, f'{BUST} {who}, {outfit}, {STYLE}, small head, chest visible', neg, seed)
             if bad:
                 print(f'  [{name}] 여러 번 뽑아도 {bad} 잘림')
             print('  상반신', frame(name))
