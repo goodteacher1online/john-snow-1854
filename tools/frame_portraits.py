@@ -41,6 +41,38 @@ def find_face(raw: Image.Image):
     return x + w / 2, y + h / 2, w
 
 
+def count_faces(raw: Image.Image) -> int:
+    """얼굴이 몇 개인지 (두 사람이 그려진 그림을 걸러 낸다)"""
+    g = cv2.equalizeHist(cv2.cvtColor(np.array(raw.convert('RGB')), cv2.COLOR_RGB2GRAY))
+    return len(_casc.detectMultiScale(g, 1.05, 4, minSize=(raw.width // 10, raw.width // 10)))
+
+
+def problems(raw: Image.Image, cut: Image.Image) -> tuple[str, float]:
+    """흉상으로 쓰기 어려운 까닭과 벌점. 벌점 0 이면 그대로 쓴다.
+    머리·어깨 잘림, 얼굴이 하나가 아님, 가슴이 짧아 얼굴이 판 아래로 내려가는 것을 본다"""
+    why, pen = [], 0.0
+    bad = edge_cut(cut)
+    n = count_faces(raw)
+    if n != 1:
+        why.append(f'얼굴 {n}개'); pen += 10
+    f = find_face(raw)
+    if f is None:
+        return ' '.join(why + ['얼굴 못 찾음']), pen + 20
+    k = cut.width / raw.width
+    cx, cy, fw = (v * k for v in f)
+    solid = np.array(cut)[..., 3] > 128
+    H = solid.shape[0]
+    side = solid[:, :3].any(axis=1) | solid[:, -3:].any(axis=1)
+    rows = np.nonzero(side & (np.arange(H) > cy + fw * 0.6))[0]
+    keep = int(rows[0]) - 2 if len(rows) else H
+    chest = (keep - cy) / fw
+    if chest < CHEST_MIN:
+        why.append(f'가슴 짧음 {chest:.2f}'); pen += (CHEST_MIN - chest) * 4
+    if '위' in bad:
+        why.append('머리 잘림'); pen += 5
+    return ' '.join(why), pen
+
+
 MARGIN_TOP = 14       # 머리(모자) 위로 남길 여백
 MARGIN_SIDE = 10      # 어깨 옆으로 남길 여백 (판 아래쪽 22%는 잘려도 자연스럽다)
 
@@ -96,27 +128,32 @@ def chosen_seed(name: str, seed: int) -> int:
         return seed
 
 
-def generate_clean(pipe, session, name: str, prompt: str, neg: str, seed: int, tries: int = 8):
-    """흉상 하나를 만든다. 머리나 어깨가 그림 밖으로 잘리면 시드를 바꿔 다시 뽑는다.
+def generate_clean(pipe, session, name: str, prompt: str, neg: str, seed: int, tries: int = 12):
+    """흉상 하나를 만든다. 얼굴이 둘이거나, 머리가 잘리거나, 가슴이 짧아 얼굴이 작고 낮게 놓일 그림이면
+    시드를 바꿔 다시 뽑고, 끝내 깨끗한 것이 없으면 가장 나은 것을 쓴다.
     받아들인 시드는 seeds.json 에 적어 다음에도 같은 그림이 나오게 한다"""
     import json, torch
     from rembg import remove
+    best = None
     for i in range(tries):
         s = seed + i * 7919
         img = pipe(prompt, negative_prompt=neg, width=768, height=768, num_inference_steps=28, guidance_scale=6.5,
                    generator=torch.Generator('cuda').manual_seed(s)).images[0]
         cut = remove(img, session=session, post_process_mask=True)
-        bad = edge_cut(cut)
-        if not bad:
+        why, pen = problems(img, cut)
+        if best is None or pen < best[0]:
+            best = (pen, s, img, cut, why)
+        if pen == 0:
             break
-        print(f'    {name} 시드 {s}: {bad} 잘림, 다시 뽑는다')
+        print(f'    {name} 시드 {s}: {why}, 다시 뽑는다')
+    pen, s, img, cut, why = best
     img.save(RAW / f'{name}.png')
     (RAW / 'cut').mkdir(exist_ok=True)
     cut.save(RAW / 'cut' / f'{name}.png')
     seeds = json.loads(SEEDS.read_text(encoding='utf-8')) if SEEDS.exists() else {}
     seeds[name] = s
     SEEDS.write_text(json.dumps(seeds, ensure_ascii=False, indent=1), encoding='utf-8')
-    return bad
+    return why
 
 
 CHEST_MIN = 1.25      # 얼굴 가운데부터 가슴 아래 끝까지 최소 길이 (얼굴 폭의 배수). 이보다 짧으면 다시 그려야 한다

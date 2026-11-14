@@ -85,7 +85,7 @@ def generate(names):
         neg = NEG + (', ' + EXTRA_NEG[name] if name in EXTRA_NEG else '')
         bad = generate_clean(pipe, session, name, f'{FRAME} {desc}, {STYLE}', neg, seed)
         if bad:
-            print(f'  [{name}] 여러 번 뽑아도 {bad} 잘림. 설명을 바꿔 보시오')
+            print(f'  [{name}] 여러 번 뽑아도 깨끗하지 않음: {bad}. 설명을 바꿔 보시오')
         print('  ', frame(name))                      # 얼굴 크기와 위치를 다른 인물과 맞춘다
         print('  생성', name)
 
