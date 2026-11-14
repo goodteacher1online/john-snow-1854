@@ -953,6 +953,7 @@ function setupLobby() {
   $<HTMLInputElement>('in-name').value = save.name;
   $<HTMLInputElement>('in-room').value = room;
   $('in-look').innerHTML = LOOKS.map(l => `<button type="button" class="pick" data-value="${l}" role="radio" aria-label="조사관 ${l}"><img src="./assets/portraits/inv_${l}.webp" alt=""></button>`).join('');
+  $('in-look').querySelectorAll('img').forEach(img => img.complete && img.naturalWidth ? fillCell(img) : img.addEventListener('load', () => fillCell(img), { once: true }));
   radioGroup('in-look', LOOKS.includes(save.look) ? save.look : 'f1', v => { save.look = v; });
   radioGroup('in-team', save.team, v => { save.team = v; });
   const resumable = save.records.length > 0 || save.noteSeen >= 0;
@@ -1100,4 +1101,19 @@ if (import.meta.env.DEV) {
       fillRecords: (n: number) => { save.records = [...save.records, ...SITES.filter(s => !has(s.id)).slice(0, n).map(s => s.id)]; updateHud(); },
     },
   });
+}
+
+/** 조사관 고르기 칸: 머리 위 빈자리를 덜어 인물이 칸을 꽉 채우게 키운다 (아래는 칸 바닥에 붙인 채, 양옆 어깨는 칸 밖으로 잘린다) */
+function fillCell(img: HTMLImageElement) {
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  if (!g || !c.height) return;
+  g.drawImage(img, 0, 0);
+  const a = g.getImageData(0, 0, c.width, c.height).data;
+  let top = 0;
+  find: for (; top < c.height; top++) for (let x = 0; x < c.width; x++) if (a[(top * c.width + x) * 4 + 3] > 40) break find;
+  const room = c.height * 0.06;                     // 머리 위로 남길 여백
+  const zoom = c.height / Math.max(c.height * 0.5, c.height - top + room);
+  if (zoom > 1) img.style.width = `${(zoom * 100).toFixed(1)}%`;
 }
