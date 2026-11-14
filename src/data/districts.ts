@@ -1,6 +1,7 @@
 import gen from './districts.gen.json';
 import people from './district_people.json';
 import { Site, Smell, WaterKind, Proof, PortraitId } from '../types.ts';
+import { voiceOf, victims, fill, hashOf, pickAt, SYMPTOM, STREET_DEAD, STREET_WELL } from './voices.ts';
 
 /**
  * 영역마다 맡아 조사하는 집 8곳과, 사망자가 7명 넘는 큰 집 (tools/build_districts.py 가 스노우의 지도에서 고름).
@@ -11,7 +12,7 @@ import { Site, Smell, WaterKind, Proof, PortraitId } from '../types.ts';
  */
 
 interface Gen { id: string; area: string; icon: number[]; door: number[]; bars: boolean; deaths: number; nearestPump: string; assigned?: boolean; points?: number[][] }
-interface Person { id: string; name: string; role: string; home: string }
+interface Person { id: string; name: string; role: string; home: string; female?: boolean }
 
 export interface DistrictCtx {
   w: (p: number[]) => [number, number];
@@ -29,10 +30,10 @@ function josa(word: string, a: string, b: string) {
 }
 const pick = <T,>(arr: T[], i: number) => arr[i % arr.length];
 
-const GREET = ['조사관이시라고요? 들어오세요.', '무슨 일로 오셨어요?', '교구에서 나오셨다고요. 물어보세요.', '바쁘지만 잠깐이면 괜찮아요.'];
-const SICK = ['하루 사이에 쌀뜨물 같은 설사를 하더니 손쓸 틈도 없었어요.', '9월 첫 주말이었어요. 의사를 부르러 간 사이에 숨을 거뒀지요.', '아침까지 멀쩡하던 사람이 저녁에 식어 버렸어요.'];
-const WELL = ['이웃 동네 소식을 들으면 무섭기만 해요.', '문을 닫아걸고 지냈지요.', '왜 우리만 무사한지 모르겠어요.'];
-const BYE = ['궁금한 게 더 있으면 언제든 오세요.', '원인을 꼭 찾아 주세요.', '몸조심하세요, 조사관님.', '다른 집들도 무사하면 좋겠어요.'];
+const ASK_TOLL = ['나: 이 집에서 앓은 사람이 있습니까?', '나: 이번 콜레라로 이 집에서 앓은 분이 있습니까?', '나: 식구들은 모두 무사하십니까?'];
+const ASK_AIR = ['나: 집 주변 공기는 어떻습니까?', '나: 이 거리 냄새는 어떻습니까?', '나: 집 안팎에 고약한 냄새가 납니까?'];
+const ASK_WATER = ['나: 마실 물은 어디서 길어 옵니까?', '나: 식구들이 마시는 물은 어디 물입니까?', '나: 물은 어느 펌프에서 받아 옵니까?'];
+const SMELL_BELIEF = ['다들 그 냄새가 병을 옮긴다고들 해요.', '독기가 올라온다고, 밤에는 창을 꼭 닫으래요.'];
 
 /** 사망자가 났지만 다른 펌프가 더 가까운 집이 브로드 가 물을 마신 사정 */
 const FAR_REASON: { short: string; line: string; why: string }[] = [
@@ -60,15 +61,18 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
     let smellNote = near ? `${near.name} 냄새` : smell === 'high' ? '하수구 악취' : smell === 'mid' ? '하수구 냄새 조금' : '냄새가 덜함';
     if (deaths === 0 && i % 8 === 5) { smell = 'high'; smellNote = '뒷마당 오물통 냄새'; }
 
+    const hv = (salt: number) => hashOf(g.id, salt);
     // 마시는 물
     let kind: WaterKind, short: string, note: string, waterLine: string, why = '';
     if (deaths > 0 && g.nearestPump === 'broad') {
       kind = 'broad'; short = '브로드 가 펌프'; note = '브로드 가 펌프, 가까움';
-      waterLine = '브로드 가 펌프요. 가깝고 물이 차고 맛있거든요.';
+      waterLine = pickAt(['브로드 가 펌프요. 가깝고 물이 차고 맛있거든요.', '브로드 가 펌프에서 길어 와요. 몇 걸음이면 되니까요.',
+        '당연히 브로드 가 펌프지요. 이 동네 사람들은 다 거기 물을 마셔요.', '브로드 가 펌프 물이요. 여름에도 차가워서 다들 좋아해요.'], hv(30));
     } else if (deaths > 0 && g.nearestPump === 'little_marlborough') {
       kind = 'broad'; short = '브로드 가 펌프'; note = '리틀 말버러 가 펌프 물이 고약해 브로드 가까지 감';
       why = '리틀 말버러 가 펌프 물에서 냄새가 나서';
-      waterLine = '가까운 건 리틀 말버러 가 펌프인데 물에서 고약한 냄새가 나요. 그래서 다들 브로드 가까지 길으러 가요.';
+      waterLine = pickAt(['가까운 건 리틀 말버러 가 펌프인데 물에서 고약한 냄새가 나요. 그래서 다들 브로드 가까지 길으러 가요.',
+        '리틀 말버러 가 펌프가 코앞이지만 그 물은 냄새가 나서 못 마셔요. 조금 걸어도 브로드 가 펌프로 가요.'], hv(31));
     } else if (deaths > 0 && g.assigned === false) {
       kind = 'broad'; short = '동네 펌프, 가끔 브로드 가 펌프'; note = `${ctx.pumpName(g.nearestPump)}, 가끔 브로드 가 펌프`;
       why = '브로드 가를 지날 때면';
@@ -112,6 +116,27 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
     }
 
     const role = p.role, nm = p.name;
+    // 직업과 사는 곳에 맞춘 말투. 같은 집은 늘 같은 대사가 나오도록 집 id 로 고른다
+    const v = voiceOf(role), female = !!p.female;
+    const h = (salt: number) => hashOf(g.id, salt);
+    const say = (arr: string[], salt: number) => fill(pickAt(arr, h(salt)), v, `${role} ${nm}${josa(nm, '이', '가')}`, p.home);
+    const toll = deaths > 0
+      ? [pickAt([`${peopleCount}명이 사는데 ${deaths}명이 죽었어요.`, `이 집엔 ${peopleCount}명이 살아요. 그 가운데 ${deaths}명을 잃었어요.`, `${peopleCount}명 가운데 ${deaths}명이 죽었어요.`], h(3)),
+        victims(deaths, female, v.aide, h(4)),
+        h(5) % 2 ? pickAt(SYMPTOM, h(6)) : say(v.sick, 6),
+        ...(h(7) % 3 === 0 ? [pickAt(STREET_DEAD, h(8))] : [])]
+      : [pickAt([`${peopleCount}명이 사는데 다행히 아무도 앓지 않았어요.`, `${peopleCount}명 모두 무사해요.`, `이 집 ${peopleCount}명은 아무도 앓지 않았어요.`], h(3)),
+        say(v.well, 4),
+        ...(h(7) % 2 === 0 ? [pickAt(STREET_WELL, h(8))] : [])];
+    const airFact = smell === 'high'
+      ? pickAt([`${smellNote}가 지독해요. 여름엔 창을 못 열지요.`, `${smellNote}가 말도 못 해요. 숨을 참고 지나다닐 정도예요.`, `${smellNote} 때문에 머리가 지끈거려요.`], h(15))
+      : smell === 'mid'
+        ? pickAt(['다른 동네와 비슷하게 하수구 냄새가 조금 나요.', '하수구 냄새가 조금 나지만 소호에선 흔한 일이에요.', '비 온 뒤에는 하수구 냄새가 좀 올라와요.'], h(15))
+        : pickAt(['이 거리는 냄새가 덜한 편이에요.', '여기는 바람이 잘 통해서 냄새가 덜해요.', '우리 골목은 그나마 냄새가 덜한 편이에요.'], h(15));
+    const air = [airFact,
+      ...(smell !== 'low' && h(9) % 2 ? [say(v.air, 10)] : []),
+      ...(smell === 'high' && h(11) % 3 === 0 ? [pickAt(SMELL_BELIEF, h(12))] : [])];
+    const water = [waterLine, kind === 'pipe' ? '물값이 들지만 집 안 꼭지에서 바로 나오니 편해요.' : say(v.waterUse, 13)];
     const site: Site = {
       id: g.id, name, kind: 'house', basis: 'map', proves, clue, testimonies, area: g.area,
       assigned: g.assigned !== false, points: g.points?.map(ctx.w),
@@ -120,18 +145,11 @@ export function buildDistricts(ctx: DistrictCtx): Site[] {
       people: peopleCount, deaths, smell, smellNote,
       drankBroad: kind === 'broad', waterNote: note, waterKind: kind, waterShort: short,
       door, icon, nearestPump: g.nearestPump,
-      intro: [`(${p.home} 문을 두드리자 ${role} ${nm}${josa(nm, '이', '가')} 나온다.)`, pick(GREET, i)],
-      toll: [
-        '나: 이 집에서 앓은 사람이 있습니까?',
-        deaths > 0 ? `${peopleCount}명이 사는데 ${deaths}명이 죽었어요.` : `${peopleCount}명이 사는데 다행히 아무도 앓지 않았어요.`,
-        deaths > 0 ? pick(SICK, i) : pick(WELL, i),
-      ],
-      air: [
-        '나: 집 주변 공기는 어떻습니까?',
-        smell === 'high' ? `${smellNote}가 지독해요. 여름엔 창을 못 열지요.` : smell === 'mid' ? '다른 동네와 비슷하게 하수구 냄새가 조금 나요.' : '이 거리는 냄새가 덜한 편이에요.',
-      ],
-      water: ['나: 마실 물은 어디서 길어 옵니까?', waterLine],
-      outro: pick(BYE, i),
+      intro: [`(${say(v.scene, 1)})`, say(v.greet, 2)],
+      toll: [pickAt(ASK_TOLL, h(20)), ...toll],
+      air: [pickAt(ASK_AIR, h(21)), ...air],
+      water: [pickAt(ASK_WATER, h(22)), ...water],
+      outro: say(v.bye, 14),
     };
     return site;
   });
