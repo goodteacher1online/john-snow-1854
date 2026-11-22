@@ -96,6 +96,10 @@ function toast(msg: string, sub = '', key = false) {
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => t.classList.remove('show'), key ? 5200 : 3200);
 }
+$('toast').addEventListener('click', () => {
+  clearTimeout(toastTimer);
+  $('toast').classList.remove('show');
+});
 
 function tick(msg: string, color?: string) {
   const row = document.createElement('div');

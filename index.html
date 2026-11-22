@@ -106,11 +106,13 @@
     </section>
 
     <div id="ticker"></div>
-    <p id="legend" class="hidden"></p>
     <aside id="board" class="panel hidden"></aside>
-    <button id="prompt" class="hidden"><kbd>E</kbd><span id="prompt-text"></span></button>
     <div id="toast"></div>
-    <p id="hint-click" class="hidden"><svg viewBox="0 0 24 24"><path d="M9 3v8.5M9 11.5 6.8 10a1.5 1.5 0 0 0-2.1 2.1L9 17.5c1 1.4 2.2 2.5 4.5 2.5h1a5 5 0 0 0 5-5v-4a1.5 1.5 0 0 0-3 0M16.5 11V9.5a1.5 1.5 0 0 0-3 0V11M13.5 9.5V8a1.5 1.5 0 0 0-3 0V11M10.5 8V3a1.5 1.5 0 0 0-3 0"/></svg><span>지도를 누르면 그곳까지 걸어간다. 건물을 누르면 문을 두드린다</span></p>
+    <div id="hud-bottom-stack">
+      <p id="hint-click" class="hidden"><svg viewBox="0 0 24 24"><path d="M9 3v8.5M9 11.5 6.8 10a1.5 1.5 0 0 0-2.1 2.1L9 17.5c1 1.4 2.2 2.5 4.5 2.5h1a5 5 0 0 0 5-5v-4a1.5 1.5 0 0 0-3 0M16.5 11V9.5a1.5 1.5 0 0 0-3 0V11M13.5 9.5V8a1.5 1.5 0 0 0-3 0V11M10.5 8V3a1.5 1.5 0 0 0-3 0"/></svg><span>지도를 누르면 그곳까지 걸어간다. 건물을 누르면 문을 두드린다</span></p>
+      <p id="legend" class="hidden"></p>
+      <button id="prompt" class="hidden"><kbd>E</kbd><span id="prompt-text"></span></button>
+    </div>
     <div id="zoom-controls" aria-label="지도 확대 및 축소">
       <button type="button" class="zoom-btn" id="btn-zoom-in" title="지도 확대" aria-label="지도 확대">+</button>
       <button type="button" class="zoom-btn" id="btn-zoom-out" title="지도 축소" aria-label="지도 축소">−</button>
