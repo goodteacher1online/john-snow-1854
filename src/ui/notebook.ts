@@ -116,7 +116,7 @@ export class Notebook {
           <div class="bar"><i style="width:0" data-w="${(g.rate / max * 100).toFixed(1)}"></i></div>
         </section>`).join('')}
       <h3 class="table-title">곳마다 나란히 놓기 <small>사망 비율이 높은 곳부터</small></h3>
-      <table class="data">
+      <div class="table-wrap"><table class="data">
         <thead><tr><th>조사한 곳</th><th>사망</th><th>백 명에</th><th>악취</th><th>마시는 물</th></tr></thead>
         <tbody>${[...recs].sort((a, b) => b.deaths / b.people - a.deaths / a.people).map(s => `
           <tr>
@@ -127,7 +127,7 @@ export class Notebook {
             <td>${esc(s.waterShort)}</td>
           </tr>`).join('')}
         </tbody>
-      </table>`;
+      </table></div>`;
     this.body.querySelectorAll<HTMLButtonElement>('.seg button').forEach(b => b.addEventListener('click', () => {
       this.groupBy = b.dataset.by as 'smell' | 'water';
       this.renderCompare();

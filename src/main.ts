@@ -88,6 +88,10 @@ const keys = new Set<string>();
 // 알림
 // ---------------------------------------------------------------------------
 let toastTimer = 0;
+function dismissToast() {
+  clearTimeout(toastTimer);
+  $('toast').classList.remove('show');
+}
 function toast(msg: string, sub = '', key = false) {
   const t = $('toast');
   t.innerHTML = esc(msg) + (sub ? `<small>${esc(sub)}</small>` : '');
@@ -96,10 +100,7 @@ function toast(msg: string, sub = '', key = false) {
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => t.classList.remove('show'), key ? 5200 : 3200);
 }
-$('toast').addEventListener('click', () => {
-  clearTimeout(toastTimer);
-  $('toast').classList.remove('show');
-});
+$('toast').addEventListener('click', dismissToast);
 
 function tick(msg: string, color?: string) {
   const row = document.createElement('div');
@@ -133,6 +134,10 @@ function toggleQuest(open?: boolean) {
   const next = open ?? el.classList.contains('folded');
   el.classList.toggle('folded', !next);
   $('quest-pull').setAttribute('aria-expanded', String(next));
+  if (isNarrow() && next) {
+    dismissToast();
+    if (!$('ledger').classList.contains('folded')) toggleLedger(false);
+  }
 }
 $('quest-pull').addEventListener('click', () => toggleQuest());
 
@@ -263,6 +268,10 @@ function toggleLedger(open?: boolean) {
   el.classList.toggle('folded', !next);
   $('ledger-toggle').setAttribute('aria-expanded', String(next));
   try { localStorage.setItem('snow1854.ledger', next ? '1' : '0'); } catch { /* 무시 */ }
+  if (isNarrow() && next) {
+    dismissToast();
+    if (!$('quest').classList.contains('folded')) toggleQuest(false);
+  }
 }
 $('ledger-toggle').addEventListener('click', () => toggleLedger());
 // 좁은 화면에서는 지도를 가리지 않게 접은 채로 시작한다
@@ -813,6 +822,7 @@ function updateNear() {
 function setOverview(on: boolean, withBoard = false) {
   overview = on;
   board = on && withBoard;
+  document.body.classList.toggle('in-overview', on);
   renderer.focus = on ? { x: BROAD_PUMP.x, y: BROAD_PUMP.y + 60 } : null;
   renderer.zoomTarget = on ? renderer.overviewZoom : (userZoom || renderer.baseZoom);
   $('btn-map').classList.toggle('on', on && !board);
@@ -1061,7 +1071,17 @@ $('help-note').addEventListener('click', () => {
   closeModal('help');
   if (save.stage >= STAGE.DONE) openEnding(0); else showNote(save.stage);
 });
-$('snowmap-close').addEventListener('click', () => closeModal('snowmap'));
+$('snowmap-zoom').addEventListener('click', () => {
+  const sc = document.querySelector('#snowmap .viewer-scroll');
+  if (!sc) return;
+  const zoomed = sc.classList.toggle('zoomed');
+  $('snowmap-zoom').textContent = zoomed ? '전체 보기' : '크게 보기';
+});
+$('snowmap-close').addEventListener('click', () => {
+  document.querySelector('#snowmap .viewer-scroll')?.classList.remove('zoomed');
+  $('snowmap-zoom').textContent = '크게 보기';
+  closeModal('snowmap');
+});
 $('about-body').innerHTML = SOURCES.map(s => `<h3>${esc(s.title)}</h3><ul>${s.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
 $('help-about').addEventListener('click', () => { closeModal('help'); openModal('about'); });
 $('primer-body').innerHTML = PRIMER.map(s => `<h2>${esc(s.title)}</h2>${s.body.map(b => `<p>${esc(b)}</p>`).join('')}`
