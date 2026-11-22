@@ -526,16 +526,25 @@ export function tollAt(stage: number) {
   return { day, dead: upto.reduce((n, x) => n + x.deaths, 0), fresh: upto[upto.length - 1].attacks };
 }
 
-export interface QuestView { title: string; items: { label: string; done: boolean }[]; targets: string[] }
+export interface QuestItem {
+  label: string;
+  done: boolean;
+  /** 누르면 가장 가까운 미조사 목적지(또는 'pump')로 자동 이동 */
+  go?: string[];
+  /** 누르면 수첩의 해당 탭 열기 */
+  tab?: 'graph' | 'reason';
+}
+export interface QuestView { title: string; items: QuestItem[]; targets: string[] }
 
 /** 이야기 단계의 할 일에, 내 영역의 구역 조사를 덧붙인다 */
 export function questView(stage: number, has: (id: string) => boolean, area = 'team1', seen: SeenFlags = {}): QuestView {
   const v = storyQuest(stage, has, area, seen);
   const mine = districtOf(area);
-  const n = mine.filter(s => has(s.id)).length;
-  v.items.push({ label: `${areaName(area)} 구역 조사 ${n} / ${mine.length}곳`, done: n === mine.length });
+  const leftMine = mine.filter(s => !has(s.id)).map(s => s.id);
+  const n = mine.length - leftMine.length;
+  v.items.push({ label: `${areaName(area)} 구역 조사 ${n} / ${mine.length}곳`, done: n === mine.length, go: leftMine });
   // 이야기 쪽에 갈 곳이 없을 때는 내 구역의 남은 집으로 안내한다
-  if (!v.targets.length && stage !== STAGE.REASON && stage !== STAGE.HEARING) v.targets = mine.filter(s => !has(s.id)).map(s => s.id);
+  if (!v.targets.length && stage !== STAGE.REASON && stage !== STAGE.HEARING) v.targets = leftMine;
   return v;
 }
 
@@ -544,61 +553,65 @@ function storyQuest(stage: number, has: (id: string) => boolean, area: string, s
   switch (stage) {
     case STAGE.FIRST: {
       const c = firstCounts(has);
+      const deathIds = left(['lewis', 'lodging', 'cambridge', 'coffee', ...districtOf(area).filter(s => s.deaths > 0).map(s => s.id)]);
+      const safeIds = left(['pulteney', 'rupert', ...districtOf(area).filter(s => s.deaths === 0).map(s => s.id)]);
       return {
         title: '거리를 돌며 관찰을 쌓아라',
         items: [
-          { label: `조사한 집 ${Math.min(c.total, FIRST_NEED.total)} / ${FIRST_NEED.total}곳`, done: c.total >= FIRST_NEED.total },
-          { label: `그 가운데 사망자가 난 집 ${Math.min(c.deaths, FIRST_NEED.deaths)} / ${FIRST_NEED.deaths}곳`, done: c.deaths >= FIRST_NEED.deaths },
-          { label: `무사한 집 ${Math.min(c.safe, FIRST_NEED.safe)} / ${FIRST_NEED.safe}곳`, done: c.safe >= FIRST_NEED.safe },
+          { label: `조사한 집 ${Math.min(c.total, FIRST_NEED.total)} / ${FIRST_NEED.total}곳`, done: c.total >= FIRST_NEED.total, go: [...deathIds, ...safeIds] },
+          { label: `그 가운데 사망자가 난 집 ${Math.min(c.deaths, FIRST_NEED.deaths)} / ${FIRST_NEED.deaths}곳`, done: c.deaths >= FIRST_NEED.deaths, go: deathIds },
+          { label: `무사한 집 ${Math.min(c.safe, FIRST_NEED.safe)} / ${FIRST_NEED.safe}곳`, done: c.safe >= FIRST_NEED.safe, go: safeIds },
         ],
         // 모자란 쪽의 집으로 안내한다: 이야기 집과 내 구역
         targets: left([
-          ...(c.deaths < FIRST_NEED.deaths ? ['lewis', 'lodging', 'cambridge', 'coffee', ...districtOf(area).filter(s => s.deaths > 0).map(s => s.id)] : []),
-          ...(c.safe < FIRST_NEED.safe ? ['pulteney', 'rupert', ...districtOf(area).filter(s => s.deaths === 0).map(s => s.id)] : []),
+          ...(c.deaths < FIRST_NEED.deaths ? deathIds : []),
+          ...(c.safe < FIRST_NEED.safe ? safeIds : []),
         ]),
       };
     }
     case STAGE.TEST_AIR: {
       const n = extraCounter(has);
+      const smellIds = left(['marlborough', ...districtOf(area).filter(s => s.smell === 'high').map(s => s.id)]);
       return {
         title: '공기설을 시험하라',
         items: [
-          { label: '폴란드 가 구빈원', done: has('workhouse') },
-          { label: '라이온 양조장', done: has('brewery') },
-          { label: `냄새가 고약한 다른 곳 ${Math.min(n, COUNTER_NEED)} / ${COUNTER_NEED}곳`, done: n >= COUNTER_NEED },
+          { label: '폴란드 가 구빈원', done: has('workhouse'), go: ['workhouse'] },
+          { label: '라이온 양조장', done: has('brewery'), go: ['brewery'] },
+          { label: `냄새가 고약한 다른 곳 ${Math.min(n, COUNTER_NEED)} / ${COUNTER_NEED}곳`, done: n >= COUNTER_NEED, go: smellIds },
         ],
-        targets: [...left(['workhouse', 'brewery']), ...(n >= COUNTER_NEED ? [] : left(['marlborough', ...districtOf(area).filter(s => s.smell === 'high').map(s => s.id)]))],
+        targets: [...left(['workhouse', 'brewery']), ...(n >= COUNTER_NEED ? [] : smellIds)],
       };
     }
     case STAGE.REASON:
       return {
         title: '그래프로 견주고 추리하라',
         items: [
-          { label: '수첩 그래프: 냄새로 묶어 그리기', done: !!seen.smell },
-          { label: '수첩 그래프: 마시는 물로 묶어 그리기', done: !!seen.water },
-          { label: '수첩 추리: 두 문제', done: false },
+          { label: '수첩 그래프: 냄새로 묶어 그리기', done: !!seen.smell, tab: 'graph' },
+          { label: '수첩 그래프: 마시는 물로 묶어 그리기', done: !!seen.water, tab: 'graph' },
+          { label: '수첩 추리: 두 문제', done: false, tab: 'reason' },
         ],
         targets: [],
       };
     case STAGE.PREDICT: {
       const far = has('littlepulteney') || has('carnaby');
       const n = SITES.filter(s => has(s.id)).length;
+      const moreIds = left(['gould', 'eley', 'littlepulteney', 'carnaby', ...districtOf(area).map(s => s.id)]);
       return {
         title: '가설이 맞는지 시험하라',
         items: [
-          { label: '브로드 가 굴드 댁', done: has('gould') },
-          { label: '일리 형제 뇌관 공장', done: has('eley') },
-          { label: '리틀 윈드밀 가 또는 카나비 가', done: far },
-          { label: `기록 ${Math.min(n, DIST_NEED)} / ${DIST_NEED}곳`, done: n >= DIST_NEED },
-          { label: '수첩 그래프: 펌프에서의 거리와 사망', done: !!seen.dist },
+          { label: '브로드 가 굴드 댁', done: has('gould'), go: ['gould'] },
+          { label: '일리 형제 뇌관 공장', done: has('eley'), go: ['eley'] },
+          { label: '리틀 윈드밀 가 또는 카나비 가', done: far, go: ['littlepulteney', 'carnaby'] },
+          { label: `기록 ${Math.min(n, DIST_NEED)} / ${DIST_NEED}곳`, done: n >= DIST_NEED, go: moreIds },
+          { label: '수첩 그래프: 펌프에서의 거리와 사망', done: !!seen.dist, tab: 'graph' },
         ],
         targets: [...left(['gould', 'eley']), ...(far ? [] : ['littlepulteney', 'carnaby'])],
       };
     }
     case STAGE.HEARING:
-      return { title: '교구 위원회를 설득하라', items: [{ label: '수첩에서 보고 시작', done: false }], targets: [] };
+      return { title: '교구 위원회를 설득하라', items: [{ label: '수첩에서 보고 시작', done: false, tab: 'reason' }], targets: [] };
     case STAGE.HANDLE:
-      return { title: '브로드 가 펌프의 손잡이를 떼어 내라', items: [{ label: '펌프로 가기', done: false }], targets: ['pump'] };
+      return { title: '브로드 가 펌프의 손잡이를 떼어 내라', items: [{ label: '펌프로 가기', done: false, go: ['pump'] }], targets: ['pump'] };
     default: {
       const n = SITES.slice(0, STORY_COUNT).filter(s => has(s.id)).length;
       return { title: '조사 완료', items: [{ label: `이야기 속 집 ${n} / ${STORY_COUNT}곳`, done: n === STORY_COUNT }], targets: [] };

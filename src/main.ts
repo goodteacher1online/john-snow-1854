@@ -122,6 +122,16 @@ function openModal(id: string) {
 }
 const closeModal = (id: string) => $(id).classList.remove('open');
 
+const isNarrow = () => matchMedia('(max-width: 820px)').matches;
+
+function toggleQuest(open?: boolean) {
+  const el = $('quest');
+  const next = open ?? el.classList.contains('folded');
+  el.classList.toggle('folded', !next);
+  $('quest-pull').setAttribute('aria-expanded', String(next));
+}
+$('quest-pull').addEventListener('click', () => toggleQuest());
+
 // ---------------------------------------------------------------------------
 // 화면 위 정보
 // ---------------------------------------------------------------------------
@@ -135,7 +145,17 @@ function updateHud(bump = false) {
     const g = classGoal();
     quest.items.push({ label: `${save.room ? '반 공동 목표' : '조사 목표'} ${g.n} / ${g.need}곳 · 스노우의 기록 열기`, done: false });
   }
-  $('quest-items').innerHTML = quest.items.map(i => `<li class="${i.done ? 'done' : ''}">${esc(i.label)}</li>`).join('');
+  const doneN = quest.items.filter(i => i.done).length;
+  $('quest-summary').textContent = `${quest.title} (${doneN}/${quest.items.length})`;
+  $('quest-items').innerHTML = quest.items.map(i => {
+    if (i.tab) {
+      return `<li class="${i.done ? 'done' : ''} clickable"><button type="button" class="quest-link" data-tab="${i.tab}"><span>${esc(i.label)}</span><em class="quest-go-badge">열기 →</em></button></li>`;
+    }
+    if (i.go?.length && (!i.done || i.go.length === 1)) {
+      return `<li class="${i.done ? 'done' : ''} clickable"><button type="button" class="quest-link" data-go="${esc(i.go.join(','))}"><span>${esc(i.label)}</span><em class="quest-go-badge">${i.done ? '이동' : '이동 →'}</em></button></li>`;
+    }
+    return `<li class="${i.done ? 'done' : ''}"><span>${esc(i.label)}</span></li>`;
+  }).join('');
   if (bump) {
     $('quest').classList.remove('bump');
     void $('quest').offsetWidth;
@@ -149,6 +169,52 @@ function updateHud(bump = false) {
   $('notebook-dot').classList.toggle('hidden', !notebook.needsReason);
   renderLedger();
 }
+
+$('quest-items').addEventListener('click', e => {
+  const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.quest-link');
+  if (!btn || !started || cinematic) return;
+  const tab = btn.dataset.tab as 'graph' | 'reason' | undefined;
+  if (tab) {
+    if (isNarrow()) toggleQuest(false);
+    notebook.open(tab);
+    return;
+  }
+  const ids = (btn.dataset.go ?? '').split(',').filter(Boolean);
+  if (!ids.length) return;
+  void navReady.then(() => {
+    const unvisited = ids.filter(id => id === 'pump' || !has(id));
+    const pool = unvisited.length ? unvisited : ids;
+    let bestId = '';
+    let bestDist = Infinity;
+    for (const id of pool) {
+      const pos: [number, number] | null = id === 'pump' ? [BROAD_PUMP.x, BROAD_PUMP.y] : SITE_BY_ID[id]?.door ?? null;
+      if (!pos) continue;
+      const d = Math.hypot(pos[0] - me.x, pos[1] - me.y);
+      if (d < bestDist) { bestDist = d; bestId = id; }
+    }
+    if (!bestId) return;
+    if (overview) setOverview(false);
+    if (isNarrow()) toggleQuest(false);
+    if (bestId === 'pump') {
+      if (bestDist < REACH) inspectPump('broad');
+      else {
+        goTo(BROAD_PUMP.x, BROAD_PUMP.y, () => inspectPump('broad'));
+        toast('브로드 가 펌프로 이동합니다');
+      }
+      return;
+    }
+    const site = SITE_BY_ID[bestId];
+    if (!site) return;
+    if (bestDist < REACH) void interview(site);
+    else {
+      goTo(site.door[0], site.door[1], () => {
+        if (!has(site.id) || canRevisit(site)) void interview(site);
+        else toast(site.name, '이미 조사를 마친 곳이다');
+      });
+      toast(`${site.name}(으)로 이동합니다`, '도착하면 자동으로 문을 두드립니다');
+    }
+  });
+});
 
 /** 조사 기록판: 사망 비율이 높은 곳부터 한 줄씩. 줄을 누르면 그 집에서 들은 내용이 펼쳐진다 */
 let ledgerOpenRow = '';
@@ -196,7 +262,8 @@ function toggleLedger(open?: boolean) {
 }
 $('ledger-toggle').addEventListener('click', () => toggleLedger());
 // 좁은 화면에서는 지도를 가리지 않게 접은 채로 시작한다
-try { if (localStorage.getItem('snow1854.ledger') === '0' || matchMedia('(max-width: 820px)').matches) toggleLedger(false); } catch { /* 무시 */ }
+if (isNarrow()) toggleQuest(false);
+try { if (localStorage.getItem('snow1854.ledger') === '0' || isNarrow()) toggleLedger(false); } catch { /* 무시 */ }
 
 function showNote(stage: number) {
   const note = NOTES[stage];
@@ -871,14 +938,112 @@ window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur', () => keys.clear());
 
 const canvas = $<HTMLCanvasElement>('map');
-canvas.addEventListener('pointerdown', e => onTap(e.clientX, e.clientY));
+const clampZoom = (z: number) => Math.max(renderer.overviewZoom, Math.min(3.4, z));
+function zoomBy(factor: number) {
+  if (!started || cinematic) return;
+  const cur = overview ? renderer.zoom : (userZoom || renderer.baseZoom);
+  userZoom = clampZoom(cur * factor);
+  if (overview) setOverview(false);
+  renderer.zoomTarget = userZoom;
+}
+
+const activePointers = new Map<number, { x: number; y: number }>();
+let downPos: { id: number; x: number; y: number } | null = null;
+let didPinch = false;
+let pinchStartDist = 0;
+let pinchStartZoom = 0;
+const pointerPairDist = () => {
+  const pts = [...activePointers.values()];
+  return pts.length >= 2 ? Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y) : 0;
+};
+
+canvas.addEventListener('pointerdown', e => {
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (activePointers.size === 1) {
+    didPinch = false;
+    downPos = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  } else if (activePointers.size === 2) {
+    didPinch = true;
+    downPos = null;
+    pinchStartDist = pointerPairDist();
+    pinchStartZoom = overview ? renderer.zoom : (userZoom || renderer.zoom || renderer.baseZoom);
+    if (overview) {
+      userZoom = pinchStartZoom;
+      setOverview(false);
+    }
+  }
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!activePointers.has(e.pointerId)) return;
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (activePointers.size >= 2 && pinchStartDist > 10 && started && !cinematic) {
+    const dist = pointerPairDist();
+    if (dist > 0) {
+      userZoom = clampZoom(pinchStartZoom * (dist / pinchStartDist));
+      renderer.zoomTarget = userZoom;
+    }
+  }
+});
+
+function finishPointer(e: PointerEvent, allowTap: boolean) {
+  const hadDown = downPos?.id === e.pointerId ? downPos : null;
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) pinchStartDist = 0;
+  if (allowTap && !didPinch && hadDown && activePointers.size === 0) {
+    if (Math.hypot(e.clientX - hadDown.x, e.clientY - hadDown.y) < 18) onTap(e.clientX, e.clientY);
+    downPos = null;
+  } else if (activePointers.size === 0) {
+    downPos = null;
+    didPinch = false;
+  }
+}
+canvas.addEventListener('pointerup', e => finishPointer(e, true));
+canvas.addEventListener('pointercancel', e => finishPointer(e, false));
+canvas.addEventListener('touchstart', e => { if (e.touches.length >= 2) e.preventDefault(); }, { passive: false });
+canvas.addEventListener('touchmove', e => { if (e.touches.length >= 2) e.preventDefault(); }, { passive: false });
+
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
-  if (overview) return;
-  // 소호 전체가 한 화면에 들어올 때까지 줄일 수 있다
-  userZoom = Math.max(renderer.overviewZoom, Math.min(3.4, (userZoom || renderer.baseZoom) * (e.deltaY < 0 ? 1.1 : 0.9)));
-  renderer.zoomTarget = userZoom;
+  zoomBy(e.deltaY < 0 ? 1.1 : 0.9);
 }, { passive: false });
+
+$('btn-zoom-in').addEventListener('click', () => zoomBy(1.28));
+$('btn-zoom-out').addEventListener('click', () => zoomBy(1 / 1.28));
+
+const FS_ENTER_PATH = 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5';
+const FS_EXIT_PATH = 'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5';
+const docAny = document as Document & { webkitFullscreenElement?: Element; webkitExitFullscreen?: () => Promise<void> | void };
+const isFullscreen = () => !!(document.fullscreenElement || docAny.webkitFullscreenElement || document.body.classList.contains('pseudo-fullscreen'));
+function syncFullscreenUi() {
+  const on = isFullscreen();
+  $('btn-fullscreen').classList.toggle('on', on);
+  $('fs-label').textContent = on ? '원래' : '전체';
+  $('fs-icon').setAttribute('d', on ? FS_EXIT_PATH : FS_ENTER_PATH);
+}
+async function toggleFullscreen() {
+  const root = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
+  try {
+    if (document.fullscreenElement || docAny.webkitFullscreenElement) {
+      if (document.exitFullscreen) await document.exitFullscreen();
+      else if (docAny.webkitExitFullscreen) await docAny.webkitExitFullscreen();
+      document.body.classList.remove('pseudo-fullscreen');
+    } else if (root.requestFullscreen || root.webkitRequestFullscreen) {
+      if (root.requestFullscreen) await root.requestFullscreen();
+      else if (root.webkitRequestFullscreen) await root.webkitRequestFullscreen();
+      document.body.classList.remove('pseudo-fullscreen');
+    } else {
+      document.body.classList.toggle('pseudo-fullscreen');
+    }
+  } catch {
+    document.body.classList.toggle('pseudo-fullscreen');
+  }
+  syncFullscreenUi();
+  renderer.resize();
+}
+$('btn-fullscreen').addEventListener('click', () => { void toggleFullscreen(); });
+document.addEventListener('fullscreenchange', () => { syncFullscreenUi(); renderer.resize(); });
+document.addEventListener('webkitfullscreenchange', () => { syncFullscreenUi(); renderer.resize(); });
 
 $('prompt').addEventListener('click', interact);
 $('btn-notebook').addEventListener('click', () => notebook.open());
@@ -1088,7 +1253,8 @@ requestAnimationFrame(frame);
 if (import.meta.env.DEV) {
   Object.assign(window, {
     __game: {
-      state: () => ({ ...save, near: nearId, others: others.map(o => o.name), x: me.x, y: me.y, walking: !!path, guide: guide?.length ?? -1, guideName }),
+      state: () => ({ ...save, near: nearId, others: others.map(o => o.name), x: me.x, y: me.y, walking: !!path, guide: guide?.length ?? -1, guideName, zoom: renderer.zoom, zoomTarget: renderer.zoomTarget }),
+      setStage: (s: number) => setStage(s),
       doorOnScreen: (id: string) => renderer.toScreen(...SITE_BY_ID[id].door),
       iconOnScreen: (id: string) => renderer.toScreen(SITE_BY_ID[id].icon[0], SITE_BY_ID[id].icon[1] - 12),
       teleport: (x: number, y: number) => { [me.x, me.y] = nav.snap(x, y) ?? [me.x, me.y]; path = null; },
